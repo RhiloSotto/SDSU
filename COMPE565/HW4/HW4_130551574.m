@@ -1,0 +1,732 @@
+% EXECUTE THIS FILE
+% CompE565 Final Project
+% May. 15, 2026
+% Name: Rhilo Sotto
+% ID: 130551574
+% email: rsotto4586@sdsu.edu  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+% M-file name: HW4_130551574.m  
+% Location of output image: figure windows, command window, image folders
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+% Input: foreman_cif.avi
+% GOP: I + 4 P frames
+% Frame size: 352 x 288
+% Format: 4:2:0
+% Macroblock size: 16 x 16
+% DCT block size: 8 x 8
+% Quantizer: Q = 28
+% Entropy coding, MUX, and buffer are ignored.
+
+clear;
+clc;
+close all;
+
+%% Codec Settings 
+videoFile = 'foreman_cif.avi';
+
+% HW3 said to use frames 16-20 from the video
+frameNumbers = [16 17 18 19 20];
+
+% Encoder/Decoder profile according to project description
+W = 352;
+H = 288;
+% Quantization is constant value of 28
+Q = 28;
+% Macroblock size
+MB_SIZE = 16;
+% Block size
+BLOCK_SIZE = 8;
+% Search range for motion estimation
+SEARCH_RANGE = 8;
+
+% Assignment says DC + 7 AC = 8 coefficients from zig-zag scan
+NUM_COEFF_KEEP = 8;
+
+% If true, all P-frames use the reconstructed I-frame as the reference
+% If false, each P-frame uses the previous reconstructed frame
+USE_FIXED_IFRAME_REFERENCE = true;
+
+%% Read Original Frames from AVI Input
+numFrames = length(frameNumbers);
+
+orig(numFrames) = struct();
+% Read each selected RGB frame directly from the video
+v = VideoReader(videoFile);
+
+for k = 1:numFrames
+    frameIndex = frameNumbers(k);
+    % go to specific frame index
+    v.CurrentTime = (frameIndex - 1) / v.FrameRate;
+
+    rgbFrame = readFrame(v);
+    % resize to ensure no errors will occur (testing with other videos)
+    if size(rgbFrame, 1) ~= H || size(rgbFrame, 2) ~= W
+        rgbFrame = imresize(rgbFrame, [H W]);
+    end
+    % using doubles throughout
+    rgbFrame = double(rgbFrame);
+
+    R = rgbFrame(:,:,1);
+    G = rgbFrame(:,:,2);
+    B = rgbFrame(:,:,3);
+
+    [Y, Cb, Cr] = rgbToYCbCrCustom(R, G, B);
+    orig(k).Y = Y;
+    orig(k).Cb = subsample420(Cb);
+    orig(k).Cr = subsample420(Cr);
+    orig(k).rgb = rgbFrame;
+end
+
+%% Encode 
+coded = encodeVideo(orig, Q, MB_SIZE, BLOCK_SIZE, SEARCH_RANGE, NUM_COEFF_KEEP, USE_FIXED_IFRAME_REFERENCE);
+
+% Decode using the coded structure and the same codec parameters
+%% Decode 
+decoded = decodeVideo(coded, Q, MB_SIZE, BLOCK_SIZE, NUM_COEFF_KEEP, USE_FIXED_IFRAME_REFERENCE);
+
+%% Compute PSNR for Y Component
+psnrY = zeros(numFrames, 1);
+
+for k = 1:numFrames
+    psnrY(k) = computePSNR(orig(k).Y, decoded(k).Y);
+end
+
+fprintf('\nPSNR Results for Y Component\n');
+fprintf('----------------------------\n');
+fprintf('Frame\tType\tPSNR-Y dB\n');
+
+for k = 1:numFrames
+    fprintf('%d\t\t%s\t\t%.4f\n', frameNumbers(k), coded(k).type, psnrY(k));
+end
+
+%% Convert Reconstructed Frames to RGB
+for k = 1:numFrames
+    decoded(k).rgb = ycbcr420ToRGB(decoded(k).Y, decoded(k).Cb, decoded(k).Cr);
+end
+
+%% Display Results
+displayFrameSet(orig, 'Original Five Frames', true, frameNumbers);
+
+displayPredictedFrames(coded, 'Predicted P Frames', frameNumbers);
+
+displayDifferenceFrames(coded, 'Reconstructed Difference P Frames After IDCT', frameNumbers);
+
+displayFrameSet(decoded, 'Reconstructed Five Frames', true, frameNumbers);
+
+%% Save Output Images (for Report)
+outputFolder = 'codec_results';
+
+if ~exist(outputFolder, 'dir')
+    mkdir(outputFolder);
+end
+
+for k = 1:numFrames
+    imwrite(uint8(orig(k).rgb), fullfile(outputFolder, sprintf('original_frame_%d.png', frameNumbers(k))));
+
+    imwrite(uint8(decoded(k).rgb), fullfile(outputFolder, sprintf('reconstructed_frame_%d.png', frameNumbers(k))));
+end
+
+for k = 2:numFrames
+    imwrite(uint8(coded(k).predRGB), fullfile(outputFolder, sprintf('predicted_frame_%d.png', frameNumbers(k))));
+
+    diffVis = visualizeDifference(coded(k).recResidualY);
+    imwrite(uint8(diffVis), fullfile(outputFolder, sprintf('difference_frame_%d.png', frameNumbers(k))));
+end
+
+fprintf('\nImages saved in folder: %s\n', outputFolder);
+
+
+%% Encoder Function
+
+function coded = encodeVideo(orig, Q, MB_SIZE, BLOCK_SIZE, SEARCH_RANGE, NUM_COEFF_KEEP, USE_FIXED_IFRAME_REFERENCE)
+
+    numFrames = length(orig);
+    coded(numFrames) = struct();
+
+    % Use I-frame as reference
+    refI.Y = [];
+    refI.Cb = [];
+    refI.Cr = [];
+
+    % or Use previous frame (either I- or P-) as reference
+    prevRef.Y = [];
+    prevRef.Cb = [];
+    prevRef.Cr = [];
+    
+    % GOP
+    for k = 1:numFrames
+
+        if k == 1
+            coded(k).type = 'I';
+
+            coded(k).Ycoeffs  = encodePlane(orig(k).Y,  Q, BLOCK_SIZE, NUM_COEFF_KEEP);
+            coded(k).Cbcoeffs = encodePlane(orig(k).Cb, Q, BLOCK_SIZE, NUM_COEFF_KEEP);
+            coded(k).Crcoeffs = encodePlane(orig(k).Cr, Q, BLOCK_SIZE, NUM_COEFF_KEEP);
+
+            recY  = decodePlane(coded(k).Ycoeffs,  Q, BLOCK_SIZE, NUM_COEFF_KEEP);
+            recCb = decodePlane(coded(k).Cbcoeffs, Q, BLOCK_SIZE, NUM_COEFF_KEEP);
+            recCr = decodePlane(coded(k).Crcoeffs, Q, BLOCK_SIZE, NUM_COEFF_KEEP);
+
+            recY  = clip255(recY);
+            recCb = clip255(recCb);
+            recCr = clip255(recCr);
+
+            coded(k).recY = recY;
+            coded(k).recCb = recCb;
+            coded(k).recCr = recCr;
+
+            refI.Y = recY;
+            refI.Cb = recCb;
+            refI.Cr = recCr;
+
+            prevRef = refI;
+
+        else
+            coded(k).type = 'P';
+
+            if USE_FIXED_IFRAME_REFERENCE
+                ref = refI;
+            else
+                ref = prevRef;
+            end
+
+            [MVx, MVy] = motionEstimateFullSearch(orig(k).Y, ref.Y, MB_SIZE, SEARCH_RANGE);
+
+            predY = motionCompensateY(ref.Y, MVx, MVy, MB_SIZE);
+            predCb = motionCompensateChroma(ref.Cb, MVx, MVy, MB_SIZE);
+            predCr = motionCompensateChroma(ref.Cr, MVx, MVy, MB_SIZE);
+
+            residualY  = orig(k).Y  - predY;
+            residualCb = orig(k).Cb - predCb;
+            residualCr = orig(k).Cr - predCr;
+
+            coded(k).Ycoeffs  = encodePlane(residualY,  Q, BLOCK_SIZE, NUM_COEFF_KEEP);
+            coded(k).Cbcoeffs = encodePlane(residualCb, Q, BLOCK_SIZE, NUM_COEFF_KEEP);
+            coded(k).Crcoeffs = encodePlane(residualCr, Q, BLOCK_SIZE, NUM_COEFF_KEEP);
+
+            recResidualY  = decodePlane(coded(k).Ycoeffs,  Q, BLOCK_SIZE, NUM_COEFF_KEEP);
+            recResidualCb = decodePlane(coded(k).Cbcoeffs, Q, BLOCK_SIZE, NUM_COEFF_KEEP);
+            recResidualCr = decodePlane(coded(k).Crcoeffs, Q, BLOCK_SIZE, NUM_COEFF_KEEP);
+
+            recY  = clip255(predY  + recResidualY);
+            recCb = clip255(predCb + recResidualCb);
+            recCr = clip255(predCr + recResidualCr);
+
+            coded(k).MVx = MVx;
+            coded(k).MVy = MVy;
+
+            coded(k).predY = predY;
+            coded(k).predCb = predCb;
+            coded(k).predCr = predCr;
+            coded(k).predRGB = ycbcr420ToRGB(predY, predCb, predCr);
+
+            coded(k).recResidualY = recResidualY;
+            coded(k).recResidualCb = recResidualCb;
+            coded(k).recResidualCr = recResidualCr;
+
+            coded(k).recY = recY;
+            coded(k).recCb = recCb;
+            coded(k).recCr = recCr;
+
+            prevRef.Y = recY;
+            prevRef.Cb = recCb;
+            prevRef.Cr = recCr;
+        end
+    end
+end
+
+
+%% Decoder Function
+
+function decoded = decodeVideo(coded, Q, MB_SIZE, BLOCK_SIZE, NUM_COEFF_KEEP, USE_FIXED_IFRAME_REFERENCE)
+
+    numFrames = length(coded);
+    decoded(numFrames) = struct();
+
+    refI.Y = [];
+    refI.Cb = [];
+    refI.Cr = [];
+
+    prevRef.Y = [];
+    prevRef.Cb = [];
+    prevRef.Cr = [];
+
+    for k = 1:numFrames
+
+        if strcmp(coded(k).type, 'I')
+
+            recY  = decodePlane(coded(k).Ycoeffs,  Q, BLOCK_SIZE, NUM_COEFF_KEEP);
+            recCb = decodePlane(coded(k).Cbcoeffs, Q, BLOCK_SIZE, NUM_COEFF_KEEP);
+            recCr = decodePlane(coded(k).Crcoeffs, Q, BLOCK_SIZE, NUM_COEFF_KEEP);
+
+            recY  = clip255(recY);
+            recCb = clip255(recCb);
+            recCr = clip255(recCr);
+
+            decoded(k).Y = recY;
+            decoded(k).Cb = recCb;
+            decoded(k).Cr = recCr;
+
+            refI.Y = recY;
+            refI.Cb = recCb;
+            refI.Cr = recCr;
+
+            prevRef = refI;
+
+        else
+            if USE_FIXED_IFRAME_REFERENCE
+                ref = refI;
+            else
+                ref = prevRef;
+            end
+
+            MVx = coded(k).MVx;
+            MVy = coded(k).MVy;
+
+            predY = motionCompensateY(ref.Y, MVx, MVy, MB_SIZE);
+            predCb = motionCompensateChroma(ref.Cb, MVx, MVy, MB_SIZE);
+            predCr = motionCompensateChroma(ref.Cr, MVx, MVy, MB_SIZE);
+
+            recResidualY  = decodePlane(coded(k).Ycoeffs,  Q, BLOCK_SIZE, NUM_COEFF_KEEP);
+            recResidualCb = decodePlane(coded(k).Cbcoeffs, Q, BLOCK_SIZE, NUM_COEFF_KEEP);
+            recResidualCr = decodePlane(coded(k).Crcoeffs, Q, BLOCK_SIZE, NUM_COEFF_KEEP);
+
+            recY  = clip255(predY  + recResidualY);
+            recCb = clip255(predCb + recResidualCb);
+            recCr = clip255(predCr + recResidualCr);
+
+            decoded(k).Y = recY;
+            decoded(k).Cb = recCb;
+            decoded(k).Cr = recCr;
+
+            prevRef.Y = recY;
+            prevRef.Cb = recCb;
+            prevRef.Cr = recCr;
+        end
+    end
+end
+
+
+%% Color Conversion and Sampling Functions
+
+function [Y, Cb, Cr] = rgbToYCbCrCustom(R, G, B)
+    % custom function that directly works with doubles
+    % also wanted to implement the ITU-R BT.601 conversion
+    % (standard that Matlab uses through its built-in function)
+    Y  =  0.299000 * R + 0.587000 * G + 0.114000 * B;
+    Cb = -0.168736 * R - 0.331264 * G + 0.500000 * B + 128;
+    Cr =  0.500000 * R - 0.418688 * G - 0.081312 * B + 128;
+end
+
+
+function rgb = ycbcr420ToRGB(Y, Cb420, Cr420)
+    % this combines upsampling and ycbcr to rgb in one function that works
+    % with doubles and implements the inverse ITU-R BT.601 conversion
+    Cb = upsample420(Cb420);
+    Cr = upsample420(Cr420);
+
+    R = Y + 1.402000 * (Cr - 128);
+    G = Y - 0.344136 * (Cb - 128) - 0.714136 * (Cr - 128);
+    B = Y + 1.772000 * (Cb - 128);
+
+    rgb = cat(3, clip255(R), clip255(G), clip255(B));
+end
+
+
+function C420 = subsample420(C)
+
+    [H, W] = size(C);
+    C420 = zeros(H/2, W/2);
+
+    % using the mean within a 2x2 pixel block for the subsampled value
+    for r = 1:2:H
+        for c = 1:2:W
+            block = C(r:r+1, c:c+1);
+            C420((r+1)/2, (c+1)/2) = mean(block(:));
+        end
+    end
+end
+
+
+function C = upsample420(C420)
+    % Upsample by repeating each chroma sample into a 2x2 block
+    % This matches the simple 4:2:0 reconstruction used in this project
+    C = kron(C420, ones(2, 2));
+end
+
+
+%% DCT, Quantization, and ZigZag Functions
+% Each Y, Cb, or Cr component is treated as a separate image plane
+function coeffStruct = encodePlane(plane, Q, BLOCK_SIZE, NUM_COEFF_KEEP)
+    % put data from each plane into a struct of coefficients
+    [H, W] = size(plane);
+
+    if mod(H, BLOCK_SIZE) ~= 0 || mod(W, BLOCK_SIZE) ~= 0
+        error('Plane size must be divisible by block size.');
+    end
+
+    numBlocksY = H / BLOCK_SIZE;
+    numBlocksX = W / BLOCK_SIZE;
+
+    coeffs = zeros(numBlocksY, numBlocksX, NUM_COEFF_KEEP);
+
+    previousDC = 0;
+
+    T = dctMatrix(BLOCK_SIZE);
+
+    % block level
+    for by = 1:numBlocksY
+        for bx = 1:numBlocksX
+
+            r = (by - 1) * BLOCK_SIZE + 1;
+            c = (bx - 1) * BLOCK_SIZE + 1;
+
+            block = plane(r:r+BLOCK_SIZE-1, c:c+BLOCK_SIZE-1);
+            % DCT
+            dctBlock = T * block * T';
+            % Quantize
+            qBlock = round(dctBlock / Q);
+            % Zigzag scan
+            zz = zigzagScan(qBlock);
+            % store DC
+            dc = zz(1);
+            dcDiff = dc - previousDC;
+            previousDC = dc;
+            % store 7 AC
+            stored = zz(1:NUM_COEFF_KEEP);
+            stored(1) = dcDiff;
+
+            coeffs(by, bx, :) = stored;
+        end
+    end
+
+    coeffStruct.coeffs = coeffs;
+    coeffStruct.height = H;
+    coeffStruct.width = W;
+end
+
+
+function plane = decodePlane(coeffStruct, Q, BLOCK_SIZE, NUM_COEFF_KEEP)
+    % from the coefficients struct (image data) reconstruct the plane
+    H = coeffStruct.height;
+    W = coeffStruct.width;
+
+    coeffs = coeffStruct.coeffs;
+
+    numBlocksY = H / BLOCK_SIZE;
+    numBlocksX = W / BLOCK_SIZE;
+
+    plane = zeros(H, W);
+
+    previousDC = 0;
+
+    T = dctMatrix(BLOCK_SIZE);
+
+    for by = 1:numBlocksY
+        for bx = 1:numBlocksX
+            % read struct as normal row vector rather than 3D array
+            stored = squeeze(coeffs(by, bx, :))';
+
+            dcDiff = stored(1);
+            dc = previousDC + dcDiff;
+            previousDC = dc;
+
+            zz = zeros(1, BLOCK_SIZE * BLOCK_SIZE);
+            zz(1:NUM_COEFF_KEEP) = stored;
+            zz(1) = dc;
+            % inverse Zigzag
+            qBlock = inverseZigzag(zz, BLOCK_SIZE, BLOCK_SIZE);
+            % inverse Quantization
+            dctBlock = qBlock * Q;
+            % inverse DCT
+            recBlock = T' * dctBlock * T;
+
+            r = (by - 1) * BLOCK_SIZE + 1;
+            c = (bx - 1) * BLOCK_SIZE + 1;
+            
+            plane(r:r+BLOCK_SIZE-1, c:c+BLOCK_SIZE-1) = recBlock;
+        end
+    end
+end
+
+
+function T = dctMatrix(N)
+    % Build a custom DCT matrix instead of using dct2()
+    % This allows the same function to work for any block size N
+    T = zeros(N, N);
+
+    for k = 0:N-1
+        for n = 0:N-1
+            if k == 0
+                alpha = sqrt(1 / N);
+            else
+                alpha = sqrt(2 / N);
+            end
+
+            T(k+1, n+1) = alpha * cos(((2*n + 1) * k * pi) / (2*N));
+        end
+    end
+end
+
+
+function zz = zigzagScan(block)
+    % Convert a 2D block into a 1D zigzag-ordered list
+    [H, W] = size(block);
+    zz = zeros(1, H * W);
+
+    index = 1;
+
+    for s = 1:(H + W - 1)
+        % alternates directions for the zigzag pattern
+        if mod(s, 2) == 0
+            rStart = min(s, H);
+            rEnd = max(1, s - W + 1);
+
+            for r = rStart:-1:rEnd
+                c = s - r + 1;
+                zz(index) = block(r, c);
+                index = index + 1;
+            end
+        else
+            cStart = min(s, W);
+            cEnd = max(1, s - H + 1);
+
+            for c = cStart:-1:cEnd
+                r = s - c + 1;
+                zz(index) = block(r, c);
+                index = index + 1;
+            end
+        end
+    end
+end
+
+
+function block = inverseZigzag(zz, H, W)
+    % Reconstruct a 2D block from a 1D zigzag-ordered list
+    block = zeros(H, W);
+
+    index = 1;
+
+    for s = 1:(H + W - 1)
+        % alternates directions for the zigzag pattern
+        if mod(s, 2) == 0
+            rStart = min(s, H);
+            rEnd = max(1, s - W + 1);
+
+            for r = rStart:-1:rEnd
+                c = s - r + 1;
+                block(r, c) = zz(index);
+                index = index + 1;
+            end
+        else
+            cStart = min(s, W);
+            cEnd = max(1, s - H + 1);
+
+            for c = cStart:-1:cEnd
+                r = s - c + 1;
+                block(r, c) = zz(index);
+                index = index + 1;
+            end
+        end
+    end
+end
+
+
+%% Motion Estimation Functions
+
+function [MVx, MVy] = motionEstimateFullSearch(currY, refY, MB_SIZE, SEARCH_RANGE)
+    % Estimate one motion vector for each 16x16 macroblock using full search
+    [H, W] = size(currY);
+
+    numMBY = H / MB_SIZE;
+    numMBX = W / MB_SIZE;
+
+    MVx = zeros(numMBY, numMBX);
+    MVy = zeros(numMBY, numMBX);
+    % Macroblock level
+    for my = 1:numMBY
+        for mx = 1:numMBX
+
+            r = (my - 1) * MB_SIZE + 1;
+            c = (mx - 1) * MB_SIZE + 1;
+
+            currBlock = currY(r:r+MB_SIZE-1, c:c+MB_SIZE-1);
+
+            bestSAD = inf;
+            bestDx = 0;
+            bestDy = 0;
+
+            for dy = -SEARCH_RANGE:SEARCH_RANGE
+                for dx = -SEARCH_RANGE:SEARCH_RANGE
+
+                    rr = r + dy;
+                    cc = c + dx;
+                    % check bounds
+                    if rr < 1 || cc < 1 || rr + MB_SIZE - 1 > H || cc + MB_SIZE - 1 > W
+                        continue;
+                    end
+
+                    refBlock = refY(rr:rr+MB_SIZE-1, cc:cc+MB_SIZE-1);
+
+                    sad = sum(abs(currBlock(:) - refBlock(:)));
+                    % minimum SAD is the criterion
+                    if sad < bestSAD
+                        bestSAD = sad;
+                        bestDx = dx;
+                        bestDy = dy;
+                    end
+                end
+            end
+
+            MVx(my, mx) = bestDx;
+            MVy(my, mx) = bestDy;
+        end
+    end
+end
+
+
+function predY = motionCompensateY(refY, MVx, MVy, MB_SIZE)
+    % use motion vectors to reconstruct Y plane
+    [H, W] = size(refY);
+
+    predY = zeros(H, W);
+
+    [numMBY, numMBX] = size(MVx);
+
+    for my = 1:numMBY
+        for mx = 1:numMBX
+
+            r = (my - 1) * MB_SIZE + 1;
+            c = (mx - 1) * MB_SIZE + 1;
+
+            dx = MVx(my, mx);
+            dy = MVy(my, mx);
+
+            rr = r + dy;
+            cc = c + dx;
+
+            rr = max(1, min(rr, H - MB_SIZE + 1));
+            cc = max(1, min(cc, W - MB_SIZE + 1));
+
+            predY(r:r+MB_SIZE-1, c:c+MB_SIZE-1) = refY(rr:rr+MB_SIZE-1, cc:cc+MB_SIZE-1);
+        end
+    end
+end
+
+
+function predC = motionCompensateChroma(refC, MVx, MVy, MB_SIZE)
+    % use motion vectors to reconstruct C plane (subsampled)
+    C_MB_SIZE = MB_SIZE / 2;
+
+    [Hc, Wc] = size(refC);
+
+    predC = zeros(Hc, Wc);
+
+    [numMBY, numMBX] = size(MVx);
+
+    for my = 1:numMBY
+        for mx = 1:numMBX
+
+            r = (my - 1) * C_MB_SIZE + 1;
+            c = (mx - 1) * C_MB_SIZE + 1;
+
+            dx = round(MVx(my, mx) / 2);
+            dy = round(MVy(my, mx) / 2);
+
+            rr = r + dy;
+            cc = c + dx;
+
+            rr = max(1, min(rr, Hc - C_MB_SIZE + 1));
+            cc = max(1, min(cc, Wc - C_MB_SIZE + 1));
+
+            predC(r:r+C_MB_SIZE-1, c:c+C_MB_SIZE-1) = refC(rr:rr+C_MB_SIZE-1, cc:cc+C_MB_SIZE-1);
+        end
+    end
+end
+
+
+%% Display and Metrics Functions
+% only need to use for Y components, but function works for Cb and Cr too
+function value = computePSNR(original, reconstructed)
+
+    err = original - reconstructed;
+    mse = mean(err(:).^2);
+
+    if mse == 0
+        value = inf;
+    else
+        value = 10 * log10((255^2) / mse);
+    end
+end
+
+% shows all the original frames
+function displayFrameSet(frames, figTitle, useRGB, frameNumbers)
+
+    figure('Name', figTitle);
+
+    numFrames = length(frames);
+
+    for k = 1:numFrames
+        subplot(1, numFrames, k);
+
+        if useRGB
+            image(uint8(frames(k).rgb));
+        else
+            imagesc(frames(k).Y);
+            colormap gray;
+        end
+
+        axis image off;
+        title(sprintf('Frame %d', frameNumbers(k)));
+    end
+end
+
+
+function displayPredictedFrames(coded, figTitle, frameNumbers)
+
+    figure('Name', figTitle);
+
+    plotIndex = 1;
+    % the first I-frame does not need to be displayed
+    for k = 2:length(coded)
+        subplot(1, length(coded)-1, plotIndex);
+        image(uint8(coded(k).predRGB));
+        axis image off;
+        title(sprintf('Predicted %d', frameNumbers(k)));
+        plotIndex = plotIndex + 1;
+    end
+end
+
+
+function displayDifferenceFrames(coded, figTitle, frameNumbers)
+
+    figure('Name', figTitle);
+
+    plotIndex = 1;
+    % the first I-frame does not need to displayed
+    for k = 2:length(coded)
+        subplot(1, length(coded)-1, plotIndex);
+
+        diffVis = visualizeDifference(coded(k).recResidualY);
+        imagesc(diffVis);
+        colormap gray;
+        axis image off;
+        title(sprintf('Diff %d', frameNumbers(k)));
+
+        plotIndex = plotIndex + 1;
+    end
+end
+
+
+% offset for difference frame visualization (gray is 0 change)
+function diffVis = visualizeDifference(diffFrame)
+
+    diffVis = clip255(diffFrame + 128);
+end
+
+
+% function to clamp number between max range [0, 255], works on doubles
+function out = clip255(in)
+
+    out = min(max(in, 0), 255);
+end

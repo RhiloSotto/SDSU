@@ -1,0 +1,191 @@
+close all;
+clear;
+clc;
+
+% Read and display image
+I = imread('iris.jpg', 'jpg');
+
+% Display each band (R = 1, G = 2, B = 3)
+Red = zeros(size(I), 'uint8');
+Green = zeros(size(I), 'uint8');
+Blue = zeros(size(I), 'uint8');
+
+Red(:,:,1) = I(:,:,1);
+Green(:,:,2) = I(:,:,2);
+Blue(:,:,3) = I(:,:,3);
+
+figure;
+sgtitle('RGB')
+subplot(2,2,1);
+subimage(I);
+title('Original Image');
+subplot(2,2,2);
+subimage(Red);
+title('Red Band');
+subplot(2,2,3);
+subimage(Green);
+title('Blue Band');
+subplot(2,2,4);
+subimage(Blue);
+title('Green Band');
+
+% Convert image into YCbCr color space
+I_YCbCr = rgb2ycbcr(I);
+
+% Display each band separately
+Y = I_YCbCr(:,:,1);
+Cb = I_YCbCr(:,:,2);
+Cr = I_YCbCr(:,:,3);
+
+YCbCr = {I_YCbCr Y Cb Cr};
+figure;
+sgtitle('YCbCr')
+subplot(2,2,1);
+subimage(I_YCbCr);
+title('RGB to YCbCr Image');
+subplot(2,2,2);
+subimage(Y);
+title('Y Band');
+subplot(2,2,3);
+subimage(Cb);
+title('Cb Band');
+subplot(2,2,4);
+subimage(Cr);
+title('Cr Band');
+
+% Subsample Cb and Cr using 4:2:0 and display
+X_sub = idivide(int32(size(I, 1)), 2);
+Y_sub = idivide(int32(size(I, 2)), 2);
+
+Cb_sub = uint8(zeros(X_sub, Y_sub));
+Cr_sub = uint8(zeros(X_sub, Y_sub));
+
+for row = 1:X_sub
+    for col = 1:Y_sub
+        Cb_sub(row, col) = Cb(2 * row - 1, 2 * col - 1);
+        Cr_sub(row, col) = Cr(2 * row - 1, 2 * col - 1);
+    end
+end
+
+% Upsample and display Cb and Cr bands
+X_up = int32(size(I, 1));
+Y_up = int32(size(I, 2));
+
+Cb_up = uint8(zeros(X_up, Y_up));
+Cr_up = uint8(zeros(X_up, Y_up));
+
+for row = 1:X_sub
+    for col = 1:Y_sub
+        Cb_up(2 * row - 1, 2 * col - 1) = Cb_sub(row, col);
+        Cr_up(2 * row - 1, 2 * col - 1) = Cr_sub(row, col);
+    end
+end
+
+% linear interpolation
+Cb_li = Cb_up;
+Cr_li = Cr_up;
+for row = 1:2:X_up
+    for col = 1:2:Y_up
+        if col + 2 <= Y_up
+            Cb_li(row, col + 1) = idivide(Cb_li(row, col), 2) + idivide(Cb_li(row, col + 2), 2);
+            Cr_li(row, col + 1) = idivide(Cr_li(row, col), 2) + idivide(Cr_li(row, col + 2), 2);
+        else % edge case
+            Cb_li(row, col + 1) = Cb_li(row, col);
+            Cr_li(row, col + 1) = Cr_li(row, col);
+        end
+    end
+end
+for row = 2:2:X_up
+    for col = 1:1:Y_up
+        if row + 2 <= X_up
+            Cb_li(row, col) = idivide(Cb_li(row - 1, col), 2) + idivide(Cb_li(row + 1, col), 2);
+            Cr_li(row, col) = idivide(Cr_li(row - 1, col), 2) + idivide(Cr_li(row + 1, col), 2);
+        else % edge case
+            Cb_li(row, col) = Cb_li(row - 1, col);
+            Cr_li(row, col) = Cr_li(row - 1, col);
+        end
+    end
+end
+
+
+% simple row or column replication
+Cb_rep = Cb_up;
+Cr_rep = Cr_up;
+for row = 1:2:X_up
+    for col = 1:2:Y_up
+        Cb_rep(row:row+1, col:col+1) = Cb_rep(row, col);
+        Cr_rep(row:row+1, col:col+1) = Cr_rep(row, col);
+    end
+end
+
+figure;
+sgtitle('Subsampling')
+subplot(2,2,1);
+subimage(Cb);
+title('Original Cb Band');
+subplot(2,2,2);
+subimage(Cr);
+title('Original Cr Band');
+
+subplot(2,2,3);
+subimage(Cb_sub);
+title('4:2:0 Cb Band');
+subplot(2,2,4);
+subimage(Cr_sub);
+title('4:2:0 Cr Band');
+
+figure;
+sgtitle('Linear Interpolation')
+subplot(2,2,1);
+subimage(Cb);
+title('Original Cb Band');
+subplot(2,2,2);
+subimage(Cr);
+title('Original Cr Band');
+
+subplot(2,2,3);
+subimage(Cb_li);
+title('Linear Interpolation Cb Band');
+subplot(2,2,4);
+subimage(Cr_li);
+title('Linear Interpolation Cr Band');
+
+figure;
+sgtitle('Row/Column Replication')
+subplot(2,2,1);
+subimage(Cb);
+title('Original Cb Band');
+subplot(2,2,2);
+subimage(Cr);
+title('Original Cr Band');
+
+subplot(2,2,3);
+subimage(Cb_rep);
+title('Row/Column Replication Cb Band');
+subplot(2,2,4);
+subimage(Cr_rep);
+title('Row/Column Replication Cr Band');
+
+% Convert image into RGB format
+YCbCr_li = cat(3, Y, Cb_li, Cr_li);
+YCbCr_rep = cat(3, Y, Cb_rep, Cr_rep);
+I_li = ycbcr2rgb(YCbCr_li);
+I_rep = ycbcr2rgb(YCbCr_rep);
+
+
+% Display original and reconstructed images
+figure;
+sgtitle('Original vs Reconstructed (LI)')
+subplot(1,2,1);
+subimage(I);
+title('Original Image');
+subplot(1,2,2);
+subimage(I_li);
+title('Linear Interpolation');
+
+% Compute MSE and PSNR (for linear interpolation)
+MSE_Cb_li = sum(sum((Cb - Cb_li).^2)) / sum(size(Cb));
+
+fprintf('MSE: %f\n', MSE);
+fprintf('PSNR: %f\n', PSNR);
+
