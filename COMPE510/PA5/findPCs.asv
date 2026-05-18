@@ -1,0 +1,28 @@
+function W = findPCs(X, K)
+% This function finds the first K principle components of X
+
+% ====================== YOUR CODE HERE ======================
+% Instructions: First, compute the estimated variance of X, denoted as S
+%               Second, compute eigenvalues and corresponding 
+%               eigenvectors of S
+%               Third, sort the eigenvalues in a descend order
+%               Four, find the top K principle components with the largest
+%               eigenvalues
+% Hints:        try functions cov(), eig() 
+%
+
+S = cov(X);
+
+[V, D] = eig(S);
+
+[eigenvalues, idx] = sort(diag(D), 'descend');
+
+% 4. Reorder eigenvectors according to sorted eigenvalues
+V = V(:, idx);
+
+% 5. Select the top K eigenvectors (principal components)
+W = V(:, 1:K);
+
+
+% ============================================================
+end
