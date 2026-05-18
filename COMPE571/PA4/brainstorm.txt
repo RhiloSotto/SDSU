@@ -1,0 +1,64 @@
+Processes aren't known until they are accessed  --> dynamically create Processes
+All processes have the same size for virtual address space
+16 bit addresses (0 - 65535), pages are 512bytes 
+1-level page tables 2^7 entries = 256
+VPN (7) - offset (9)
+
+virtual addresses expressed in Hexadecimal
+- VPN
+0b1111111
+0xFE00
+and/or shift right 9 bits
+
+- offset
+0b0000000111111111
+0x01FF
+technically only the VPN to PPN has to be stored at this point
+
+each virtual page entry has:
+- translation - where in physical memory (5 bits)
+- a dirty bit - page has been written to
+- a reference bit - page has been referenced
++ additional data (when last accessed, how many times accessed, etc.)
+
+since each entry has 16 bits
+- 5 VPN to PPN
+- 1 dirty bit
+- 1 reference bit
+- 9 for additional data (access time, count how many times used) based on algorithm
+
+each memory reference takes 1 time unit
+
+32 addressable physical pages (16KB)
+
+
+stats to track:
+- total number of page faults (X)
+- total number of disk references (Y)
+- total number of dirty page writes (Z)
+to validate results, Y = X + Z
+
+Process #, memory reference, read/write
+
+Need to Implement:
+- Random - pick a random page (need to repeat experiment and report average)
+- First in First out - oldest page (notion of age)
+- Least Recently Used - notion of time
+- Periodic Reference Reset - the physical memory has reference to virtual page
+Extra Credit:
+- Oracle - how far ahead to look?
+- Least Frequently Used?
+
+1) read input file line
+- process number, address, access type
+2) go to the process's page table using VPN as index
+3) PTE has a valid translation -> no page faults
+4) PTE does NOT have a valid translation -> PAGE faults
+5) check if MM has a free page -> use it
+
+6) no free page -> choose victim page + check if dirty page write back
+7) update stats
+
+it took him under 125 lines
+must be dynamic
+create a test input file
