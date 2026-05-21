@@ -1,0 +1,3225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CS Problem Solving Series — Murat Balci</title>
+<style>
+/* ===== RESET & BASE ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --pri:#1a2744;--sec:#2c3e50;--acc:#3498db;--acc2:#2ecc71;
+  --bg:#f4f6f9;--card:#fff;--txt:#333;--code-bg:#1e1e2e;--code-fg:#cdd6f4;
+  --red:#e74c3c;--orange:#e67e22;--yellow:#f1c40f;--green:#2ecc71;--purple:#9b59b6;--cyan:#1abc9c;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--txt);line-height:1.7}
+
+/* ===== HEADER ===== */
+.hero{background:linear-gradient(135deg,#1a2744 0%,#2c3e50 50%,#34495e 100%);color:#fff;text-align:center;padding:4rem 1rem 3rem}
+.hero h1{font-size:2.6rem;letter-spacing:-1px;margin-bottom:.5rem}
+.hero .sub{font-size:1.15rem;opacity:.85;margin-bottom:.3rem}
+.hero .instructor{font-size:1.05rem;opacity:.75;font-style:italic}
+
+/* ===== TABLE OF CONTENTS ===== */
+.toc{max-width:900px;margin:2rem auto;background:var(--card);border-radius:10px;padding:2rem;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.toc h2{color:var(--pri);margin-bottom:1rem;font-size:1.5rem}
+.toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+.toc-card{background:var(--bg);border-radius:8px;padding:1rem;border-left:4px solid var(--acc);cursor:pointer;transition:transform .15s,box-shadow .15s}
+.toc-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.toc-card h4{color:var(--pri);margin-bottom:.3rem;font-size:.95rem}
+.toc-card p{font-size:.82rem;color:#666}
+
+/* ===== CONTAINER / MODULE ===== */
+.container{max-width:960px;margin:0 auto;padding:0 1.5rem 3rem}
+.session-header{background:linear-gradient(135deg,var(--pri),var(--sec));color:#fff;padding:1.5rem 2rem;border-radius:10px 10px 0 0;margin-top:3rem}
+.session-header h2{color:#fff;border:none;padding:0;font-size:1.6rem}
+.session-header p{opacity:.8;margin-top:.3rem}
+
+.module{background:var(--card);border-radius:0 0 10px 10px;padding:2rem;margin-bottom:2.5rem;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.module + .module{border-radius:10px}
+
+h3{color:var(--sec);margin:1.8rem 0 .8rem;font-size:1.25rem}
+h4{color:var(--sec);margin:1.2rem 0 .5rem;font-size:1.05rem}
+
+.problem-box{background:#e8f4f8;border-left:4px solid var(--acc);padding:1rem 1.2rem;border-radius:0 6px 6px 0;margin:1rem 0}
+.problem-box strong{color:var(--pri)}
+
+.complexity{display:inline-block;background:#eee;padding:2px 10px;border-radius:12px;font-size:.82rem;margin:4px 4px 4px 0}
+.complexity.good{background:#d5f5e3;color:#1e8449}
+
+.tip-box{background:#fff3cd;border:1px solid #ffeeba;padding:1rem 1.2rem;border-radius:6px;margin:1rem 0;font-size:.92rem}
+.tip-box strong{color:#856404}
+
+.trick-box{background:#e8daef;border:1px solid #d2b4de;padding:1rem 1.2rem;border-radius:6px;margin:1rem 0;font-size:.92rem}
+.trick-box strong{color:#6c3483}
+
+/* ===== CODE BLOCKS ===== */
+pre{background:var(--code-bg);color:var(--code-fg);padding:1.4rem;border-radius:8px;overflow-x:auto;font-family:'Cascadia Code','Fira Code','Consolas',monospace;font-size:.88rem;line-height:1.6;margin:1rem 0;position:relative}
+pre .lang-tag{position:absolute;top:6px;right:10px;background:rgba(255,255,255,.1);color:#999;padding:1px 8px;border-radius:4px;font-size:.72rem}
+code{font-family:'Cascadia Code','Fira Code','Consolas',monospace}
+.kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.cm{color:#5c6370;font-style:italic}.num{color:#d19a66}.type{color:#e5c07b}.pp{color:#e06c75}
+
+/* ===== ANIMATION WIDGET ===== */
+.anim-widget{border:1px solid #ddd;border-radius:10px;padding:1.2rem;margin:1.5rem 0;background:#fafbfc}
+.anim-widget h4{margin-top:0;text-align:center;color:var(--pri)}
+.anim-input{margin:.8rem 0;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.anim-input label{font-weight:600;font-size:.9rem;white-space:nowrap}
+.anim-input input[type="text"]{flex:1;min-width:180px;padding:.4rem .6rem;border:1px solid #ccc;border-radius:4px;font-family:monospace;font-size:.9rem}
+.anim-display{min-height:60px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;padding:1rem;margin:.5rem 0;position:relative}
+.anim-log{background:#f0f0f0;border-radius:6px;padding:.6rem .8rem;font-size:.85rem;font-family:monospace;min-height:2.2em;margin:.5rem 0;color:#555;max-height:120px;overflow-y:auto}
+.anim-controls{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-top:.5rem}
+.anim-controls button{border:none;padding:.45rem .9rem;border-radius:5px;cursor:pointer;font-size:.88rem;font-weight:600;transition:background .15s,transform .1s}
+.anim-controls button:active{transform:scale(.95)}
+.btn-back{background:#bdc3c7;color:#fff}.btn-back:hover{background:#95a5a6}
+.btn-step{background:var(--acc);color:#fff}.btn-step:hover{background:#2980b9}
+.btn-play{background:var(--acc2);color:#fff}.btn-play:hover{background:#27ae60}
+.btn-pause{background:var(--orange);color:#fff}.btn-pause:hover{background:#d35400}
+.btn-reset{background:var(--red);color:#fff}.btn-reset:hover{background:#c0392b}
+.btn-apply{background:var(--purple);color:#fff}.btn-apply:hover{background:#7d3c98}
+.step-info{margin-left:auto;font-size:.82rem;color:#888}
+
+/* ===== ARRAY / NODE BOXES ===== */
+.box{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border:2px solid var(--pri);border-radius:5px;font-weight:700;font-size:.95rem;transition:all .25s ease;background:#fff;position:relative}
+.box.hi-yellow{background:var(--yellow);border-color:#d4ac0d}
+.box.hi-green{background:var(--green);color:#fff;border-color:#1e8449}
+.box.hi-red{background:var(--red);color:#fff;border-color:#922b21}
+.box.hi-purple{background:var(--purple);color:#fff;border-color:#6c3483}
+.box.hi-cyan{background:var(--cyan);color:#fff;border-color:#148f77}
+.box.hi-orange{background:var(--orange);color:#fff;border-color:#a04000}
+.box.dim{opacity:.35}
+.box-label{position:absolute;top:-18px;font-size:.65rem;font-weight:700;white-space:nowrap}
+.box-label.red{color:var(--red)}.box-label.blue{color:var(--acc)}.box-label.purple{color:var(--purple)}.box-label.green{color:var(--green)}.box-label.orange{color:var(--orange)}
+
+/* ===== LINKED LIST NODES ===== */
+.ll-container{display:flex;align-items:center;gap:0;flex-wrap:wrap;justify-content:center}
+.ll-node{display:flex;align-items:center}
+.ll-box{width:48px;height:40px;border:2px solid var(--pri);border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:700;background:#fff;transition:all .25s;position:relative}
+.ll-arrow{width:30px;text-align:center;font-size:1.2rem;color:#888}
+.ll-box.hi-yellow{background:var(--yellow);border-color:#d4ac0d}
+.ll-box.hi-green{background:var(--green);color:#fff;border-color:#1e8449}
+.ll-box.hi-red{background:var(--red);color:#fff;border-color:#922b21}
+.ll-box.hi-purple{background:var(--purple);color:#fff;border-color:#6c3483}
+
+/* ===== TREE NODES (SVG-based) ===== */
+.tree-svg{width:100%;overflow:visible}
+
+/* ===== MATRIX / TABLE ===== */
+.dp-table{border-collapse:collapse;margin:.5rem auto;font-size:.85rem}
+.dp-table td,.dp-table th{border:1px solid #ccc;padding:6px 10px;text-align:center;min-width:36px;transition:background .25s}
+.dp-table th{background:#ecf0f1;font-weight:700}
+.dp-table td.hi-yellow{background:var(--yellow)}
+.dp-table td.hi-green{background:var(--green);color:#fff}
+.dp-table td.hi-cyan{background:var(--cyan);color:#fff}
+.dp-table td.hi-purple{background:var(--purple);color:#fff}
+
+/* ===== GRAPH (canvas) ===== */
+.graph-canvas{border:1px solid #ddd;border-radius:8px;background:#fff;display:block;margin:.5rem auto}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:600px){
+  .hero h1{font-size:1.6rem}
+  .container{padding:0 .8rem 2rem}
+  .module{padding:1.2rem}
+  pre{font-size:.78rem;padding:1rem}
+  .box{width:34px;height:34px;font-size:.82rem}
+  .anim-controls{gap:.3rem}
+  .anim-controls button{padding:.35rem .6rem;font-size:.8rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== HERO ==================== -->
+<div class="hero">
+  <h1>Computer Science Problem Solving Series</h1>
+  <p class="sub">A 6-Hour Intensive Masterclass in Algorithms, Data Structures &amp; C/C++ (C11)</p>
+  <p class="instructor">Instructor: Murat Balci</p>
+</div>
+
+<!-- ==================== TABLE OF CONTENTS ==================== -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <div class="toc-grid">
+    <div class="toc-card" onclick="document.getElementById('s1').scrollIntoView({behavior:'smooth'})">
+      <h4>Session 1 — Arrays &amp; Hashing</h4>
+      <p>Two Sum &bull; Kadane's Algorithm &bull; Dutch National Flag</p>
+    </div>
+    <div class="toc-card" onclick="document.getElementById('s2').scrollIntoView({behavior:'smooth'})">
+      <h4>Session 2 — Linked Lists &amp; Stacks</h4>
+      <p>Reverse List &bull; Floyd's Cycle Detection &bull; Valid Parentheses</p>
+    </div>
+    <div class="toc-card" onclick="document.getElementById('s3').scrollIntoView({behavior:'smooth'})">
+      <h4>Session 3 — Trees &amp; Recursion</h4>
+      <p>Tree Traversals &bull; Lowest Common Ancestor &bull; Validate BST</p>
+    </div>
+    <div class="toc-card" onclick="document.getElementById('s4').scrollIntoView({behavior:'smooth'})">
+      <h4>Session 4 — Sorting &amp; Searching</h4>
+      <p>Merge Sort &bull; Quick Sort &bull; Binary Search Variants</p>
+    </div>
+    <div class="toc-card" onclick="document.getElementById('s5').scrollIntoView({behavior:'smooth'})">
+      <h4>Session 5 — Graph Algorithms</h4>
+      <p>BFS Shortest Path &bull; DFS &amp; Topological Sort &bull; Dijkstra's Algorithm</p>
+    </div>
+    <div class="toc-card" onclick="document.getElementById('s6').scrollIntoView({behavior:'smooth'})">
+      <h4>Session 6 — Dynamic Programming</h4>
+      <p>Fibonacci &bull; 0/1 Knapsack &bull; Longest Common Subsequence</p>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ╔══════════════════════════════════════════════════════════════╗
+     ║  SESSION 1 — ARRAYS, HASHING & TWO POINTERS (90 min)       ║
+     ╚══════════════════════════════════════════════════════════════╝ -->
+<div id="s1" class="session-header">
+  <h2>Session 1 — Arrays, Hashing &amp; Two Pointers</h2>
+  <p>Duration: 90 minutes &nbsp;|&nbsp; Difficulty: Introductory → Intermediate</p>
+</div>
+
+<div class="module">
+
+  <!-- ===== C11 TRICKS ===== -->
+  <h3>C11 / C++ Tricks &amp; Tools for This Session</h3>
+  <div class="trick-box">
+    <strong>Trick 1 — Generic Swap Macro (C11 <code>_Generic</code>):</strong> Instead of writing separate swap functions for every type, C11's <code>_Generic</code> keyword lets you dispatch at compile time. Combined with a macro using <code>typeof</code> (GCC extension), you get a type-safe, zero-overhead swap.
+  </div>
+<pre><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="cm">// Type-safe swap macro using GCC's typeof extension</span>
+<span class="pp">#define</span> <span class="fn">SWAP</span>(a, b) <span class="kw">do</span> { \
+    <span class="kw">typeof</span>(a) _tmp = (a); \
+    (a) = (b);              \
+    (b) = _tmp;             \
+} <span class="kw">while</span>(<span class="num">0</span>)
+
+<span class="cm">// Compile-time min/max (C11)</span>
+<span class="pp">#define</span> <span class="fn">MAX</span>(a,b) ({ <span class="kw">typeof</span>(a) _a=(a); <span class="kw">typeof</span>(b) _b=(b); _a>_b?_a:_b; })
+<span class="pp">#define</span> <span class="fn">MIN</span>(a,b) ({ <span class="kw">typeof</span>(a) _a=(a); <span class="kw">typeof</span>(b) _b=(b); _a<_b?_a:_b; })
+<span class="lang-tag">C11</span></pre>
+
+  <div class="trick-box">
+    <strong>Trick 2 — Fast I/O in C++:</strong> The first two lines in any competitive programming solution should disable synchronization between C and C++ I/O streams. This alone can speed up I/O by 5-10x.
+  </div>
+<pre><span class="pp">#include</span> <span class="str">&lt;bits/stdc++.h&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="cm">// MUST-HAVE for competitive programming</span>
+    ios_base::<span class="fn">sync_with_stdio</span>(<span class="kw">false</span>);
+    cin.<span class="fn">tie</span>(<span class="kw">NULL</span>);
+
+    <span class="cm">// Now cin/cout are as fast as scanf/printf</span>
+    <span class="kw">return</span> <span class="num">0</span>;
+}
+<span class="lang-tag">C++</span></pre>
+
+  <div class="trick-box">
+    <strong>Trick 3 — Designated Initializers &amp; Compound Literals (C11):</strong> Initialize structs with named fields for clarity. Compound literals let you pass struct values inline without declaring a variable.
+  </div>
+<pre><span class="kw">struct</span> <span class="type">Point</span> { <span class="type">int</span> x, y; };
+
+<span class="cm">// Designated initializer — fields are named, order doesn't matter</span>
+<span class="kw">struct</span> <span class="type">Point</span> p = { .y = <span class="num">20</span>, .x = <span class="num">10</span> };
+
+<span class="cm">// Compound literal — create a temporary struct on the fly</span>
+<span class="fn">draw_point</span>((<span class="kw">struct</span> <span class="type">Point</span>){ .x = <span class="num">5</span>, .y = <span class="num">15</span> });
+<span class="lang-tag">C11</span></pre>
+
+  <!-- ===== PROBLEM 1: TWO SUM ===== -->
+  <h3>Problem 1: Two Sum</h3>
+  <div class="problem-box">
+    <strong>Problem Statement:</strong> Given an array of integers <code>nums</code> and an integer <code>target</code>, return the indices of the two numbers such that they add up to <code>target</code>. You may assume that each input has exactly one solution, and you may not use the same element twice.
+  </div>
+  <p><span class="complexity good">Time: O(n)</span> <span class="complexity good">Space: O(n)</span></p>
+
+  <h4>Solution Methodology</h4>
+  <p>The brute-force approach checks every pair in O(n&sup2;), but we can do much better using a <strong>hash map</strong>. The key insight is: for each element <code>nums[i]</code>, we need to find whether <code>target - nums[i]</code> already exists in the array. A hash map gives us O(1) average lookup time.</p>
+  <p><strong>Algorithm Steps:</strong></p>
+  <ol>
+    <li>Create an empty hash map that maps <em>value &rarr; index</em>.</li>
+    <li>Iterate through the array. For each element <code>nums[i]</code>, compute <code>complement = target - nums[i]</code>.</li>
+    <li>Check if <code>complement</code> exists in the hash map. If yes, return <code>[map[complement], i]</code>.</li>
+    <li>Otherwise, insert <code>nums[i] &rarr; i</code> into the hash map and continue.</li>
+  </ol>
+  <p>This single-pass approach is elegant because we build the map as we go, ensuring we never use the same element twice.</p>
+
+  <div class="anim-widget" id="w-twosum">
+    <h4>Two Sum — Interactive Visualization</h4>
+    <div class="anim-input">
+      <label>Array:</label>
+      <input type="text" id="twosum-arr" value="2, 7, 11, 15, 1, 8">
+      <label>Target:</label>
+      <input type="text" id="twosum-target" value="9" style="width:50px;min-width:50px;flex:none">
+      <button class="btn-apply" onclick="tsApply()">Apply</button>
+    </div>
+    <div class="anim-display" id="twosum-display"></div>
+    <div class="anim-log" id="twosum-log">Press Step or Play to begin.</div>
+    <div class="anim-controls">
+      <button class="btn-back" onclick="tsBack()">&laquo; Back</button>
+      <button class="btn-step" onclick="tsStep()">Step &raquo;</button>
+      <button class="btn-play" id="twosum-play" onclick="tsPlay()">&#9654; Play</button>
+      <button class="btn-pause" onclick="tsPause()">&#10074;&#10074; Pause</button>
+      <button class="btn-reset" onclick="tsReset()">Reset</button>
+      <span class="step-info" id="twosum-stepinfo">Step 0</span>
+    </div>
+  </div>
+
+<pre><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+<span class="pp">#include</span> <span class="str">&lt;stdlib.h&gt;</span>
+<span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span>
+
+<span class="cm">/* Simple hash map using open addressing for Two Sum.
+   In production, use a proper hash table library. */</span>
+<span class="pp">#define</span> TABLE_SIZE <span class="num">1024</span>
+
+<span class="kw">typedef struct</span> {
+    <span class="type">int</span> key;       <span class="cm">// the value from nums[]</span>
+    <span class="type">int</span> value;     <span class="cm">// the index in nums[]</span>
+    <span class="type">int</span> occupied;  <span class="cm">// 0 = empty, 1 = used</span>
+} <span class="type">Entry</span>;
+
+<span class="type">int</span> <span class="fn">hash</span>(<span class="type">int</span> key) {
+    <span class="type">unsigned int</span> k = (<span class="type">unsigned int</span>)key;
+    <span class="kw">return</span> (k % TABLE_SIZE + TABLE_SIZE) % TABLE_SIZE;
+}
+
+<span class="type">int</span>* <span class="fn">twoSum</span>(<span class="type">int</span>* nums, <span class="type">int</span> numsSize, <span class="type">int</span> target, <span class="type">int</span>* returnSize) {
+    <span class="type">Entry</span> table[TABLE_SIZE];
+    <span class="fn">memset</span>(table, <span class="num">0</span>, <span class="kw">sizeof</span>(table));
+
+    <span class="type">int</span>* result = <span class="fn">malloc</span>(<span class="num">2</span> * <span class="kw">sizeof</span>(<span class="type">int</span>));
+    *returnSize = <span class="num">2</span>;
+
+    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; numsSize; i++) {
+        <span class="type">int</span> complement = target - nums[i];
+        <span class="type">int</span> h = <span class="fn">hash</span>(complement);
+
+        <span class="cm">// Linear probing to find complement</span>
+        <span class="kw">while</span> (table[h].occupied) {
+            <span class="kw">if</span> (table[h].key == complement) {
+                result[<span class="num">0</span>] = table[h].value;
+                result[<span class="num">1</span>] = i;
+                <span class="kw">return</span> result;
+            }
+            h = (h + <span class="num">1</span>) % TABLE_SIZE;
+        }
+
+        <span class="cm">// Insert current element</span>
+        h = <span class="fn">hash</span>(nums[i]);
+        <span class="kw">while</span> (table[h].occupied) h = (h + <span class="num">1</span>) % TABLE_SIZE;
+        table[h] = (<span class="type">Entry</span>){ .key = nums[i], .value = i, .occupied = <span class="num">1</span> };
+    }
+
+    *returnSize = <span class="num">0</span>;
+    <span class="kw">return</span> result;
+}
+<span class="lang-tag">C11</span></pre>
+
+  <!-- ===== PROBLEM 2: KADANE'S ALGORITHM ===== -->
+  <h3>Problem 2: Maximum Subarray (Kadane's Algorithm)</h3>
+  <div class="problem-box">
+    <strong>Problem Statement:</strong> Given an integer array <code>nums</code>, find the contiguous subarray (containing at least one number) which has the largest sum and return its sum. For example, given <code>[-2,1,-3,4,-1,2,1,-5,4]</code>, the answer is <code>6</code> (subarray <code>[4,-1,2,1]</code>).
+  </div>
+  <p><span class="complexity good">Time: O(n)</span> <span class="complexity good">Space: O(1)</span></p>
+
+  <h4>Solution Methodology</h4>
+  <p>Kadane's algorithm is a textbook example of <strong>dynamic programming</strong> reduced to its simplest form. We define <code>dp[i]</code> as the maximum sum of a subarray ending at index <code>i</code>. The recurrence is:</p>
+  <p style="text-align:center;font-size:1.1rem;margin:1rem 0"><code>dp[i] = max(nums[i], dp[i-1] + nums[i])</code></p>
+  <p>At each position, we make a binary decision: either extend the previous subarray by including <code>nums[i]</code>, or start a fresh subarray from <code>nums[i]</code>. Since <code>dp[i]</code> only depends on <code>dp[i-1]</code>, we only need a single variable <code>current_max</code> instead of a full array.</p>
+  <p><strong>Algorithm Steps:</strong></p>
+  <ol>
+    <li>Initialize <code>current_max = nums[0]</code> and <code>global_max = nums[0]</code>.</li>
+    <li>For each element from index 1 onward: <code>current_max = max(nums[i], current_max + nums[i])</code>.</li>
+    <li>Update <code>global_max = max(global_max, current_max)</code>.</li>
+    <li>After the loop, <code>global_max</code> holds the answer.</li>
+  </ol>
+
+  <div class="anim-widget" id="w-kadane">
+    <h4>Kadane's Algorithm — Interactive Visualization</h4>
+    <div class="anim-input">
+      <label>Array:</label>
+      <input type="text" id="kadane-arr" value="-2, 1, -3, 4, -1, 2, 1, -5, 4">
+      <button class="btn-apply" onclick="kadApply()">Apply</button>
+    </div>
+    <div class="anim-display" id="kadane-display"></div>
+    <div class="anim-log" id="kadane-log">Press Step or Play to begin.</div>
+    <div class="anim-controls">
+      <button class="btn-back" onclick="kadBack()">&laquo; Back</button>
+      <button class="btn-step" onclick="kadStep()">Step &raquo;</button>
+      <button class="btn-play" id="kadane-play" onclick="kadPlay()">&#9654; Play</button>
+      <button class="btn-pause" onclick="kadPause()">&#10074;&#10074; Pause</button>
+      <button class="btn-reset" onclick="kadReset()">Reset</button>
+      <span class="step-info" id="kadane-stepinfo">Step 0</span>
+    </div>
+  </div>
+
+<pre><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="cm">/* Kadane's Algorithm — O(n) time, O(1) space */</span>
+<span class="type">int</span> <span class="fn">maxSubArray</span>(<span class="type">int</span>* nums, <span class="type">int</span> n) {
+    <span class="type">int</span> current_max = nums[<span class="num">0</span>];
+    <span class="type">int</span> global_max  = nums[<span class="num">0</span>];
+
+    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">1</span>; i &lt; n; i++) {
+        <span class="cm">// Extend or restart?</span>
+        current_max = (nums[i] > current_max + nums[i])
+                    ? nums[i]
+                    : current_max + nums[i];
+
+        <span class="kw">if</span> (current_max > global_max)
+            global_max = current_max;
+    }
+    <span class="kw">return</span> global_max;
+}
+
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="type">int</span> nums[] = {<span class="num">-2</span>, <span class="num">1</span>, <span class="num">-3</span>, <span class="num">4</span>, <span class="num">-1</span>, <span class="num">2</span>, <span class="num">1</span>, <span class="num">-5</span>, <span class="num">4</span>};
+    <span class="type">int</span> n = <span class="kw">sizeof</span>(nums) / <span class="kw">sizeof</span>(nums[<span class="num">0</span>]);
+    <span class="fn">printf</span>(<span class="str">"Max subarray sum: %d\n"</span>, <span class="fn">maxSubArray</span>(nums, n));
+    <span class="kw">return</span> <span class="num">0</span>;
+}
+<span class="lang-tag">C11</span></pre>
+
+  <!-- ===== PROBLEM 3: DUTCH NATIONAL FLAG ===== -->
+  <h3>Problem 3: Dutch National Flag (Sort Colors)</h3>
+  <div class="problem-box">
+    <strong>Problem Statement:</strong> Given an array <code>nums</code> with <code>n</code> objects colored red (0), white (1), or blue (2), sort them <strong>in-place</strong> so that objects of the same color are adjacent, in the order 0, 1, 2. You must solve this without using the library sort function, in a single pass with O(1) extra space.
+  </div>
+  <p><span class="complexity good">Time: O(n)</span> <span class="complexity good">Space: O(1)</span></p>
+
+  <h4>Solution Methodology</h4>
+  <p>This problem, originally formulated by <strong>Edsger Dijkstra</strong>, is solved with a <strong>three-way partitioning</strong> scheme using three pointers: <code>low</code>, <code>mid</code>, and <code>high</code>. The invariant maintained throughout the algorithm is:</p>
+  <ul>
+    <li>Everything in <code>[0, low)</code> is 0 (red).</li>
+    <li>Everything in <code>[low, mid)</code> is 1 (white).</li>
+    <li>Everything in <code>(high, n-1]</code> is 2 (blue).</li>
+    <li>Everything in <code>[mid, high]</code> is unclassified.</li>
+  </ul>
+  <p><strong>Algorithm Steps:</strong></p>
+  <ol>
+    <li>Initialize <code>low = 0</code>, <code>mid = 0</code>, <code>high = n - 1</code>.</li>
+    <li>While <code>mid &le; high</code>:
+      <ul>
+        <li>If <code>nums[mid] == 0</code>: swap <code>nums[low]</code> and <code>nums[mid]</code>, increment both <code>low</code> and <code>mid</code>.</li>
+        <li>If <code>nums[mid] == 1</code>: just increment <code>mid</code>.</li>
+        <li>If <code>nums[mid] == 2</code>: swap <code>nums[mid]</code> and <code>nums[high]</code>, decrement <code>high</code> (do <em>not</em> increment <code>mid</code> because the swapped element is unexamined).</li>
+      </ul>
+    </li>
+  </ol>
+
+  <div class="anim-widget" id="w-dnf">
+    <h4>Dutch National Flag — Interactive Visualization</h4>
+    <div class="anim-input">
+      <label>Array (0/1/2):</label>
+      <input type="text" id="dnf-arr" value="2, 0, 2, 1, 1, 0, 1, 2, 0">
+      <button class="btn-apply" onclick="dnfApply()">Apply</button>
+    </div>
+    <div class="anim-display" id="dnf-display"></div>
+    <div class="anim-log" id="dnf-log">Press Step or Play to begin.</div>
+    <div class="anim-controls">
+      <button class="btn-back" onclick="dnfBack()">&laquo; Back</button>
+      <button class="btn-step" onclick="dnfStep()">Step &raquo;</button>
+      <button class="btn-play" id="dnf-play" onclick="dnfPlay()">&#9654; Play</button>
+      <button class="btn-pause" onclick="dnfPause()">&#10074;&#10074; Pause</button>
+      <button class="btn-reset" onclick="dnfReset()">Reset</button>
+      <span class="step-info" id="dnf-stepinfo">Step 0</span>
+    </div>
+  </div>
+
+<pre><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="pp">#define</span> <span class="fn">SWAP</span>(a, b) <span class="kw">do</span> { <span class="kw">typeof</span>(a) _t=(a); (a)=(b); (b)=_t; } <span class="kw">while</span>(<span class="num">0</span>)
+
+<span class="type">void</span> <span class="fn">sortColors</span>(<span class="type">int</span>* nums, <span class="type">int</span> n) {
+    <span class="type">int</span> lo = <span class="num">0</span>, mid = <span class="num">0</span>, hi = n - <span class="num">1</span>;
+
+    <span class="kw">while</span> (mid &lt;= hi) {
+        <span class="kw">switch</span> (nums[mid]) {
+            <span class="kw">case</span> <span class="num">0</span>: <span class="fn">SWAP</span>(nums[lo], nums[mid]); lo++; mid++; <span class="kw">break</span>;
+            <span class="kw">case</span> <span class="num">1</span>: mid++; <span class="kw">break</span>;
+            <span class="kw">case</span> <span class="num">2</span>: <span class="fn">SWAP</span>(nums[mid], nums[hi]); hi--; <span class="kw">break</span>;
+        }
+    }
+}
+
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="type">int</span> a[] = {<span class="num">2</span>,<span class="num">0</span>,<span class="num">2</span>,<span class="num">1</span>,<span class="num">1</span>,<span class="num">0</span>,<span class="num">1</span>,<span class="num">2</span>,<span class="num">0</span>};
+    <span class="type">int</span> n = <span class="kw">sizeof</span>(a)/<span class="kw">sizeof</span>(a[<span class="num">0</span>]);
+    <span class="fn">sortColors</span>(a, n);
+    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) <span class="fn">printf</span>(<span class="str">"%d "</span>, a[i]);
+    <span class="kw">return</span> <span class="num">0</span>;
+}
+<span class="lang-tag">C11</span></pre>
+</div><!-- end module session 1 -->
+
+
+<!-- ╔══════════════════════════════════════════════════════════════╗
+     ║  SESSION 2 — LINKED LISTS & STACKS (90 min)                 ║
+     ╚══════════════════════════════════════════════════════════════╝ -->
+<div id="s2" class="session-header">
+  <h2>Session 2 — Linked Lists &amp; Stacks</h2>
+  <p>Duration: 90 minutes &nbsp;|&nbsp; Difficulty: Intermediate</p>
+</div>
+
+<div class="module">
+
+  <h3>C11 / C++ Tricks for Linked Lists</h3>
+  <div class="trick-box">
+    <strong>Trick 4 — Flexible Array Members (C11):</strong> When you need a struct with a variable-length trailing array, use a flexible array member. This avoids a separate allocation for the data buffer.
+  </div>
+<pre><span class="kw">typedef struct</span> {
+    <span class="type">int</span> size;
+    <span class="type">int</span> data[];  <span class="cm">// flexible array member — MUST be last</span>
+} <span class="type">DynArray</span>;
+
+<span class="cm">// Allocate for 100 ints:</span>
+<span class="type">DynArray</span>* arr = <span class="fn">malloc</span>(<span class="kw">sizeof</span>(<span class="type">DynArray</span>) + <span class="num">100</span> * <span class="kw">sizeof</span>(<span class="type">int</span>));
+arr->size = <span class="num">100</span>;
+<span class="lang-tag">C11</span></pre>
+
+  <div class="trick-box">
+    <strong>Trick 5 — Sentinel / Dummy Head Node:</strong> When manipulating linked lists, always use a dummy head node. This eliminates all edge cases for insertion/deletion at the head and makes your code dramatically simpler.
+  </div>
+<pre><span class="kw">struct</span> <span class="type">ListNode</span>* <span class="fn">removeElements</span>(<span class="kw">struct</span> <span class="type">ListNode</span>* head, <span class="type">int</span> val) {
+    <span class="kw">struct</span> <span class="type">ListNode</span> dummy = { .val = <span class="num">0</span>, .next = head };  <span class="cm">// C11 designated init</span>
+    <span class="kw">struct</span> <span class="type">ListNode</span>* prev = &amp;dummy;
+
+    <span class="kw">while</span> (prev->next) {
+        <span class="kw">if</span> (prev->next->val == val) {
+            prev->next = prev->next->next;  <span class="cm">// skip node</span>
+        } <span class="kw">else</span> {
+            prev = prev->next;
+        }
+    }
+    <span class="kw">return</span> dummy.next;
+}
+<span class="lang-tag">C11</span></pre>
+
+  <!-- ===== PROBLEM 4: REVERSE LINKED LIST ===== -->
+  <h3>Problem 4: Reverse a Linked List</h3>
+  <div class="problem-box">
+    <strong>Problem Statement:</strong> Given the head of a singly linked list, reverse the list and return the reversed list. You must do this iteratively in O(n) time and O(1) space.
+  </div>
+  <p><span class="complexity good">Time: O(n)</span> <span class="complexity good">Space: O(1)</span></p>
+
+  <h4>Solution Methodology</h4>
+  <p>We maintain three pointers: <code>prev</code> (initially NULL), <code>curr</code> (initially head), and <code>next</code> (a temporary holder). At each step, we save <code>curr->next</code>, reverse the link by pointing <code>curr->next</code> to <code>prev</code>, then advance both <code>prev</code> and <code>curr</code> one step forward. When <code>curr</code> becomes NULL, <code>prev</code> is the new head.</p>
+
+  <div class="anim-widget" id="w-revll">
+    <h4>Reverse Linked List — Interactive Visualization</h4>
+    <div class="anim-input">
+      <label>List values:</label>
+      <input type="text" id="revll-arr" value="1, 2, 3, 4, 5">
+      <button class="btn-apply" onclick="revApply()">Apply</button>
+    </div>
+    <div class="anim-display" id="revll-display"></div>
+    <div class="anim-log" id="revll-log">Press Step or Play to begin.</div>
+    <div class="anim-controls">
+      <button class="btn-back" onclick="revBack()">&laquo; Back</button>
+      <button class="btn-step" onclick="revStep()">Step &raquo;</button>
+      <button class="btn-play" id="revll-play" onclick="revPlay()">&#9654; Play</button>
+      <button class="btn-pause" onclick="revPause()">&#10074;&#10074; Pause</button>
+      <button class="btn-reset" onclick="revReset()">Reset</button>
+      <span class="step-info" id="revll-stepinfo">Step 0</span>
+    </div>
+  </div>
+
+<pre><span class="kw">struct</span> <span class="type">ListNode</span> {
+    <span class="type">int</span> val;
+    <span class="kw">struct</span> <span class="type">ListNode</span>* next;
+};
+
+<span class="kw">struct</span> <span class="type">ListNode</span>* <span class="fn">reverseList</span>(<span class="kw">struct</span> <span class="type">ListNode</span>* head) {
+    <span class="kw">struct</span> <span class="type">ListNode</span>* prev = <span class="kw">NULL</span>;
+    <span class="kw">struct</span> <span class="type">ListNode</span>* curr = head;
+
+    <span class="kw">while</span> (curr != <span class="kw">NULL</span>) {
+        <span class="kw">struct</span> <span class="type">ListNode</span>* next_temp = curr->next;  <span class="cm">// save next</span>
+        curr->next = prev;                        <span class="cm">// reverse link</span>
+        prev = curr;                               <span class="cm">// advance prev</span>
+        curr = next_temp;                          <span class="cm">// advance curr</span>
+    }
+    <span class="kw">return</span> prev;  <span class="cm">// new head</span>
+}
+<span class="lang-tag">C11</span></pre>
+
+  <!-- ===== PROBLEM 5: FLOYD'S CYCLE DETECTION ===== -->
+  <h3>Problem 5: Linked List Cycle Detection (Floyd's Algorithm)</h3>
+  <div class="problem-box">
+    <strong>Problem Statement:</strong> Given the <code>head</code> of a linked list, determine if the linked list has a cycle. A cycle exists if some node's <code>next</code> pointer points back to a previously visited node. Solve in O(n) time and O(1) space.
+  </div>
+  <p><span class="complexity good">Time: O(n)</span> <span class="complexity good">Space: O(1)</span></p>
+
+  <h4>Solution Methodology</h4>
+  <p>The <strong>Tortoise and Hare</strong> algorithm uses two pointers moving at different speeds. The slow pointer (<em>tortoise</em>) moves one node at a time, while the fast pointer (<em>hare</em>) moves two nodes at a time. If there is a cycle, the hare will eventually lap the tortoise and they will meet. If the hare reaches NULL, there is no cycle.</p>
+  <p><strong>Why it works:</strong> Once both pointers are inside the cycle, the distance between them decreases by 1 at each step (since the fast pointer gains 1 node per step). Therefore, they must eventually collide.</p>
+
+  <div class="anim-widget" id="w-floyd">
+    <h4>Floyd's Cycle Detection — Interactive Visualization</h4>
+    <div class="anim-input">
+      <label>List:</label>
+      <input type="text" id="floyd-arr" value="3, 2, 0, -4">
+      <label>Cycle at index:</label>
+      <input type="text" id="floyd-cycle" value="1" style="width:40px;min-width:40px;flex:none">
+      <button class="btn-apply" onclick="floydApply()">Apply</button>
+    </div>
+    <div class="anim-display" id="floyd-display" style="min-height:80px"></div>
+    <div class="anim-log" id="floyd-log">Press Step or Play to begin. Cycle connects tail back to index 1.</div>
+    <div class="anim-controls">
+      <button class="btn-back" onclick="floydBack()">&laquo; Back</button>
+      <button class="btn-step" onclick="floydStep()">Step &raquo;</button>
+      <button class="btn-play" id="floyd-play" onclick="floydPlay()">&#9654; Play</button>
+      <button class="btn-pause" onclick="floydPause()">&#10074;&#10074; Pause</button>
+      <button class="btn-reset" onclick="floydReset()">Reset</button>
+      <span class="step-info" id="floyd-stepinfo">Step 0</span>
+    </div>
+  </div>
+
+<pre><span class="pp">#include</span> <span class="str">&lt;stdbool.h&gt;</span>
+<span class="pp">#include</span> <span class="str">&lt;stddef.h&gt;</span>
+
+<span class="type">bool</span> <span class="fn">hasCycle</span>(<span class="kw">struct</span> <span class="type">ListNode</span>* head) {
+    <span class="kw">struct</span> <span class="type">ListNode</span>* slow = head;
+    <span class="kw">struct</span> <span class="type">ListNode</span>* fast = head;
+
+    <span class="kw">while</span> (fast != <span class="kw">NULL</span> &amp;&amp; fast->next != <span class="kw">NULL</span>) {
+        slow = slow->next;           <span class="cm">// 1 step</span>
+        fast = fast->next->next;     <span class="cm">// 2 steps</span>
+
+        <span class="kw">if</span> (slow == fast)
+            <span class="kw">return</span> <span class="kw">true</span>;          <span class="cm">// cycle detected!</span>
+    }
+    <span class="kw">return</span> <span class="kw">false</span>;                    <span class="cm">// no cycle</span>
+}
+<span class="lang-tag">C11</span></pre>
+
+  <!-- ===== PROBLEM 6: VALID PARENTHESES ===== -->
+  <h3>Problem 6: Valid Parentheses (Stack)</h3>
+  <div class="problem-box">
+    <strong>Problem Statement:</strong> Given a string <code>s</code> containing just the characters <code>'('</code>, <code>')'</code>, <code>'{'</code>, <code>'}'</code>, <code>'['</code>, and <code>']'</code>, determine if the input string is valid. A string is valid if: (1) every open bracket is closed by the same type of bracket, (2) open brackets are closed in the correct order, and (3) every close bracket has a corresponding open bracket.
+  </div>
+  <p><span class="complexity good">Time: O(n)</span> <span class="complexity good">Space: O(n)</span></p>
+
+  <h4>Solution Methodology</h4>
+  <p>This is the quintessential <strong>stack</strong> problem. We iterate through each character. If it is an opening bracket, we push it onto the stack. If it is a closing bracket, we check whether the top of the stack is the matching opening bracket. If it matches, we pop; otherwise, the string is invalid. At the end, the stack must be empty for the string to be valid.</p>
+
+  <div class="anim-widget" id="w-paren">
+    <h4>Valid Parentheses — Interactive Visualization</h4>
+    <div class="anim-input">
+      <label>String:</label>
+      <input type="text" id="paren-str" value="{[()]}()" style="font-size:1.1rem">
+      <button class="btn-apply" onclick="parApply()">Apply</button>
+    </div>
+    <div class="anim-display" id="paren-display"></div>
+    <div class="anim-log" id="paren-log">Press Step or Play to begin.</div>
+    <div class="anim-controls">
+      <button class="btn-back" onclick="parBack()">&laquo; Back</button>
+      <button class="btn-step" onclick="parStep()">Step &raquo;</button>
+      <button class="btn-play" id="paren-play" onclick="parPlay()">&#9654; Play</button>
+      <button class="btn-pause" onclick="parPause()">&#10074;&#10074; Pause</button>
+      <button class="btn-reset" onclick="parReset()">Reset</button>
+      <span class="step-info" id="paren-stepinfo">Step 0</span>
+    </div>
+  </div>
+
+<pre><span class="pp">#include</span> <span class="str">&lt;stdbool.h&gt;</span>
+<span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span>
+
+<span class="type">bool</span> <span class="fn">isValid</span>(<span class="type">char</span>* s) {
+    <span class="type">int</span> n = <span class="fn">strlen</span>(s);
+    <span class="type">char</span> stack[n];   <span class="cm">// VLA — valid in C11</span>
+    <span class="type">int</span> top = <span class="num">-1</span>;
+
+    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; s[i]; i++) {
+        <span class="kw">switch</span> (s[i]) {
+            <span class="kw">case</span> <span class="str">'('</span>: <span class="kw">case</span> <span class="str">'['</span>: <span class="kw">case</span> <span class="str">'{'</span>:
+                stack[++top] = s[i];
+                <span class="kw">break</span>;
+            <span class="kw">case</span> <span class="str">')'</span>:
+                <span class="kw">if</span> (top &lt; <span class="num">0</span> || stack[top--] != <span class="str">'('</span>) <span class="kw">return</span> <span class="kw">false</span>;
+                <span class="kw">break</span>;
+            <span class="kw">case</span> <span class="str">']'</span>:
+                <span class="kw">if</span> (top &lt; <span class="num">0</span> || stack[top--] != <span class="str">'['</span>) <span class="kw">return</span> <span class="kw">false</span>;
+                <span class="kw">break</span>;
+            <span class="kw">case</span> <span class="str">'}'</span>:
+                <span class="kw">if</span> (top &lt; <span class="num">0</span> || stack[top--] != <span class="str">'{'</span>) <span class="kw">return</span> <span class="kw">false</span>;
+                <span class="kw">break</span>;
+        }
+    }
+    <span class="kw">return</span> top == <span class="num">-1</span>;  <span class="cm">// stack must be empty</span>
+}
+<span class="lang-tag">C11</span></pre>
+</div><!-- end module session 2 -->
+
+
+<!-- ╔══════════════════════════════════════════════════════════════╗
+     ║  SESSION 3 — TREES & RECURSION (90 min)                     ║
+     ╚══════════════════════════════════════════════════════════════╝ -->
+<div id="s3" class="session-header">
+  <h2>Session 3 — Trees &amp; Recursion</h2>
+  <p>Duration: 90 minutes &nbsp;|&nbsp; Difficulty: Intermediate → Advanced</p>
+</div>
+
+<div class="module">
+
+  <h3>C11 / C++ Tricks for Tree Problems</h3>
+  <div class="trick-box">
+    <strong>Trick 6 — Container-of Macro:</strong> The Linux kernel's famous <code>container_of</code> macro lets you recover a pointer to the enclosing struct from a pointer to one of its members. This is the foundation of intrusive data structures used in high-performance C code.
+  </div>
+<pre><span class="pp">#define</span> <span class="fn">container_of</span>(ptr, type, member) \
+    ((<span class="type">type</span> *)( (<span class="type">char</span> *)(ptr) - <span class="fn">offsetof</span>(<span class="type">type</span>, member) ))
+
+<span class="cm">// Usage: given a pointer to the 'left' field, recover the TreeNode*</span>
+<span class="kw">struct</span> <span class="type">TreeNode</span> { <span class="type">int</span> val; <span class="kw">struct</span> <span class="type">TreeNode</span> *left, *right; };
+<span class="lang-tag">C11</span></pre>
+
+  <div class="trick-box">
+    <strong>Trick 7 — Recursive Helper with Static Variables:</strong> In C, you can use a static local variable inside a recursive function to accumulate results without passing extra parameters. However, be cautious — this makes the function non-reentrant. For thread safety, pass the accumulator as a parameter instead.
+  </div>
+
+  <!-- ===== PROBLEM 7: BINARY TREE TRAVERSALS ===== -->
+  <h3>Problem 7: Binary Tree Traversals (Inorder, Preorder, Postorder)</h3>
+  <div class="problem-box">
+    <strong>Problem Statement:</strong> Given the root of a binary tree, return the <strong>inorder</strong>, <strong>preorder</strong>, and <strong>postorder</strong> traversal of its nodes' values. Understand the recursive structure and be able to implement both recursive and iterative versions.
+  </div>
+  <p><span class="complexity good">Time: O(n)</span> <span class="complexity good">Space: O(h) where h = tree height</span></p>
+
+  <h4>Solution Methodology</h4>
+  <p>Tree traversals are the foundation of almost every tree algorithm. The three classic depth-first traversals differ only in <em>when</em> the current node is processed relative to its children:</p>
+  <ul>
+    <li><strong>Preorder (Root → Left → Right):</strong> Process the node first, then recurse on left and right subtrees. Used for copying/serializing a tree.</li>
+    <li><strong>Inorder (Left → Root → Right):</strong> Recurse left, process node, recurse right. For a BST, this yields sorted order.</li>
+    <li><strong>Postorder (Left → Right → Root):</strong> Recurse on both children first, then process the node. Used for deletion and expression evaluation.</li>
+  </ul>
+
+  <div class="anim-widget" id="w-traverse">
+    <h4>Binary Tree Traversal — Interactive Visualization</h4>
+    <div class="anim-input">
+      <label>Tree (level-order, use 'null'):</label>
+      <input type="text" id="traverse-arr" value="1, 2, 3, 4, 5, null, 6">
+      <label style="margin-left:8px">Mode:</label>
+      <select id="traverse-mode" style="padding:4px;border-radius:4px;border:1px solid #ccc">
+        <option value="inorder">Inorder</option>
+        <option value="preorder">Preorder</option>
+        <option value="postorder">Postorder</option>
+      </select>
+      <button class="btn-apply" onclick="travApply()">Apply</button>
+    </div>
+    <div class="anim-display" id="traverse-display" style="min-height:180px"></div>
+    <div class="anim-log" id="traverse-log">Press Step or Play to begin.</div>
+    <div class="anim-controls">
+      <button class="btn-back" onclick="travBack()">&laquo; Back</button>
+      <button class="btn-step" onclick="travStep()">Step &raquo;</button>
+      <button class="btn-play" id="traverse-play" onclick="travPlay()">&#9654; Play</button>
+      <button class="btn-pause" onclick="travPause()">&#10074;&#10074; Pause</button>
+      <button class="btn-reset" onclick="travReset()">Reset</button>
+      <span class="step-info" id="traverse-stepinfo">Step 0</span>
+    </div>
+  </div>
+
+<pre><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+<span class="pp">#include</span> <span class="str">&lt;stdlib.h&gt;</span>
+
+<span class="kw">struct</span> <span class="type">TreeNode</span> {
+    <span class="type">int</span> val;
+    <span class="kw">struct</span> <span class="type">TreeNode</span>* left;
+    <span class="kw">struct</span> <span class="type">TreeNode</span>* right;
+};
+
+<span class="cm">/* ---- Recursive Traversals ---- */</span>
+<span class="type">void</span> <span class="fn">inorder</span>(<span class="kw">struct</span> <span class="type">TreeNode</span>* root, <span class="type">int</span>* res, <span class="type">int</span>* idx) {
+    <span class="kw">if</span> (!root) <span class="kw">return</span>;
+    <span class="fn">inorder</span>(root->left, res, idx);
+    res[(*idx)++] = root->val;          <span class="cm">// process node</span>
+    <span class="fn">inorder</span>(root->right, res, idx);
+}
+
+<span class="type">void</span> <span class="fn">preorder</span>(<span class="kw">struct</span> <span class="type">TreeNode</span>* root, <span class="type">int</span>* res, <span class="type">int</span>* idx) {
+    <span class="kw">if</span> (!root) <span class="kw">return</span>;
+    res[(*idx)++] = root->val;          <span class="cm">// process node FIRST</span>
+    <span class="fn">preorder</span>(root->left, res, idx);
+    <span class="fn">preorder</span>(root->right, res, idx);
+}
+
+<span class="type">void</span> <span class="fn">postorder</span>(<span class="kw">struct</span> <span class="type">TreeNode</span>* root, <span class="type">int</span>* res, <span class="type">int</span>* idx) {
+    <span class="kw">if</span> (!root) <span class="kw">return</span>;
+    <span class="fn">postorder</span>(root->left, res, idx);
+    <span class="fn">postorder</span>(root->right, res, idx);
+    res[(*idx)++] = root->val;          <span class="cm">// process node LAST</span>
+}
+
+<span class="cm">/* ---- Iterative Inorder using explicit stack ---- */</span>
+<span class="type">int</span>* <span class="fn">inorderIterative</span>(<span class="kw">struct</span> <span class="type">TreeNode</span>* root, <span class="type">int</span>* returnSize) {
+    <span class="type">int</span>* res = <span class="fn">malloc</span>(<span class="num">1000</span> * <span class="kw">sizeof</span>(<span class="type">int</span>));
+    <span class="kw">struct</span> <span class="type">TreeNode</span>* stack[<span class="num">1000</span>];
+    <span class="type">int</span> top = <span class="num">-1</span>, idx = <span class="num">0</span>;
+    <span class="kw">struct</span> <span class="type">TreeNode</span>* curr = root;
+
+    <span class="kw">while</span> (curr || top >= <span class="num">0</span>) {
+        <span class="kw">while</span> (curr) {                  <span class="cm">// go left as far as possible</span>
+            stack[++top] = curr;
+            curr = curr->left;
+        }
+        curr = stack[top--];            <span class="cm">// pop</span>
+        res[idx++] = curr->val;         <span class="cm">// process</span>
+        curr = curr->right;             <span class="cm">// go right</span>
+    }
+    *returnSize = idx;
+    <span class="kw">return</span> res;
+}
+<span class="lang-tag">C11</span></pre>
+
+  <!-- ===== PROBLEM 8: LOWEST COMMON ANCESTOR ===== -->
+  <h3>Problem 8: Lowest Common Ancestor of a BST</h3>
+  <div class="problem-box">
+    <strong>Problem Statement:</strong> Given a Binary Search Tree (BST) and two nodes <code>p</code> and <code>q</code>, find their Lowest Common Ancestor (LCA). The LCA is the deepest node that is an ancestor of both <code>p</code> and <code>q</code>.
+  </div>
+  <p><span class="complexity good">Time: O(h)</span> <span class="complexity good">Space: O(1) iterative</span></p>
+
+  <h4>Solution Methodology</h4>
+  <p>In a BST, the key property is that for any node, all values in the left subtree are smaller and all values in the right subtree are larger. The LCA of <code>p</code> and <code>q</code> is the first node where <code>p</code> and <code>q</code> "split" — one goes left and the other goes right (or one of them equals the current node).</p>
+  <p><strong>Algorithm Steps:</strong></p>
+  <ol>
+    <li>Start at the root.</li>
+    <li>If both <code>p</code> and <code>q</code> are smaller than the current node, move left.</li>
+    <li>If both <code>p</code> and <code>q</code> are larger than the current node, move right.</li>
+    <li>Otherwise, the current node is the LCA (the "split point").</li>
+  </ol>
+
+  <div class="anim-widget" id="w-lca">
+    <h4>LCA in BST — Interactive Visualization</h4>
+    <div class="anim-input">
+      <label>BST (level-order):</label>
+      <input type="text" id="lca-arr" value="6, 2, 8, 0, 4, 7, 9, null, null, 3, 5">
+      <label>p:</label>
+      <input type="text" id="lca-p" value="2" style="width:35px;min-width:35px;flex:none">
+      <label>q:</label>
+      <input type="text" id="lca-q" value="8" style="width:35px;min-width:35px;flex:none">
+      <button class="btn-apply" onclick="lcaApply()">Apply</button>
+    </div>
+    <div class="anim-display" id="lca-display" style="min-height:180px"></div>
+    <div class="anim-log" id="lca-log">Press Step or Play to begin.</div>
+    <div class="anim-controls">
+      <button class="btn-back" onclick="lcaBack()">&laquo; Back</button>
+      <button class="btn-step" onclick="lcaStep()">Step &raquo;</button>
+      <button class="btn-play" id="lca-play" onclick="lcaPlay()">&#9654; Play</button>
+      <button class="btn-pause" onclick="lcaPause()">&#10074;&#10074; Pause</button>
+      <button class="btn-reset" onclick="lcaReset()">Reset</button>
+      <span class="step-info" id="lca-stepinfo">Step 0</span>
+    </div>
+  </div>
+
+<pre><span class="kw">struct</span> <span class="type">TreeNode</span>* <span class="fn">lowestCommonAncestor</span>(
+        <span class="kw">struct</span> <span class="type">TreeNode</span>* root,
+        <span class="kw">struct</span> <span class="type">TreeNode</span>* p,
+        <span class="kw">struct</span> <span class="type">TreeNode</span>* q) {
+
+    <span class="kw">while</span> (root) {
+        <span class="kw">if</span> (p->val &lt; root->val &amp;&amp; q->val &lt; root->val) {
+            root = root->left;          <span class="cm">// both in left subtree</span>
+        } <span class="kw">else if</span> (p->val > root->val &amp;&amp; q->val > root->val) {
+            root = root->right;         <span class="cm">// both in right subtree</span>
+        } <span class="kw">else</span> {
+            <span class="kw">return</span> root;                <span class="cm">// split point = LCA</span>
+        }
+    }
+    <span class="kw">return</span> <span class="kw">NULL</span>;
+}
+<span class="lang-tag">C11</span></pre>
+
+  <!-- ===== PROBLEM 9: VALIDATE BST ===== -->
+  <h3>Problem 9: Validate Binary Search Tree</h3>
+  <div class="problem-box">
+    <strong>Problem Statement:</strong> Given the root of a binary tree, determine if it is a valid Binary Search Tree. A valid BST is defined as: the left subtree of a node contains only nodes with keys <strong>strictly less than</strong> the node's key, and the right subtree contains only nodes with keys <strong>strictly greater than</strong> the node's key. Both subtrees must also be valid BSTs.
+  </div>
+  <p><span class="complexity good">Time: O(n)</span> <span class="complexity good">Space: O(h)</span></p>
+
+  <h4>Solution Methodology</h4>
+  <p>A common mistake is to only check that <code>left->val < root->val < right->val</code> locally. This misses cases where a node deep in the left subtree violates the constraint of an ancestor. The correct approach is to pass down a <strong>valid range</strong> <code>(min, max)</code> for each node.</p>
+  <p><strong>Algorithm Steps:</strong></p>
+  <ol>
+    <li>Start with the range <code>(-&infin;, +&infin;)</code>.</li>
+    <li>For the left child, narrow the range to <code>(min, root->val)</code>.</li>
+    <li>For the right child, narrow the range to <code>(root->val, max)</code>.</li>
+    <li>If any node's value falls outside its allowed range, return false.</li>
+  </ol>
+
+<pre><span class="pp">#include</span> <span class="str">&lt;stdbool.h&gt;</span>
+<span class="pp">#include</span> <span class="str">&lt;limits.h&gt;</span>
+
+<span class="type">bool</span> <span class="fn">validate</span>(<span class="kw">struct</span> <span class="type">TreeNode</span>* node, <span class="type">long</span> min_val, <span class="type">long</span> max_val) {
+    <span class="kw">if</span> (!node) <span class="kw">return</span> <span class="kw">true</span>;
+
+    <span class="kw">if</span> (node->val &lt;= min_val || node->val >= max_val)
+        <span class="kw">return</span> <span class="kw">false</span>;
+
+    <span class="kw">return</span> <span class="fn">validate</span>(node->left,  min_val, node->val)
+        &amp;&amp; <span class="fn">validate</span>(node->right, node->val, max_val);
+}
+
+<span class="type">bool</span> <span class="fn">isValidBST</span>(<span class="kw">struct</span> <span class="type">TreeNode</span>* root) {
+    <span class="kw">return</span> <span class="fn">validate</span>(root, <span class="num">LONG_MIN</span>, <span class="num">LONG_MAX</span>);
+}
+<span class="lang-tag">C11</span></pre>
+
+  <div class="tip-box">
+    <strong>Pro Tip:</strong> An alternative approach is to perform an inorder traversal and check that the resulting sequence is strictly increasing. This is often easier to implement and debug.
+  </div>
+</div><!-- end module session 3 -->
+
+
+<!-- ╔══════════════════════════════════════════════════════════════╗
+     ║  SESSION 4 — SORTING & SEARCHING (90 min)                   ║
+     ╚══════════════════════════════════════════════════════════════╝ -->
+<div id="s4" class="session-header">
+  <h2>Session 4 — Sorting &amp; Searching</h2>
+  <p>Duration: 90 minutes &nbsp;|&nbsp; Difficulty: Intermediate</p>
+</div>
+
+<div class="module">
+
+  <h3>C11 / C++ Tricks for Sorting</h3>
+  <div class="trick-box">
+    <strong>Trick 8 — qsort with Compound Literal Comparator:</strong> C's <code>qsort</code> requires a comparator function. A clean C11 pattern uses a helper macro to avoid boilerplate.
+  </div>
+<pre><span class="pp">#include</span> <span class="str">&lt;stdlib.h&gt;</span>
+
+<span class="cm">// Generic comparator for ascending int sort</span>
+<span class="type">int</span> <span class="fn">cmp_int_asc</span>(<span class="kw">const</span> <span class="type">void</span>* a, <span class="kw">const</span> <span class="type">void</span>* b) {
+    <span class="type">int</span> x = *(<span class="kw">const</span> <span class="type">int</span>*)a;
+    <span class="type">int</span> y = *(<span class="kw">const</span> <span class="type">int</span>*)b;
+    <span class="kw">return</span> (x > y) - (x &lt; y);  <span class="cm">// branchless, overflow-safe</span>
+}
+
+<span class="cm">// Usage:</span>
+<span class="type">int</span> arr[] = {<span class="num">5</span>, <span class="num">2</span>, <span class="num">8</span>, <span class="num">1</span>, <span class="num">9</span>};
+<span class="fn">qsort</span>(arr, <span class="num">5</span>, <span class="kw">sizeof</span>(<span class="type">int</span>), cmp_int_asc);
+<span class="lang-tag">C11</span></pre>
+
+  <div class="trick-box">
+    <strong>Trick 9 — C++ Lambda Comparators:</strong> In C++, you can pass a lambda directly to <code>std::sort</code>, making custom sort orders trivial.
+  </div>
+<pre><span class="pp">#include</span> <span class="str">&lt;algorithm&gt;</span>
+<span class="pp">#include</span> <span class="str">&lt;vector&gt;</span>
+<span class="kw">using namespace</span> std;
+
+vector&lt;<span class="type">int</span>&gt; v = {<span class="num">5</span>, <span class="num">2</span>, <span class="num">8</span>, <span class="num">1</span>, <span class="num">9</span>};
+<span class="fn">sort</span>(v.<span class="fn">begin</span>(), v.<span class="fn">end</span>(), [](<span class="type">int</span> a, <span class="type">int</span> b) { <span class="kw">return</span> a &lt; b; });
+<span class="lang-tag">C++</span></pre>
+
+  <!-- ===== PROBLEM 10: MERGE SORT ===== -->
+  <h3>Problem 10: Merge Sort</h3>
+  <div class="problem-box">
+    <strong>Problem Statement:</strong> Implement Merge Sort to sort an array of integers. Merge Sort is a <strong>divide-and-conquer</strong> algorithm that divides the array into halves, recursively sorts each half, and then merges the two sorted halves. It guarantees O(n log n) time in all cases.
+  </div>
+  <p><span class="complexity good">Time: O(n log n)</span> <span class="complexity">Space: O(n)</span></p>
+
+  <h4>Solution Methodology</h4>
+  <p>Merge Sort works in two phases:</p>
+  <ol>
+    <li><strong>Divide:</strong> Split the array into two halves at the midpoint. Recursively sort each half until you reach subarrays of size 1 (which are trivially sorted).</li>
+    <li><strong>Conquer (Merge):</strong> Merge two sorted halves into a single sorted array. Use two pointers, one for each half. Compare the elements they point to, take the smaller one, and advance that pointer. Continue until both halves are exhausted.</li>
+  </ol>
+  <p>The merge step is the heart of the algorithm. It takes O(n) time and O(n) space for the temporary buffer. The recursion depth is O(log n), giving us O(n log n) total.</p>
+
+  <div class="anim-widget" id="w-merge">
+    <h4>Merge Sort — Interactive Visualization</h4>
+    <div class="anim-input">
+      <label>Array:</label>
+      <input type="text" id="merge-arr" value="38, 27, 43, 3, 9, 82, 10">
+      <button class="btn-apply" onclick="msApply()">Apply</button>
+    </div>
+    <div class="anim-display" id="merge-display" style="min-height:100px"></div>
+    <div class="anim-log" id="merge-log">Press Step or Play to begin.</div>
+    <div class="anim-controls">
+      <button class="btn-back" onclick="msBack()">&laquo; Back</button>
+      <button class="btn-step" onclick="msStep()">Step &raquo;</button>
+      <button class="btn-play" id="merge-play" onclick="msPlay()">&#9654; Play</button>
+      <button class="btn-pause" onclick="msPause()">&#10074;&#10074; Pause</button>
+      <button class="btn-reset" onclick="msReset()">Reset</button>
+      <span class="step-info" id="merge-stepinfo">Step 0</span>
+    </div>
+  </div>
+
+<pre><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+<span class="pp">#include</span> <span class="str">&lt;stdlib.h&gt;</span>
+<span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span>
+
+<span class="type">void</span> <span class="fn">merge</span>(<span class="type">int</span>* arr, <span class="type">int</span> l, <span class="type">int</span> m, <span class="type">int</span> r) {
+    <span class="type">int</span> n1 = m - l + <span class="num">1</span>;
+    <span class="type">int</span> n2 = r - m;
+
+    <span class="cm">// VLA temporaries (C11)</span>
+    <span class="type">int</span> L[n1], R[n2];
+    <span class="fn">memcpy</span>(L, arr + l,     n1 * <span class="kw">sizeof</span>(<span class="type">int</span>));
+    <span class="fn">memcpy</span>(R, arr + m + <span class="num">1</span>, n2 * <span class="kw">sizeof</span>(<span class="type">int</span>));
+
+    <span class="type">int</span> i = <span class="num">0</span>, j = <span class="num">0</span>, k = l;
+    <span class="kw">while</span> (i &lt; n1 &amp;&amp; j &lt; n2)
+        arr[k++] = (L[i] &lt;= R[j]) ? L[i++] : R[j++];
+    <span class="kw">while</span> (i &lt; n1) arr[k++] = L[i++];
+    <span class="kw">while</span> (j &lt; n2) arr[k++] = R[j++];
+}
+
+<span class="type">void</span> <span class="fn">mergeSort</span>(<span class="type">int</span>* arr, <span class="type">int</span> l, <span class="type">int</span> r) {
+    <span class="kw">if</span> (l &lt; r) {
+        <span class="type">int</span> m = l + (r - l) / <span class="num">2</span>;   <span class="cm">// overflow-safe midpoint</span>
+        <span class="fn">mergeSort</span>(arr, l, m);
+        <span class="fn">mergeSort</span>(arr, m + <span class="num">1</span>, r);
+        <span class="fn">merge</span>(arr, l, m, r);
+    }
+}
+<span class="lang-tag">C11</span></pre>
+
+  <!-- ===== PROBLEM 11: QUICK SORT ===== -->
+  <h3>Problem 11: Quick Sort (Lomuto Partition)</h3>
+  <div class="problem-box">
+    <strong>Problem Statement:</strong> Implement Quick Sort using the Lomuto partition scheme. Quick Sort is another divide-and-conquer sorting algorithm that works by selecting a "pivot" element and partitioning the array around it. It has O(n log n) average-case time but O(n&sup2;) worst-case.
+  </div>
+  <p><span class="complexity good">Time: O(n log n) average</span> <span class="complexity good">Space: O(log n) stack</span></p>
+
+  <h4>Solution Methodology</h4>
+  <p>The Lomuto partition scheme is simpler to understand than Hoare's. It works as follows:</p>
+  <ol>
+    <li>Choose the last element as the pivot.</li>
+    <li>Maintain a pointer <code>i</code> that tracks the boundary of elements &le; pivot.</li>
+    <li>Scan from left to right with pointer <code>j</code>. Whenever <code>arr[j] &le; pivot</code>, swap <code>arr[j]</code> with <code>arr[i]</code> and increment <code>i</code>.</li>
+    <li>After the scan, swap the pivot into position <code>i</code>. Now everything left of <code>i</code> is &le; pivot, and everything right is &gt; pivot.</li>
+    <li>Recursively sort the two partitions.</li>
+  </ol>
+
+  <div class="anim-widget" id="w-quick">
+    <h4>Quick Sort (Lomuto) — Interactive Visualization</h4>
+    <div class="anim-input">
+      <label>Array:</label>
+      <input type="text" id="quick-arr" value="10, 80, 30, 90, 40, 50, 70">
+      <button class="btn-apply" onclick="qsApply()">Apply</button>
+    </div>
+    <div class="anim-display" id="quick-display" style="min-height:80px"></div>
+    <div class="anim-log" id="quick-log">Press Step or Play to begin.</div>
+    <div class="anim-controls">
+      <button class="btn-back" onclick="qsBack()">&laquo; Back</button>
+      <button class="btn-step" onclick="qsStep()">Step &raquo;</button>
+      <button class="btn-play" id="quick-play" onclick="qsPlay()">&#9654; Play</button>
+      <button class="btn-pause" onclick="qsPause()">&#10074;&#10074; Pause</button>
+      <button class="btn-reset" onclick="qsReset()">Reset</button>
+      <span class="step-info" id="quick-stepinfo">Step 0</span>
+    </div>
+  </div>
+
+<pre><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="pp">#define</span> <span class="fn">SWAP</span>(a, b) <span class="kw">do</span> { <span class="kw">typeof</span>(a) _t=(a); (a)=(b); (b)=_t; } <span class="kw">while</span>(<span class="num">0</span>)
+
+<span class="type">int</span> <span class="fn">partition</span>(<span class="type">int</span>* arr, <span class="type">int</span> lo, <span class="type">int</span> hi) {
+    <span class="type">int</span> pivot = arr[hi];   <span class="cm">// Lomuto: pivot is last element</span>
+    <span class="type">int</span> i = lo - <span class="num">1</span>;
+
+    <span class="kw">for</span> (<span class="type">int</span> j = lo; j &lt; hi; j++) {
+        <span class="kw">if</span> (arr[j] &lt;= pivot) {
+            i++;
+            <span class="fn">SWAP</span>(arr[i], arr[j]);
+        }
+    }
+    <span class="fn">SWAP</span>(arr[i + <span class="num">1</span>], arr[hi]);
+    <span class="kw">return</span> i + <span class="num">1</span>;
+}
+
+<span class="type">void</span> <span class="fn">quickSort</span>(<span class="type">int</span>* arr, <span class="type">int</span> lo, <span class="type">int</span> hi) {
+    <span class="kw">if</span> (lo &lt; hi) {
+        <span class="type">int</span> pi = <span class="fn">partition</span>(arr, lo, hi);
+        <span class="fn">quickSort</span>(arr, lo, pi - <span class="num">1</span>);
+        <span class="fn">quickSort</span>(arr, pi + <span class="num">1</span>, hi);
+    }
+}
+<span class="lang-tag">C11</span></pre>
+
+  <!-- ===== PROBLEM 12: BINARY SEARCH ===== -->
+  <h3>Problem 12: Binary Search Variants</h3>
+  <div class="problem-box">
+    <strong>Problem Statement:</strong> Given a sorted array of integers and a target value, implement binary search to find the target. Then extend it to find the <strong>first occurrence</strong> (lower bound) and <strong>last occurrence</strong> (upper bound) of the target.
+  </div>
+  <p><span class="complexity good">Time: O(log n)</span> <span class="complexity good">Space: O(1)</span></p>
+
+  <h4>Solution Methodology</h4>
+  <p>Binary search repeatedly halves the search space. The key is maintaining the invariant: the answer is always within <code>[lo, hi]</code>. For the standard version, if <code>arr[mid] == target</code>, we return. For lower/upper bound variants, we continue searching even after finding a match to find the boundary.</p>
+  <p><strong>Lower Bound:</strong> When <code>arr[mid] >= target</code>, set <code>hi = mid</code>. When <code>arr[mid] < target</code>, set <code>lo = mid + 1</code>. Result: first index where <code>arr[index] >= target</code>.</p>
+  <p><strong>Upper Bound:</strong> When <code>arr[mid] <= target</code>, set <code>lo = mid + 1</code>. When <code>arr[mid] > target</code>, set <code>hi = mid</code>. Result: first index where <code>arr[index] > target</code>.</p>
+
+  <div class="anim-widget" id="w-bsearch">
+    <h4>Binary Search — Interactive Visualization</h4>
+    <div class="anim-input">
+      <label>Sorted Array:</label>
+      <input type="text" id="bsearch-arr" value="1, 3, 5, 7, 9, 11, 13, 15, 17">
+      <label>Target:</label>
+      <input type="text" id="bsearch-target" value="7" style="width:45px;min-width:45px;flex:none">
+      <button class="btn-apply" onclick="bsApply()">Apply</button>
+    </div>
+    <div class="anim-display" id="bsearch-display"></div>
+    <div class="anim-log" id="bsearch-log">Press Step or Play to begin.</div>
+    <div class="anim-controls">
+      <button class="btn-back" onclick="bsBack()">&laquo; Back</button>
+      <button class="btn-step" onclick="bsStep()">Step &raquo;</button>
+      <button class="btn-play" id="bsearch-play" onclick="bsPlay()">&#9654; Play</button>
+      <button class="btn-pause" onclick="bsPause()">&#10074;&#10074; Pause</button>
+      <button class="btn-reset" onclick="bsReset()">Reset</button>
+      <span class="step-info" id="bsearch-stepinfo">Step 0</span>
+    </div>
+  </div>
+
+<pre><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="cm">/* Standard binary search */</span>
+<span class="type">int</span> <span class="fn">binarySearch</span>(<span class="type">int</span>* arr, <span class="type">int</span> n, <span class="type">int</span> target) {
+    <span class="type">int</span> lo = <span class="num">0</span>, hi = n - <span class="num">1</span>;
+    <span class="kw">while</span> (lo &lt;= hi) {
+        <span class="type">int</span> mid = lo + (hi - lo) / <span class="num">2</span>;  <span class="cm">// overflow-safe</span>
+        <span class="kw">if</span>      (arr[mid] == target) <span class="kw">return</span> mid;
+        <span class="kw">else if</span> (arr[mid] &lt;  target) lo = mid + <span class="num">1</span>;
+        <span class="kw">else</span>                         hi = mid - <span class="num">1</span>;
+    }
+    <span class="kw">return</span> <span class="num">-1</span>;
+}
+
+<span class="cm">/* Lower bound: first index where arr[i] >= target */</span>
+<span class="type">int</span> <span class="fn">lowerBound</span>(<span class="type">int</span>* arr, <span class="type">int</span> n, <span class="type">int</span> target) {
+    <span class="type">int</span> lo = <span class="num">0</span>, hi = n;
+    <span class="kw">while</span> (lo &lt; hi) {
+        <span class="type">int</span> mid = lo + (hi - lo) / <span class="num">2</span>;
+        <span class="kw">if</span> (arr[mid] >= target) hi = mid;
+        <span class="kw">else</span>                    lo = mid + <span class="num">1</span>;
+    }
+    <span class="kw">return</span> lo;
+}
+
+<span class="cm">/* Upper bound: first index where arr[i] > target */</span>
+<span class="type">int</span> <span class="fn">upperBound</span>(<span class="type">int</span>* arr, <span class="type">int</span> n, <span class="type">int</span> target) {
+    <span class="type">int</span> lo = <span class="num">0</span>, hi = n;
+    <span class="kw">while</span> (lo &lt; hi) {
+        <span class="type">int</span> mid = lo + (hi - lo) / <span class="num">2</span>;
+        <span class="kw">if</span> (arr[mid] > target) hi = mid;
+        <span class="kw">else</span>                   lo = mid + <span class="num">1</span>;
+    }
+    <span class="kw">return</span> lo;
+}
+<span class="lang-tag">C11</span></pre>
+
+  <div class="tip-box">
+    <strong>Pro Tip — Avoiding Off-by-One Errors:</strong> The most common bug in binary search is the loop condition and how <code>lo</code>/<code>hi</code> are updated. A useful mental model: think of <code>[lo, hi]</code> as the "candidate range." When the range becomes empty, the search is done. For the standard search, use <code>lo &lt;= hi</code>. For lower/upper bound, use <code>lo &lt; hi</code> with half-open intervals.
+  </div>
+</div><!-- end module session 4 -->
+
+
+<!-- ╔══════════════════════════════════════════════════════════════╗
+     ║  SESSION 5 — GRAPH ALGORITHMS (90 min)                      ║
+     ╚══════════════════════════════════════════════════════════════╝ -->
+<div id="s5" class="session-header">
+  <h2>Session 5 — Graph Algorithms</h2>
+  <p>Duration: 90 minutes &nbsp;|&nbsp; Difficulty: Advanced</p>
+</div>
+
+<div class="module">
+
+  <h3>C11 / C++ Tricks for Graphs</h3>
+  <div class="trick-box">
+    <strong>Trick 10 — Adjacency List with Dynamic Arrays:</strong> For sparse graphs, adjacency lists are far more memory-efficient than matrices. In C11, combine <code>realloc</code> with a growth factor for a simple dynamic array.
+  </div>
+<pre><span class="pp">#define</span> MAX_NODES <span class="num">1000</span>
+
+<span class="kw">typedef struct</span> {
+    <span class="type">int</span>* neighbors;
+    <span class="type">int</span>* weights;    <span class="cm">// for weighted graphs</span>
+    <span class="type">int</span> size;
+    <span class="type">int</span> capacity;
+} <span class="type">AdjList</span>;
+
+<span class="type">AdjList</span> graph[MAX_NODES];
+
+<span class="type">void</span> <span class="fn">addEdge</span>(<span class="type">int</span> u, <span class="type">int</span> v, <span class="type">int</span> w) {
+    <span class="type">AdjList</span>* list = &amp;graph[u];
+    <span class="kw">if</span> (list->size == list->capacity) {
+        list->capacity = list->capacity ? list->capacity * <span class="num">2</span> : <span class="num">4</span>;
+        list->neighbors = <span class="fn">realloc</span>(list->neighbors, list->capacity * <span class="kw">sizeof</span>(<span class="type">int</span>));
+        list->weights   = <span class="fn">realloc</span>(list->weights,   list->capacity * <span class="kw">sizeof</span>(<span class="type">int</span>));
+    }
+    list->neighbors[list->size] = v;
+    list->weights[list->size]   = w;
+    list->size++;
+}
+<span class="lang-tag">C11</span></pre>
+
+  <div class="trick-box">
+    <strong>Trick 11 — C++ Priority Queue for Dijkstra:</strong> Use <code>std::priority_queue</code> with <code>std::greater</code> for a min-heap. The pair stores <code>(distance, node)</code> so the smallest distance is always on top.
+  </div>
+<pre><span class="pp">#include</span> <span class="str">&lt;queue&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="cm">// Min-heap: smallest distance first</span>
+priority_queue&lt;pair&lt;<span class="type">int</span>,<span class="type">int</span>&gt;, vector&lt;pair&lt;<span class="type">int</span>,<span class="type">int</span>&gt;&gt;, greater&lt;pair&lt;<span class="type">int</span>,<span class="type">int</span>&gt;&gt;&gt; pq;
+pq.<span class="fn">push</span>({<span class="num">0</span>, start_node});  <span class="cm">// {distance, node}</span>
+<span class="lang-tag">C++</span></pre>
+
+  <!-- ===== PROBLEM 13: BFS SHORTEST PATH ===== -->
+  <h3>Problem 13: BFS Shortest Path (Unweighted Graph)</h3>
+  <div class="problem-box">
+    <strong>Problem Statement:</strong> Given an unweighted graph with <code>V</code> vertices and <code>E</code> edges, find the shortest path (minimum number of edges) from a source vertex <code>s</code> to all other vertices using Breadth-First Search.
+  </div>
+  <p><span class="complexity good">Time: O(V + E)</span> <span class="complexity good">Space: O(V)</span></p>
+
+  <h4>Solution Methodology</h4>
+  <p>BFS explores the graph level by level, like ripples spreading from a stone dropped in water. It uses a <strong>queue</strong> (FIFO) to process vertices in the order they are discovered. Because it explores all vertices at distance <code>d</code> before any vertex at distance <code>d+1</code>, the first time a vertex is reached, it is via the shortest path.</p>
+  <p><strong>Algorithm Steps:</strong></p>
+  <ol>
+    <li>Initialize a distance array with all values set to -1 (unvisited). Set <code>dist[source] = 0</code>.</li>
+    <li>Enqueue the source vertex.</li>
+    <li>While the queue is not empty: dequeue a vertex <code>u</code>, and for each neighbor <code>v</code> of <code>u</code>, if <code>v</code> is unvisited, set <code>dist[v] = dist[u] + 1</code> and enqueue <code>v</code>.</li>
+  </ol>
+
+  <div class="anim-widget" id="w-bfs">
+    <h4>BFS Shortest Path — Interactive Visualization</h4>
+    <div class="anim-input">
+      <label>Edges (u-v):</label>
+      <input type="text" id="bfs-edges" value="0-1, 0-2, 1-3, 2-3, 3-4, 2-4, 4-5">
+      <label>Source:</label>
+      <input type="text" id="bfs-src" value="0" style="width:35px;min-width:35px;flex:none">
+      <button class="btn-apply" onclick="bfsApply()">Apply</button>
+    </div>
+    <div class="anim-display" id="bfs-display" style="min-height:200px">
+      <canvas id="bfs-canvas" class="graph-canvas" width="500" height="200"></canvas>
+    </div>
+    <div class="anim-log" id="bfs-log">Press Step or Play to begin.</div>
+    <div class="anim-controls">
+      <button class="btn-back" onclick="bfsBack()">&laquo; Back</button>
+      <button class="btn-step" onclick="bfsStep()">Step &raquo;</button>
+      <button class="btn-play" id="bfs-play" onclick="bfsPlay()">&#9654; Play</button>
+      <button class="btn-pause" onclick="bfsPause()">&#10074;&#10074; Pause</button>
+      <button class="btn-reset" onclick="bfsReset()">Reset</button>
+      <span class="step-info" id="bfs-stepinfo">Step 0</span>
+    </div>
+  </div>
+
+<pre><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+<span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span>
+
+<span class="pp">#define</span> MAXV <span class="num">1000</span>
+
+<span class="type">int</span> adj[MAXV][MAXV], deg[MAXV];  <span class="cm">// adjacency list</span>
+<span class="type">int</span> dist[MAXV], parent[MAXV];
+<span class="type">int</span> queue[MAXV], front, back;
+
+<span class="type">void</span> <span class="fn">bfs</span>(<span class="type">int</span> src, <span class="type">int</span> V) {
+    <span class="fn">memset</span>(dist, <span class="num">-1</span>, V * <span class="kw">sizeof</span>(<span class="type">int</span>));
+    <span class="fn">memset</span>(parent, <span class="num">-1</span>, V * <span class="kw">sizeof</span>(<span class="type">int</span>));
+    front = back = <span class="num">0</span>;
+
+    dist[src] = <span class="num">0</span>;
+    queue[back++] = src;
+
+    <span class="kw">while</span> (front &lt; back) {
+        <span class="type">int</span> u = queue[front++];
+        <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; deg[u]; i++) {
+            <span class="type">int</span> v = adj[u][i];
+            <span class="kw">if</span> (dist[v] == <span class="num">-1</span>) {       <span class="cm">// unvisited</span>
+                dist[v] = dist[u] + <span class="num">1</span>;
+                parent[v] = u;
+                queue[back++] = v;
+            }
+        }
+    }
+}
+<span class="lang-tag">C11</span></pre>
+
+  <!-- ===== PROBLEM 14: DFS & TOPOLOGICAL SORT ===== -->
+  <h3>Problem 14: DFS &amp; Topological Sort</h3>
+  <div class="problem-box">
+    <strong>Problem Statement:</strong> Given a Directed Acyclic Graph (DAG) with <code>V</code> vertices and <code>E</code> edges, find a topological ordering of the vertices. A topological sort is a linear ordering of vertices such that for every directed edge <code>u &rarr; v</code>, vertex <code>u</code> comes before <code>v</code>.
+  </div>
+  <p><span class="complexity good">Time: O(V + E)</span> <span class="complexity good">Space: O(V)</span></p>
+
+  <h4>Solution Methodology</h4>
+  <p>Topological sort can be implemented using DFS. The key insight is: when DFS finishes processing a vertex (all its descendants have been visited), that vertex can be placed at the front of the topological order. We use a stack (or simply reverse the finish order).</p>
+  <p><strong>Algorithm Steps:</strong></p>
+  <ol>
+    <li>Mark all vertices as unvisited.</li>
+    <li>For each unvisited vertex, run DFS.</li>
+    <li>In DFS, after visiting all neighbors of a vertex, push it onto a stack.</li>
+    <li>The stack (read top to bottom) gives the topological order.</li>
+  </ol>
+
+  <div class="anim-widget" id="w-topo">
+    <h4>Topological Sort (DFS) — Interactive Visualization</h4>
+    <div class="anim-input">
+      <label>Directed edges (u→v):</label>
+      <input type="text" id="topo-edges" value="5→2, 5→0, 4→0, 4→1, 2→3, 3→1">
+      <button class="btn-apply" onclick="topoApply()">Apply</button>
+    </div>
+    <div class="anim-display" id="topo-display" style="min-height:200px">
+      <canvas id="topo-canvas" class="graph-canvas" width="500" height="200"></canvas>
+    </div>
+    <div class="anim-log" id="topo-log">Press Step or Play to begin.</div>
+    <div class="anim-controls">
+      <button class="btn-back" onclick="topoBack()">&laquo; Back</button>
+      <button class="btn-step" onclick="topoStep()">Step &raquo;</button>
+      <button class="btn-play" id="topo-play" onclick="topoPlay()">&#9654; Play</button>
+      <button class="btn-pause" onclick="topoPause()">&#10074;&#10074; Pause</button>
+      <button class="btn-reset" onclick="topoReset()">Reset</button>
+      <span class="step-info" id="topo-stepinfo">Step 0</span>
+    </div>
+  </div>
+
+<pre><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+<span class="pp">#include</span> <span class="str">&lt;stdbool.h&gt;</span>
+
+<span class="pp">#define</span> MAXV <span class="num">1000</span>
+
+<span class="type">int</span> adj[MAXV][MAXV], deg[MAXV];
+<span class="type">bool</span> visited[MAXV];
+<span class="type">int</span> stack[MAXV], stack_top;
+
+<span class="type">void</span> <span class="fn">dfs</span>(<span class="type">int</span> u) {
+    visited[u] = <span class="kw">true</span>;
+    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; deg[u]; i++) {
+        <span class="type">int</span> v = adj[u][i];
+        <span class="kw">if</span> (!visited[v])
+            <span class="fn">dfs</span>(v);
+    }
+    stack[stack_top++] = u;  <span class="cm">// push after all descendants done</span>
+}
+
+<span class="type">void</span> <span class="fn">topologicalSort</span>(<span class="type">int</span> V) {
+    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; V; i++) visited[i] = <span class="kw">false</span>;
+    stack_top = <span class="num">0</span>;
+
+    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; V; i++)
+        <span class="kw">if</span> (!visited[i]) <span class="fn">dfs</span>(i);
+
+    <span class="cm">// Print in reverse stack order</span>
+    <span class="fn">printf</span>(<span class="str">"Topological Order: "</span>);
+    <span class="kw">for</span> (<span class="type">int</span> i = stack_top - <span class="num">1</span>; i >= <span class="num">0</span>; i--)
+        <span class="fn">printf</span>(<span class="str">"%d "</span>, stack[i]);
+    <span class="fn">printf</span>(<span class="str">"\n"</span>);
+}
+<span class="lang-tag">C11</span></pre>
+
+  <!-- ===== PROBLEM 15: DIJKSTRA'S ALGORITHM ===== -->
+  <h3>Problem 15: Dijkstra's Shortest Path Algorithm</h3>
+  <div class="problem-box">
+    <strong>Problem Statement:</strong> Given a weighted graph with non-negative edge weights, find the shortest path from a source vertex to all other vertices using Dijkstra's algorithm.
+  </div>
+  <p><span class="complexity good">Time: O((V + E) log V) with min-heap</span> <span class="complexity good">Space: O(V)</span></p>
+
+  <h4>Solution Methodology</h4>
+  <p>Dijkstra's algorithm is a <strong>greedy</strong> algorithm that builds the shortest path tree one vertex at a time. It maintains a set of "finalized" vertices and a priority queue of tentative distances. At each step, it extracts the vertex with the smallest tentative distance, finalizes it, and <strong>relaxes</strong> all its outgoing edges.</p>
+  <p><strong>Relaxation:</strong> For an edge <code>(u, v)</code> with weight <code>w</code>, if <code>dist[u] + w &lt; dist[v]</code>, update <code>dist[v] = dist[u] + w</code>.</p>
+  <p><strong>Algorithm Steps:</strong></p>
+  <ol>
+    <li>Initialize <code>dist[source] = 0</code>, all others to &infin;. Insert source into the priority queue.</li>
+    <li>Extract the vertex <code>u</code> with minimum distance from the priority queue.</li>
+    <li>For each neighbor <code>v</code> of <code>u</code>: if <code>dist[u] + weight(u,v) &lt; dist[v]</code>, update <code>dist[v]</code> and insert/update <code>v</code> in the priority queue.</li>
+    <li>Repeat until the priority queue is empty.</li>
+  </ol>
+
+  <div class="anim-widget" id="w-dijkstra">
+    <h4>Dijkstra's Algorithm — Interactive Visualization</h4>
+    <div class="anim-input">
+      <label>Weighted edges (u-v:w):</label>
+      <input type="text" id="dijkstra-edges" value="0-1:4, 0-2:1, 2-1:2, 1-3:1, 2-3:5, 3-4:3">
+      <label>Source:</label>
+      <input type="text" id="dijkstra-src" value="0" style="width:35px;min-width:35px;flex:none">
+      <button class="btn-apply" onclick="dijApply()">Apply</button>
+    </div>
+    <div class="anim-display" id="dijkstra-display" style="min-height:200px">
+      <canvas id="dijkstra-canvas" class="graph-canvas" width="500" height="200"></canvas>
+    </div>
+    <div class="anim-log" id="dijkstra-log">Press Step or Play to begin.</div>
+    <div class="anim-controls">
+      <button class="btn-back" onclick="dijBack()">&laquo; Back</button>
+      <button class="btn-step" onclick="dijStep()">Step &raquo;</button>
+      <button class="btn-play" id="dijkstra-play" onclick="dijPlay()">&#9654; Play</button>
+      <button class="btn-pause" onclick="dijPause()">&#10074;&#10074; Pause</button>
+      <button class="btn-reset" onclick="dijReset()">Reset</button>
+      <span class="step-info" id="dijkstra-stepinfo">Step 0</span>
+    </div>
+  </div>
+
+<pre><span class="cm">/* Dijkstra's Algorithm — C++ with priority_queue */</span>
+<span class="pp">#include</span> <span class="str">&lt;bits/stdc++.h&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="kw">typedef</span> pair&lt;<span class="type">int</span>,<span class="type">int</span>&gt; <span class="type">pii</span>;  <span class="cm">// {distance, node}</span>
+
+vector&lt;<span class="type">int</span>&gt; <span class="fn">dijkstra</span>(<span class="type">int</span> src, vector&lt;vector&lt;<span class="type">pii</span>&gt;&gt;&amp; adj, <span class="type">int</span> V) {
+    vector&lt;<span class="type">int</span>&gt; dist(V, INT_MAX);
+    priority_queue&lt;<span class="type">pii</span>, vector&lt;<span class="type">pii</span>&gt;, greater&lt;<span class="type">pii</span>&gt;&gt; pq;
+
+    dist[src] = <span class="num">0</span>;
+    pq.<span class="fn">push</span>({<span class="num">0</span>, src});
+
+    <span class="kw">while</span> (!pq.<span class="fn">empty</span>()) {
+        <span class="kw">auto</span> [d, u] = pq.<span class="fn">top</span>(); pq.<span class="fn">pop</span>();
+
+        <span class="kw">if</span> (d > dist[u]) <span class="kw">continue</span>;  <span class="cm">// stale entry</span>
+
+        <span class="kw">for</span> (<span class="kw">auto</span>&amp; [v, w] : adj[u]) {
+            <span class="kw">if</span> (dist[u] + w &lt; dist[v]) {
+                dist[v] = dist[u] + w;
+                pq.<span class="fn">push</span>({dist[v], v});
+            }
+        }
+    }
+    <span class="kw">return</span> dist;
+}
+<span class="lang-tag">C++17</span></pre>
+
+  <div class="tip-box">
+    <strong>Pro Tip — When NOT to use Dijkstra:</strong> Dijkstra's algorithm fails with negative edge weights. For graphs with negative weights (but no negative cycles), use the Bellman-Ford algorithm. For all-pairs shortest paths, consider Floyd-Warshall.
+  </div>
+</div><!-- end module session 5 -->
+
+
+<!-- ╔══════════════════════════════════════════════════════════════╗
+     ║  SESSION 6 — DYNAMIC PROGRAMMING (90 min)                   ║
+     ╚══════════════════════════════════════════════════════════════╝ -->
+<div id="s6" class="session-header">
+  <h2>Session 6 — Dynamic Programming</h2>
+  <p>Duration: 90 minutes &nbsp;|&nbsp; Difficulty: Advanced</p>
+</div>
+
+<div class="module">
+
+  <h3>C11 / C++ Tricks for Dynamic Programming</h3>
+  <div class="trick-box">
+    <strong>Trick 12 — VLA for 2D DP Tables (C11):</strong> Variable-Length Arrays let you allocate a 2D DP table on the stack without <code>malloc</code>. This is cleaner and faster for moderate sizes.
+  </div>
+<pre><span class="type">void</span> <span class="fn">solve</span>(<span class="type">int</span> n, <span class="type">int</span> W) {
+    <span class="type">int</span> dp[n + <span class="num">1</span>][W + <span class="num">1</span>];  <span class="cm">// VLA — allocated on stack</span>
+    <span class="fn">memset</span>(dp, <span class="num">0</span>, <span class="kw">sizeof</span>(dp));
+    <span class="cm">// ... fill dp table ...</span>
+}
+<span class="lang-tag">C11</span></pre>
+
+  <div class="trick-box">
+    <strong>Trick 13 — Memoization with Hash Maps (C++):</strong> For top-down DP with complex state, use <code>std::unordered_map</code> as a memo table. For simple integer states, a plain array is faster.
+  </div>
+<pre>unordered_map&lt;<span class="type">int</span>, <span class="type">int</span>&gt; memo;
+
+<span class="type">int</span> <span class="fn">solve</span>(<span class="type">int</span> state) {
+    <span class="kw">if</span> (memo.<span class="fn">count</span>(state)) <span class="kw">return</span> memo[state];
+    <span class="cm">// ... compute result ...</span>
+    <span class="kw">return</span> memo[state] = result;
+}
+<span class="lang-tag">C++</span></pre>
+
+  <!-- ===== PROBLEM 16: FIBONACCI ===== -->
+  <h3>Problem 16: Fibonacci — Memoization vs. Tabulation</h3>
+  <div class="problem-box">
+    <strong>Problem Statement:</strong> Compute the n-th Fibonacci number efficiently. The naive recursive solution has exponential time complexity O(2<sup>n</sup>). Demonstrate both <strong>top-down (memoization)</strong> and <strong>bottom-up (tabulation)</strong> approaches to achieve O(n) time.
+  </div>
+  <p><span class="complexity good">Time: O(n)</span> <span class="complexity good">Space: O(n) or O(1)</span></p>
+
+  <h4>Solution Methodology</h4>
+  <p>The Fibonacci sequence is the "Hello World" of dynamic programming. The naive recursive approach recomputes the same subproblems exponentially many times. DP eliminates this redundancy.</p>
+  <p><strong>Top-Down (Memoization):</strong> Keep the recursive structure but cache results in an array. Before computing <code>fib(n)</code>, check if it's already in the cache. This is "lazy" — we only compute what's needed.</p>
+  <p><strong>Bottom-Up (Tabulation):</strong> Fill a table iteratively from <code>fib(0)</code> up to <code>fib(n)</code>. No recursion overhead. Can be further optimized to O(1) space since we only need the last two values.</p>
+
+  <div class="anim-widget" id="w-fib">
+    <h4>Fibonacci — Memoization vs Tabulation Visualization</h4>
+    <div class="anim-input">
+      <label>n =</label>
+      <input type="text" id="fib-n" value="8" style="width:45px;min-width:45px;flex:none">
+      <label style="margin-left:8px">Mode:</label>
+      <select id="fib-mode" style="padding:4px;border-radius:4px;border:1px solid #ccc">
+        <option value="tabulation">Bottom-Up (Tabulation)</option>
+        <option value="memoization">Top-Down (Memoization)</option>
+      </select>
+      <button class="btn-apply" onclick="fibApply()">Apply</button>
+    </div>
+    <div class="anim-display" id="fib-display"></div>
+    <div class="anim-log" id="fib-log">Press Step or Play to begin.</div>
+    <div class="anim-controls">
+      <button class="btn-back" onclick="fibBack()">&laquo; Back</button>
+      <button class="btn-step" onclick="fibStep()">Step &raquo;</button>
+      <button class="btn-play" id="fib-play" onclick="fibPlay()">&#9654; Play</button>
+      <button class="btn-pause" onclick="fibPause()">&#10074;&#10074; Pause</button>
+      <button class="btn-reset" onclick="fibReset()">Reset</button>
+      <span class="step-info" id="fib-stepinfo">Step 0</span>
+    </div>
+  </div>
+
+<pre><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+<span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span>
+
+<span class="cm">/* ---- Top-Down: Memoization ---- */</span>
+<span class="type">long long</span> memo[<span class="num">100</span>];
+
+<span class="type">long long</span> <span class="fn">fib_memo</span>(<span class="type">int</span> n) {
+    <span class="kw">if</span> (n &lt;= <span class="num">1</span>) <span class="kw">return</span> n;
+    <span class="kw">if</span> (memo[n] != <span class="num">-1</span>) <span class="kw">return</span> memo[n];
+    <span class="kw">return</span> memo[n] = <span class="fn">fib_memo</span>(n - <span class="num">1</span>) + <span class="fn">fib_memo</span>(n - <span class="num">2</span>);
+}
+
+<span class="cm">/* ---- Bottom-Up: Tabulation ---- */</span>
+<span class="type">long long</span> <span class="fn">fib_tab</span>(<span class="type">int</span> n) {
+    <span class="kw">if</span> (n &lt;= <span class="num">1</span>) <span class="kw">return</span> n;
+    <span class="type">long long</span> dp[n + <span class="num">1</span>];  <span class="cm">// VLA</span>
+    dp[<span class="num">0</span>] = <span class="num">0</span>; dp[<span class="num">1</span>] = <span class="num">1</span>;
+    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">2</span>; i &lt;= n; i++)
+        dp[i] = dp[i-<span class="num">1</span>] + dp[i-<span class="num">2</span>];
+    <span class="kw">return</span> dp[n];
+}
+
+<span class="cm">/* ---- Space-Optimized O(1) ---- */</span>
+<span class="type">long long</span> <span class="fn">fib_opt</span>(<span class="type">int</span> n) {
+    <span class="kw">if</span> (n &lt;= <span class="num">1</span>) <span class="kw">return</span> n;
+    <span class="type">long long</span> a = <span class="num">0</span>, b = <span class="num">1</span>;
+    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">2</span>; i &lt;= n; i++) {
+        <span class="type">long long</span> c = a + b;
+        a = b; b = c;
+    }
+    <span class="kw">return</span> b;
+}
+<span class="lang-tag">C11</span></pre>
+
+  <!-- ===== PROBLEM 17: 0/1 KNAPSACK ===== -->
+  <h3>Problem 17: 0/1 Knapsack Problem</h3>
+  <div class="problem-box">
+    <strong>Problem Statement:</strong> Given <code>n</code> items, each with a weight <code>w[i]</code> and a value <code>v[i]</code>, and a knapsack with capacity <code>W</code>, determine the maximum total value you can carry. Each item can either be taken or left (0/1 choice — no fractions).
+  </div>
+  <p><span class="complexity good">Time: O(nW)</span> <span class="complexity good">Space: O(nW) or O(W)</span></p>
+
+  <h4>Solution Methodology</h4>
+  <p>The 0/1 Knapsack is the canonical DP problem. We define <code>dp[i][w]</code> as the maximum value achievable using the first <code>i</code> items with capacity <code>w</code>. The recurrence is:</p>
+  <p style="text-align:center;font-size:1rem;margin:1rem 0"><code>dp[i][w] = max(dp[i-1][w], dp[i-1][w - weight[i]] + value[i])</code> if <code>weight[i] &le; w</code></p>
+  <p>The first option means we skip item <code>i</code>. The second means we take it (subtracting its weight and adding its value). We fill the table row by row.</p>
+
+  <div class="anim-widget" id="w-knapsack">
+    <h4>0/1 Knapsack — Interactive DP Table Visualization</h4>
+    <div class="anim-input">
+      <label>Weights:</label>
+      <input type="text" id="knap-w" value="2, 3, 4, 5" style="min-width:100px">
+      <label>Values:</label>
+      <input type="text" id="knap-v" value="3, 4, 5, 6" style="min-width:100px">
+      <label>Capacity:</label>
+      <input type="text" id="knap-cap" value="5" style="width:40px;min-width:40px;flex:none">
+      <button class="btn-apply" onclick="knapApply()">Apply</button>
+    </div>
+    <div class="anim-display" id="knapsack-display" style="overflow-x:auto"></div>
+    <div class="anim-log" id="knapsack-log">Press Step or Play to begin.</div>
+    <div class="anim-controls">
+      <button class="btn-back" onclick="knapBack()">&laquo; Back</button>
+      <button class="btn-step" onclick="knapStep()">Step &raquo;</button>
+      <button class="btn-play" id="knapsack-play" onclick="knapPlay()">&#9654; Play</button>
+      <button class="btn-pause" onclick="knapPause()">&#10074;&#10074; Pause</button>
+      <button class="btn-reset" onclick="knapReset()">Reset</button>
+      <span class="step-info" id="knapsack-stepinfo">Step 0</span>
+    </div>
+  </div>
+
+<pre><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+<span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span>
+
+<span class="pp">#define</span> <span class="fn">MAX</span>(a,b) ((a)>(b)?(a):(b))
+
+<span class="type">int</span> <span class="fn">knapsack</span>(<span class="type">int</span> n, <span class="type">int</span> W, <span class="type">int</span> wt[], <span class="type">int</span> val[]) {
+    <span class="type">int</span> dp[n + <span class="num">1</span>][W + <span class="num">1</span>];  <span class="cm">// VLA</span>
+    <span class="fn">memset</span>(dp, <span class="num">0</span>, <span class="kw">sizeof</span>(dp));
+
+    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">1</span>; i &lt;= n; i++) {
+        <span class="kw">for</span> (<span class="type">int</span> w = <span class="num">0</span>; w &lt;= W; w++) {
+            dp[i][w] = dp[i-<span class="num">1</span>][w];  <span class="cm">// skip item i</span>
+            <span class="kw">if</span> (wt[i-<span class="num">1</span>] &lt;= w) {
+                dp[i][w] = <span class="fn">MAX</span>(dp[i][w],
+                    dp[i-<span class="num">1</span>][w - wt[i-<span class="num">1</span>]] + val[i-<span class="num">1</span>]);
+            }
+        }
+    }
+    <span class="kw">return</span> dp[n][W];
+}
+
+<span class="cm">/* Space-optimized 1D version */</span>
+<span class="type">int</span> <span class="fn">knapsack_opt</span>(<span class="type">int</span> n, <span class="type">int</span> W, <span class="type">int</span> wt[], <span class="type">int</span> val[]) {
+    <span class="type">int</span> dp[W + <span class="num">1</span>];
+    <span class="fn">memset</span>(dp, <span class="num">0</span>, <span class="kw">sizeof</span>(dp));
+
+    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++)
+        <span class="kw">for</span> (<span class="type">int</span> w = W; w >= wt[i]; w--)  <span class="cm">// reverse to avoid reuse</span>
+            dp[w] = <span class="fn">MAX</span>(dp[w], dp[w - wt[i]] + val[i]);
+
+    <span class="kw">return</span> dp[W];
+}
+<span class="lang-tag">C11</span></pre>
+
+  <!-- ===== PROBLEM 18: LCS ===== -->
+  <h3>Problem 18: Longest Common Subsequence (LCS)</h3>
+  <div class="problem-box">
+    <strong>Problem Statement:</strong> Given two strings <code>text1</code> and <code>text2</code>, return the length of their longest common subsequence. A subsequence is a sequence that can be derived from another sequence by deleting some or no elements without changing the order of the remaining elements.
+  </div>
+  <p><span class="complexity good">Time: O(mn)</span> <span class="complexity good">Space: O(mn)</span></p>
+
+  <h4>Solution Methodology</h4>
+  <p>We define <code>dp[i][j]</code> as the length of the LCS of <code>text1[0..i-1]</code> and <code>text2[0..j-1]</code>. The recurrence is:</p>
+  <ul>
+    <li>If <code>text1[i-1] == text2[j-1]</code>: <code>dp[i][j] = dp[i-1][j-1] + 1</code> (characters match, extend LCS).</li>
+    <li>Otherwise: <code>dp[i][j] = max(dp[i-1][j], dp[i][j-1])</code> (skip one character from either string).</li>
+  </ul>
+  <p>To reconstruct the actual LCS string, backtrack from <code>dp[m][n]</code>: if the characters match, include it and move diagonally; otherwise, move in the direction of the larger value.</p>
+
+  <div class="anim-widget" id="w-lcs">
+    <h4>Longest Common Subsequence — Interactive DP Table</h4>
+    <div class="anim-input">
+      <label>Text 1:</label>
+      <input type="text" id="lcs-s1" value="ABCBDAB" style="min-width:80px">
+      <label>Text 2:</label>
+      <input type="text" id="lcs-s2" value="BDCAB" style="min-width:80px">
+      <button class="btn-apply" onclick="lcsApply()">Apply</button>
+    </div>
+    <div class="anim-display" id="lcs-display" style="overflow-x:auto"></div>
+    <div class="anim-log" id="lcs-log">Press Step or Play to begin.</div>
+    <div class="anim-controls">
+      <button class="btn-back" onclick="lcsBack()">&laquo; Back</button>
+      <button class="btn-step" onclick="lcsStep()">Step &raquo;</button>
+      <button class="btn-play" id="lcs-play" onclick="lcsPlay()">&#9654; Play</button>
+      <button class="btn-pause" onclick="lcsPause()">&#10074;&#10074; Pause</button>
+      <button class="btn-reset" onclick="lcsReset()">Reset</button>
+      <span class="step-info" id="lcs-stepinfo">Step 0</span>
+    </div>
+  </div>
+
+<pre><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+<span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span>
+
+<span class="pp">#define</span> <span class="fn">MAX</span>(a,b) ((a)>(b)?(a):(b))
+
+<span class="type">int</span> <span class="fn">longestCommonSubsequence</span>(<span class="type">char</span>* s1, <span class="type">char</span>* s2) {
+    <span class="type">int</span> m = <span class="fn">strlen</span>(s1);
+    <span class="type">int</span> n = <span class="fn">strlen</span>(s2);
+    <span class="type">int</span> dp[m + <span class="num">1</span>][n + <span class="num">1</span>];  <span class="cm">// VLA</span>
+    <span class="fn">memset</span>(dp, <span class="num">0</span>, <span class="kw">sizeof</span>(dp));
+
+    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">1</span>; i &lt;= m; i++) {
+        <span class="kw">for</span> (<span class="type">int</span> j = <span class="num">1</span>; j &lt;= n; j++) {
+            <span class="kw">if</span> (s1[i-<span class="num">1</span>] == s2[j-<span class="num">1</span>])
+                dp[i][j] = dp[i-<span class="num">1</span>][j-<span class="num">1</span>] + <span class="num">1</span>;
+            <span class="kw">else</span>
+                dp[i][j] = <span class="fn">MAX</span>(dp[i-<span class="num">1</span>][j], dp[i][j-<span class="num">1</span>]);
+        }
+    }
+    <span class="kw">return</span> dp[m][n];
+}
+
+<span class="cm">/* Reconstruct the LCS string */</span>
+<span class="type">void</span> <span class="fn">printLCS</span>(<span class="type">char</span>* s1, <span class="type">char</span>* s2, <span class="type">int</span> m, <span class="type">int</span> n, <span class="type">int</span> dp[][n+<span class="num">1</span>]) {
+    <span class="type">char</span> lcs[m + n + <span class="num">1</span>];
+    <span class="type">int</span> idx = dp[m][n] - <span class="num">1</span>;
+    lcs[idx + <span class="num">1</span>] = <span class="str">'\0'</span>;
+
+    <span class="type">int</span> i = m, j = n;
+    <span class="kw">while</span> (i > <span class="num">0</span> &amp;&amp; j > <span class="num">0</span>) {
+        <span class="kw">if</span> (s1[i-<span class="num">1</span>] == s2[j-<span class="num">1</span>]) {
+            lcs[idx--] = s1[i-<span class="num">1</span>];
+            i--; j--;
+        } <span class="kw">else if</span> (dp[i-<span class="num">1</span>][j] > dp[i][j-<span class="num">1</span>]) {
+            i--;
+        } <span class="kw">else</span> {
+            j--;
+        }
+    }
+    <span class="fn">printf</span>(<span class="str">"LCS: %s\n"</span>, lcs);
+}
+<span class="lang-tag">C11</span></pre>
+
+  <div class="tip-box">
+    <strong>Summary — The DP Recipe:</strong> (1) Define the state — what does <code>dp[i][j]</code> represent? (2) Write the recurrence — how does the current state relate to smaller subproblems? (3) Identify the base cases. (4) Determine the iteration order. (5) Optimize space if possible (often from 2D to 1D).
+  </div>
+</div><!-- end module session 6 -->
+
+
+<!-- ==================== CLOSING ==================== -->
+<div class="module" style="border-radius:10px;margin-top:2rem">
+  <h2 style="border-color:var(--acc2)">Summary &amp; Next Steps</h2>
+  <p>Congratulations on completing this 6-hour intensive masterclass! Here is a recap of what we covered:</p>
+  <table style="width:100%;border-collapse:collapse;margin:1rem 0;font-size:.9rem">
+    <thead>
+      <tr style="background:var(--pri);color:#fff">
+        <th style="padding:8px;text-align:left">Session</th>
+        <th style="padding:8px;text-align:left">Topics</th>
+        <th style="padding:8px;text-align:left">Key Techniques</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background:#f9f9f9"><td style="padding:8px">1</td><td>Arrays, Hashing, Two Pointers</td><td>Hash maps, Kadane's DP, 3-way partition</td></tr>
+      <tr><td style="padding:8px">2</td><td>Linked Lists, Stacks</td><td>Pointer reversal, Floyd's cycle, stack matching</td></tr>
+      <tr style="background:#f9f9f9"><td style="padding:8px">3</td><td>Trees, Recursion</td><td>DFS traversals, BST properties, range validation</td></tr>
+      <tr><td style="padding:8px">4</td><td>Sorting, Searching</td><td>Merge sort, Quick sort, Binary search variants</td></tr>
+      <tr style="background:#f9f9f9"><td style="padding:8px">5</td><td>Graph Algorithms</td><td>BFS, DFS, Topological sort, Dijkstra</td></tr>
+      <tr><td style="padding:8px">6</td><td>Dynamic Programming</td><td>Memoization, tabulation, knapsack, LCS</td></tr>
+    </tbody>
+  </table>
+  <p><strong>Recommended Practice:</strong> Solve at least 3 variants of each problem type on platforms like LeetCode, Codeforces, or HackerRank. Focus on understanding the <em>pattern</em>, not memorizing solutions.</p>
+  <p><strong>Recommended Reading:</strong> "Introduction to Algorithms" (CLRS), "Competitive Programming" by Steven Halim, and "The Algorithm Design Manual" by Steven Skiena.</p>
+</div>
+
+</div><!-- end container -->
+
+<footer>
+  <p>&copy; 2026 Computer Science Problem Solving Series</p>
+  <p>Authored by <strong>Murat Balci</strong> &nbsp;|&nbsp; Designed for University Students</p>
+</footer>
+
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// ANIMATION ENGINE — Shared utilities
+// ═══════════════════════════════════════════════════════════════
+function parseArr(str){ return str.split(',').map(s=>s.trim()).filter(s=>s!=='').map(Number); }
+function parseStrArr(str){ return str.split(',').map(s=>s.trim()).filter(s=>s!==''); }
+
+// Generic snapshot-based animation controller
+class AnimController {
+  constructor(prefix){
+    this.prefix = prefix;
+    this.snapshots = [];  // array of {display, log} or custom render fn
+    this.idx = 0;
+    this.timer = null;
+    this.speed = 800;
+  }
+  get total(){ return this.snapshots.length; }
+  render(){
+    if(this.total===0) return;
+    const s = this.snapshots[this.idx];
+    if(s.renderFn) s.renderFn();
+    else {
+      const d=document.getElementById(this.prefix+'-display');
+      const l=document.getElementById(this.prefix+'-log');
+      if(d && s.display!==undefined) d.innerHTML=s.display;
+      if(l && s.log!==undefined) l.textContent=s.log;
+    }
+    const si=document.getElementById(this.prefix+'-stepinfo');
+    if(si) si.textContent=`Step ${this.idx} / ${this.total-1}`;
+  }
+  step(){
+    if(this.idx<this.total-1){this.idx++;this.render();}
+    else this.pause();
+  }
+  back(){
+    if(this.idx>0){this.idx--;this.render();}
+  }
+  play(){
+    this.pause();
+    this.timer=setInterval(()=>this.step(), this.speed);
+  }
+  pause(){
+    if(this.timer){clearInterval(this.timer);this.timer=null;}
+  }
+  reset(){
+    this.pause();
+    this.idx=0;
+    this.render();
+  }
+}
+
+// Helper: render array boxes with highlights
+function renderBoxes(arr, highlights, labels){
+  // highlights: {index: className}  labels: {index: {text,cls}}
+  let h='';
+  for(let i=0;i<arr.length;i++){
+    let cls='box';
+    if(highlights && highlights[i]) cls+=' '+highlights[i];
+    let lbl='';
+    if(labels){
+      let ll=[];
+      for(let k in labels){ if(labels[k].indices && labels[k].indices.includes(i)) ll.push(labels[k]); }
+      if(ll.length) lbl=ll.map(l=>`<span class="box-label ${l.cls||''}">${l.text}</span>`).join(' ');
+    }
+    h+=`<div class="${cls}" style="position:relative">${lbl}${arr[i]}</div>`;
+  }
+  return h;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 1. TWO SUM
+// ═══════════════════════════════════════════════════════════════
+let tsCtrl = new AnimController('twosum');
+
+function tsBuild(){
+  const arr = parseArr(document.getElementById('twosum-arr').value);
+  const target = parseInt(document.getElementById('twosum-target').value);
+  let snaps = [];
+  let map = {};
+  
+  snaps.push({
+    display: renderBoxes(arr,{}),
+    log: `Starting Two Sum. Target = ${target}. Hash map is empty.`
+  });
+  
+  let found = false;
+  for(let i=0;i<arr.length && !found;i++){
+    let comp = target - arr[i];
+    let hi = {};
+    hi[i] = 'hi-yellow';
+    
+    if(map.hasOwnProperty(comp)){
+      let j = map[comp];
+      hi[j] = 'hi-green';
+      hi[i] = 'hi-green';
+      snaps.push({
+        display: renderBoxes(arr, hi),
+        log: `i=${i}, nums[${i}]=${arr[i]}, complement=${comp}. FOUND in map at index ${j}! Answer: [${j}, ${i}]`
+      });
+      found = true;
+    } else {
+      let mapStr = Object.entries(map).map(([k,v])=>`${k}→idx${v}`).join(', ');
+      snaps.push({
+        display: renderBoxes(arr, hi),
+        log: `i=${i}, nums[${i}]=${arr[i]}, complement=${comp}. Not in map. Insert ${arr[i]}→${i}. Map: {${mapStr?mapStr+', ':''}${arr[i]}→${i}}`
+      });
+      map[arr[i]] = i;
+    }
+  }
+  
+  if(!found){
+    snaps.push({
+      display: renderBoxes(arr,{}),
+      log: `No two numbers sum to ${target}.`
+    });
+  }
+  
+  tsCtrl.snapshots = snaps;
+  tsCtrl.idx = 0;
+  tsCtrl.render();
+}
+
+function tsApply(){ tsBuild(); }
+function tsStep(){ tsCtrl.step(); }
+function tsBack(){ tsCtrl.back(); }
+function tsPlay(){ tsCtrl.play(); }
+function tsPause(){ tsCtrl.pause(); }
+function tsReset(){ tsCtrl.reset(); }
+
+// ═══════════════════════════════════════════════════════════════
+// 2. KADANE'S ALGORITHM
+// ═══════════════════════════════════════════════════════════════
+let kadCtrl = new AnimController('kadane');
+
+function kadBuild(){
+  const arr = parseArr(document.getElementById('kadane-arr').value);
+  let snaps = [];
+  if(arr.length===0) return;
+  
+  let curMax = arr[0], globMax = arr[0];
+  let curStart = 0, bestStart = 0, bestEnd = 0;
+  
+  snaps.push({
+    display: renderBoxes(arr, {0:'hi-yellow'}),
+    log: `Initialize: current_max = ${arr[0]}, global_max = ${arr[0]}`
+  });
+  
+  for(let i=1;i<arr.length;i++){
+    let extend = curMax + arr[i];
+    let restart = arr[i];
+    let hi = {};
+    
+    if(restart > extend){
+      curMax = restart;
+      curStart = i;
+    } else {
+      curMax = extend;
+    }
+    
+    if(curMax > globMax){
+      globMax = curMax;
+      bestStart = curStart;
+      bestEnd = i;
+    }
+    
+    // Highlight current subarray
+    for(let j=curStart;j<=i;j++) hi[j]='hi-yellow';
+    // Highlight best subarray
+    for(let j=bestStart;j<=bestEnd;j++){
+      if(hi[j]==='hi-yellow') hi[j]='hi-green';
+      else hi[j]='hi-green';
+    }
+    // Overlap: current and best
+    for(let j=curStart;j<=i;j++){
+      if(j>=bestStart && j<=bestEnd) hi[j]='hi-green';
+    }
+    hi[i] = (curStart===i) ? 'hi-orange' : 'hi-yellow';
+    
+    let decision = (restart > extend) ? 'RESTART' : 'EXTEND';
+    snaps.push({
+      display: renderBoxes(arr, hi),
+      log: `i=${i}, nums[${i}]=${arr[i]} | ${decision} → current_max=${curMax}, global_max=${globMax} | Best subarray: [${bestStart}..${bestEnd}]`
+    });
+  }
+  
+  let finalHi = {};
+  for(let j=bestStart;j<=bestEnd;j++) finalHi[j]='hi-green';
+  snaps.push({
+    display: renderBoxes(arr, finalHi),
+    log: `DONE! Maximum subarray sum = ${globMax}, subarray indices [${bestStart}..${bestEnd}]`
+  });
+  
+  kadCtrl.snapshots = snaps;
+  kadCtrl.idx = 0;
+  kadCtrl.render();
+}
+
+function kadApply(){ kadBuild(); }
+function kadStep(){ kadCtrl.step(); }
+function kadBack(){ kadCtrl.back(); }
+function kadPlay(){ kadCtrl.play(); }
+function kadPause(){ kadCtrl.pause(); }
+function kadReset(){ kadCtrl.reset(); }
+
+// ═══════════════════════════════════════════════════════════════
+// 3. DUTCH NATIONAL FLAG
+// ═══════════════════════════════════════════════════════════════
+let dnfCtrl = new AnimController('dnf');
+
+function dnfBuild(){
+  const orig = parseArr(document.getElementById('dnf-arr').value);
+  let snaps = [];
+  let arr = [...orig];
+  let lo=0, mid=0, hi=arr.length-1;
+  
+  const colorMap = {0:'hi-red', 1:'hi-yellow', 2:'hi-purple'};
+  
+  function snap(msg){
+    let h = {};
+    for(let i=0;i<arr.length;i++){
+      if(i<lo) h[i]='hi-red';
+      else if(i>hi) h[i]='hi-purple';
+      else if(i===mid) h[i]='hi-cyan';
+    }
+    let labels = {
+      lo:{text:'low',cls:'red',indices:[lo]},
+      mid:{text:'mid',cls:'blue',indices:[mid]},
+      hi:{text:'high',cls:'purple',indices:[hi]}
+    };
+    snaps.push({
+      display: renderBoxes([...arr], h, labels),
+      log: msg
+    });
+  }
+  
+  snap(`Initial: low=0, mid=0, high=${hi}. Array: [${arr}]`);
+  
+  while(mid<=hi){
+    if(arr[mid]===0){
+      [arr[lo],arr[mid]]=[arr[mid],arr[lo]];
+      snap(`nums[mid=${mid}]=0 → Swap nums[${lo}] and nums[${mid}], low++, mid++. Array: [${arr}]`);
+      lo++; mid++;
+    } else if(arr[mid]===1){
+      snap(`nums[mid=${mid}]=1 → Already in place, mid++. Array: [${arr}]`);
+      mid++;
+    } else {
+      [arr[mid],arr[hi]]=[arr[hi],arr[mid]];
+      snap(`nums[mid=${mid}]=2 → Swap nums[${mid}] and nums[${hi}], high--. Array: [${arr}]`);
+      hi--;
+    }
+  }
+  
+  let finalH = {};
+  for(let i=0;i<arr.length;i++){
+    if(arr[i]===0) finalH[i]='hi-red';
+    else if(arr[i]===1) finalH[i]='hi-yellow';
+    else finalH[i]='hi-purple';
+  }
+  snaps.push({
+    display: renderBoxes(arr, finalH),
+    log: `DONE! Sorted: [${arr}]`
+  });
+  
+  dnfCtrl.snapshots = snaps;
+  dnfCtrl.idx = 0;
+  dnfCtrl.render();
+}
+
+function dnfApply(){ dnfBuild(); }
+function dnfStep(){ dnfCtrl.step(); }
+function dnfBack(){ dnfCtrl.back(); }
+function dnfPlay(){ dnfCtrl.play(); }
+function dnfPause(){ dnfCtrl.pause(); }
+function dnfReset(){ dnfCtrl.reset(); }
+
+// ═══════════════════════════════════════════════════════════════
+// 4. REVERSE LINKED LIST
+// ═══════════════════════════════════════════════════════════════
+let revCtrl = new AnimController('revll');
+
+function renderLL(vals, highlights){
+  let h='<div class="ll-container">';
+  for(let i=0;i<vals.length;i++){
+    let cls='ll-box';
+    if(highlights && highlights[i]) cls+=' '+highlights[i];
+    h+=`<div class="ll-node"><div class="${cls}">${vals[i]}</div>`;
+    if(i<vals.length-1) h+=`<div class="ll-arrow">→</div>`;
+    h+=`</div>`;
+  }
+  h+=`<div class="ll-node"><div class="ll-arrow">→</div><div class="ll-box" style="background:#eee;border-style:dashed;font-size:.7rem">NULL</div></div>`;
+  h+='</div>';
+  return h;
+}
+
+function revBuild(){
+  const orig = parseArr(document.getElementById('revll-arr').value);
+  let snaps = [];
+  
+  // We'll track the state: reversed portion + remaining portion
+  let reversed = [];
+  let remaining = [...orig];
+  
+  snaps.push({
+    display: `<div style="margin-bottom:8px"><strong>Original:</strong></div>${renderLL(orig,{})}`,
+    log: `prev=NULL, curr=node(${orig[0]}). Ready to reverse.`
+  });
+  
+  for(let step=0;step<orig.length;step++){
+    let val = remaining.shift();
+    reversed.unshift(val);
+    
+    let revHi = {}; revHi[0]='hi-green';
+    let remHi = {}; if(remaining.length>0) remHi[0]='hi-yellow';
+    
+    let display = `<div style="margin-bottom:8px"><strong>Reversed portion:</strong></div>${renderLL(reversed, revHi)}`;
+    if(remaining.length>0){
+      display += `<div style="margin:8px 0"><strong>Remaining:</strong></div>${renderLL(remaining, remHi)}`;
+    }
+    
+    let currLabel = remaining.length>0 ? `node(${remaining[0]})` : 'NULL';
+    snaps.push({
+      display: display,
+      log: `Step ${step+1}: Reverse link of node(${val}). prev=node(${val}), curr=${currLabel}.`
+    });
+  }
+  
+  snaps.push({
+    display: `<div style="margin-bottom:8px"><strong>Fully Reversed:</strong></div>${renderLL(reversed, Object.fromEntries(reversed.map((_,i)=>[i,'hi-green'])))}`,
+    log: `DONE! List reversed: [${reversed.join(' → ')}]`
+  });
+  
+  revCtrl.snapshots = snaps;
+  revCtrl.idx = 0;
+  revCtrl.render();
+}
+
+function revApply(){ revBuild(); }
+function revStep(){ revCtrl.step(); }
+function revBack(){ revCtrl.back(); }
+function revPlay(){ revCtrl.play(); }
+function revPause(){ revCtrl.pause(); }
+function revReset(){ revCtrl.reset(); }
+
+// ═══════════════════════════════════════════════════════════════
+// 5. FLOYD'S CYCLE DETECTION
+// ═══════════════════════════════════════════════════════════════
+let floydCtrl = new AnimController('floyd');
+
+function floydBuild(){
+  const vals = parseArr(document.getElementById('floyd-arr').value);
+  const cycleIdx = parseInt(document.getElementById('floyd-cycle').value);
+  let snaps = [];
+  
+  // Simulate with cycle
+  let n = vals.length;
+  // Build next pointers: 0→1→2→...→(n-1)→cycleIdx
+  let next = [];
+  for(let i=0;i<n;i++) next[i]=(i+1<n)?i+1:cycleIdx;
+  
+  function renderFloyd(slow, fast, msg, done){
+    let h='<div class="ll-container">';
+    for(let i=0;i<n;i++){
+      let cls='ll-box';
+      if(i===slow && i===fast) cls+=' hi-purple';
+      else if(i===slow) cls+=' hi-green';
+      else if(i===fast) cls+=' hi-red';
+      if(done && i===slow) cls=' ll-box hi-purple';
+      let label='';
+      if(i===slow && i===fast) label='<span class="box-label purple" style="top:-18px">S+F</span>';
+      else {
+        if(i===slow) label='<span class="box-label green" style="top:-18px">slow</span>';
+        if(i===fast) label+='<span class="box-label red" style="top:-18px">fast</span>';
+      }
+      h+=`<div class="ll-node"><div class="${cls}" style="position:relative">${label}${vals[i]}</div>`;
+      if(i<n-1) h+=`<div class="ll-arrow">→</div>`;
+      h+=`</div>`;
+    }
+    h+=`<div class="ll-node"><div class="ll-arrow" style="color:var(--purple)">↩ idx ${cycleIdx}</div></div>`;
+    h+='</div>';
+    return h;
+  }
+  
+  let slow=0, fast=0;
+  snaps.push({
+    display: renderFloyd(slow, fast, '', false),
+    log: `Start: slow=0 (val=${vals[0]}), fast=0 (val=${vals[0]}). Cycle connects tail → index ${cycleIdx}.`
+  });
+  
+  let maxSteps = n * 3; // safety limit
+  let met = false;
+  for(let s=0;s<maxSteps && !met;s++){
+    slow = next[slow];
+    fast = next[next[fast]];
+    
+    if(slow===fast){
+      met = true;
+      snaps.push({
+        display: renderFloyd(slow, fast, '', true),
+        log: `Step ${s+1}: slow→idx ${slow} (val=${vals[slow]}), fast→idx ${fast} (val=${vals[fast]}). THEY MEET! Cycle detected!`
+      });
+    } else {
+      snaps.push({
+        display: renderFloyd(slow, fast, '', false),
+        log: `Step ${s+1}: slow→idx ${slow} (val=${vals[slow]}), fast→idx ${fast} (val=${vals[fast]}).`
+      });
+    }
+  }
+  
+  floydCtrl.snapshots = snaps;
+  floydCtrl.idx = 0;
+  floydCtrl.render();
+}
+
+function floydApply(){ floydBuild(); }
+function floydStep(){ floydCtrl.step(); }
+function floydBack(){ floydCtrl.back(); }
+function floydPlay(){ floydCtrl.play(); }
+function floydPause(){ floydCtrl.pause(); }
+function floydReset(){ floydCtrl.reset(); }
+
+// ═══════════════════════════════════════════════════════════════
+// 6. VALID PARENTHESES
+// ═══════════════════════════════════════════════════════════════
+let parCtrl = new AnimController('paren');
+
+function parBuild(){
+  const s = document.getElementById('paren-str').value;
+  let snaps = [];
+  let stack = [];
+  const match = {')':'(', ']':'[', '}':'{'};
+  const opens = new Set(['(','[','{']);
+  
+  function renderPar(charIdx, stk, charHi){
+    let h='<div style="display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-bottom:12px">';
+    for(let i=0;i<s.length;i++){
+      let cls='box';
+      if(i===charIdx) cls+=' '+(charHi||'hi-yellow');
+      else if(i<charIdx) cls+=' hi-green';
+      h+=`<div class="${cls}" style="width:36px;height:36px;line-height:36px;font-size:1.1rem">${s[i]}</div>`;
+    }
+    h+='</div>';
+    h+='<div style="display:flex;align-items:flex-end;justify-content:center;gap:4px;min-height:50px">';
+    h+='<span style="font-size:.8rem;color:#888;margin-right:4px">Stack:</span>';
+    if(stk.length===0) h+='<span style="color:#aaa;font-size:.85rem">(empty)</span>';
+    for(let i=0;i<stk.length;i++){
+      h+=`<div class="box hi-cyan" style="width:34px;height:34px;line-height:34px">${stk[i]}</div>`;
+    }
+    h+='</div>';
+    return h;
+  }
+  
+  snaps.push({
+    display: renderPar(-1, [], ''),
+    log: `String: "${s}". Stack is empty. Ready to process.`
+  });
+  
+  let valid = true;
+  for(let i=0;i<s.length && valid;i++){
+    let c = s[i];
+    if(opens.has(c)){
+      stack.push(c);
+      snaps.push({
+        display: renderPar(i, [...stack], 'hi-cyan'),
+        log: `i=${i}: '${c}' is opening bracket → PUSH onto stack. Stack: [${stack.join(', ')}]`
+      });
+    } else if(match[c]){
+      if(stack.length===0 || stack[stack.length-1]!==match[c]){
+        snaps.push({
+          display: renderPar(i, [...stack], 'hi-red'),
+          log: `i=${i}: '${c}' is closing bracket. Stack top='${stack.length?stack[stack.length-1]:'empty'}' ≠ '${match[c]}'. INVALID!`
+        });
+        valid = false;
+      } else {
+        stack.pop();
+        snaps.push({
+          display: renderPar(i, [...stack], 'hi-green'),
+          log: `i=${i}: '${c}' matches stack top '${match[c]}' → POP. Stack: [${stack.join(', ')||'empty'}]`
+        });
+      }
+    }
+  }
+  
+  if(valid){
+    if(stack.length===0){
+      snaps.push({
+        display: renderPar(s.length, [], 'hi-green'),
+        log: `DONE! Stack is empty → String is VALID!`
+      });
+    } else {
+      snaps.push({
+        display: renderPar(s.length, [...stack], 'hi-red'),
+        log: `DONE! Stack is NOT empty (${stack.join(',')}) → String is INVALID!`
+      });
+    }
+  }
+  
+  parCtrl.snapshots = snaps;
+  parCtrl.idx = 0;
+  parCtrl.render();
+}
+
+function parApply(){ parBuild(); }
+function parStep(){ parCtrl.step(); }
+function parBack(){ parCtrl.back(); }
+function parPlay(){ parCtrl.play(); }
+function parPause(){ parCtrl.pause(); }
+function parReset(){ parCtrl.reset(); }
+
+// ═══════════════════════════════════════════════════════════════
+// 7. BINARY TREE TRAVERSAL
+// ═══════════════════════════════════════════════════════════════
+let travCtrl = new AnimController('traverse');
+
+function buildTree(arr){
+  // arr is level-order, 'null' for missing
+  if(arr.length===0) return null;
+  let nodes = arr.map(v => v==='null'||v===null||isNaN(v) ? null : {val:v, left:null, right:null});
+  for(let i=0;i<nodes.length;i++){
+    if(nodes[i]){
+      let li=2*i+1, ri=2*i+2;
+      if(li<nodes.length) nodes[i].left=nodes[li];
+      if(ri<nodes.length) nodes[i].right=nodes[ri];
+    }
+  }
+  return nodes[0];
+}
+
+function getTreePositions(arr){
+  // Calculate x,y positions for level-order tree rendering
+  let positions = [];
+  let maxDepth = Math.floor(Math.log2(arr.length))+1;
+  let width = 440;
+  for(let i=0;i<arr.length;i++){
+    let depth = Math.floor(Math.log2(i+1));
+    let posInLevel = i - (Math.pow(2,depth)-1);
+    let nodesInLevel = Math.pow(2,depth);
+    let x = width * (posInLevel+0.5) / nodesInLevel;
+    let y = 30 + depth * 50;
+    positions.push({x:x+30, y, depth});
+  }
+  return positions;
+}
+
+function renderTree(arr, highlighted, visitedSet, currentIdx){
+  let pos = getTreePositions(arr);
+  let h = '<svg class="tree-svg" viewBox="0 0 500 '+(30+((Math.floor(Math.log2(arr.length))+1)*50)+20)+'" style="max-height:250px">';
+  
+  // Draw edges
+  for(let i=0;i<arr.length;i++){
+    if(arr[i]==='null'||arr[i]===null) continue;
+    let li=2*i+1, ri=2*i+2;
+    if(li<arr.length && arr[li]!=='null' && arr[li]!==null){
+      h+=`<line x1="${pos[i].x}" y1="${pos[i].y}" x2="${pos[li].x}" y2="${pos[li].y}" stroke="#bbb" stroke-width="2"/>`;
+    }
+    if(ri<arr.length && arr[ri]!=='null' && arr[ri]!==null){
+      h+=`<line x1="${pos[i].x}" y1="${pos[i].y}" x2="${pos[ri].x}" y2="${pos[ri].y}" stroke="#bbb" stroke-width="2"/>`;
+    }
+  }
+  
+  // Draw nodes
+  for(let i=0;i<arr.length;i++){
+    if(arr[i]==='null'||arr[i]===null) continue;
+    let fill='#fff', stroke='#2c3e50', textFill='#333';
+    if(currentIdx===i){ fill='#f1c40f'; stroke='#d4ac0d'; }
+    else if(highlighted && highlighted.has(i)){ fill='#2ecc71'; stroke='#1e8449'; textFill='#fff'; }
+    else if(visitedSet && visitedSet.has(i)){ fill='#d5f5e3'; stroke='#27ae60'; }
+    h+=`<circle cx="${pos[i].x}" cy="${pos[i].y}" r="18" fill="${fill}" stroke="${stroke}" stroke-width="2"/>`;
+    h+=`<text x="${pos[i].x}" y="${pos[i].y+5}" text-anchor="middle" font-size="13" font-weight="bold" fill="${textFill}">${arr[i]}</text>`;
+  }
+  
+  h+='</svg>';
+  return h;
+}
+
+function travBuild(){
+  let arrStr = document.getElementById('traverse-arr').value;
+  let arr = arrStr.split(',').map(s=>s.trim());
+  let mode = document.getElementById('traverse-mode').value;
+  let snaps = [];
+  
+  // Generate traversal order
+  function getOrder(idx, mode, order){
+    if(idx>=arr.length || arr[idx]==='null') return;
+    let li=2*idx+1, ri=2*idx+2;
+    if(mode==='preorder') order.push(idx);
+    getOrder(li, mode, order);
+    if(mode==='inorder') order.push(idx);
+    getOrder(ri, mode, order);
+    if(mode==='postorder') order.push(idx);
+  }
+  
+  let order = [];
+  getOrder(0, mode, order);
+  
+  let visited = new Set();
+  let result = [];
+  
+  snaps.push({
+    display: renderTree(arr, new Set(), visited, -1),
+    log: `${mode.charAt(0).toUpperCase()+mode.slice(1)} traversal. Ready to begin.`
+  });
+  
+  for(let step=0;step<order.length;step++){
+    let idx = order[step];
+    result.push(arr[idx]);
+    visited.add(idx);
+    snaps.push({
+      display: renderTree(arr, new Set([idx]), visited, idx),
+      log: `Visit node ${arr[idx]} (index ${idx}). Output so far: [${result.join(', ')}]`
+    });
+  }
+  
+  snaps.push({
+    display: renderTree(arr, new Set(order), visited, -1),
+    log: `DONE! ${mode.charAt(0).toUpperCase()+mode.slice(1)} order: [${result.join(', ')}]`
+  });
+  
+  travCtrl.snapshots = snaps;
+  travCtrl.idx = 0;
+  travCtrl.render();
+}
+
+function travApply(){ travBuild(); }
+function travStep(){ travCtrl.step(); }
+function travBack(){ travCtrl.back(); }
+function travPlay(){ travCtrl.play(); }
+function travPause(){ travCtrl.pause(); }
+function travReset(){ travCtrl.reset(); }
+
+// ═══════════════════════════════════════════════════════════════
+// 8. LCA IN BST
+// ═══════════════════════════════════════════════════════════════
+let lcaCtrl = new AnimController('lca');
+
+function lcaBuild(){
+  let arrStr = document.getElementById('lca-arr').value;
+  let arr = arrStr.split(',').map(s=>s.trim());
+  let p = parseInt(document.getElementById('lca-p').value);
+  let q = parseInt(document.getElementById('lca-q').value);
+  let snaps = [];
+  
+  // Find index of value in level-order array
+  function findIdx(val){ return arr.findIndex(v=>parseInt(v)===val); }
+  
+  let pIdx = findIdx(p), qIdx = findIdx(q);
+  let visited = new Set();
+  let currIdx = 0;
+  
+  snaps.push({
+    display: renderTree(arr, new Set([pIdx, qIdx]), visited, -1),
+    log: `Find LCA of p=${p} and q=${q}. Start at root=${arr[0]}.`
+  });
+  
+  let found = false;
+  let safety = 0;
+  while(currIdx < arr.length && arr[currIdx]!=='null' && !found && safety<20){
+    safety++;
+    let val = parseInt(arr[currIdx]);
+    visited.add(currIdx);
+    
+    if(p < val && q < val){
+      snaps.push({
+        display: renderTree(arr, new Set([pIdx, qIdx, currIdx]), visited, currIdx),
+        log: `At node ${val}: both p=${p} and q=${q} < ${val} → go LEFT.`
+      });
+      currIdx = 2*currIdx+1;
+    } else if(p > val && q > val){
+      snaps.push({
+        display: renderTree(arr, new Set([pIdx, qIdx, currIdx]), visited, currIdx),
+        log: `At node ${val}: both p=${p} and q=${q} > ${val} → go RIGHT.`
+      });
+      currIdx = 2*currIdx+2;
+    } else {
+      found = true;
+      snaps.push({
+        display: renderTree(arr, new Set([pIdx, qIdx, currIdx]), visited, currIdx),
+        log: `At node ${val}: p=${p} and q=${q} split here (or one equals ${val}). LCA = ${val}!`
+      });
+    }
+  }
+  
+  lcaCtrl.snapshots = snaps;
+  lcaCtrl.idx = 0;
+  lcaCtrl.render();
+}
+
+function lcaApply(){ lcaBuild(); }
+function lcaStep(){ lcaCtrl.step(); }
+function lcaBack(){ lcaCtrl.back(); }
+function lcaPlay(){ lcaCtrl.play(); }
+function lcaPause(){ lcaCtrl.pause(); }
+function lcaReset(){ lcaCtrl.reset(); }
+
+// ═══════════════════════════════════════════════════════════════
+// 10. MERGE SORT
+// ═══════════════════════════════════════════════════════════════
+let msCtrl = new AnimController('merge');
+
+function msBuild(){
+  const orig = parseArr(document.getElementById('merge-arr').value);
+  let snaps = [];
+  let arr = [...orig];
+  
+  function snap(arr, hi, msg){
+    snaps.push({ display: renderBoxes([...arr], hi||{}), log: msg });
+  }
+  
+  function mergeSort(a, l, r){
+    if(l>=r) return;
+    let m = Math.floor((l+r)/2);
+    
+    let hi = {};
+    for(let i=l;i<=m;i++) hi[i]='hi-yellow';
+    for(let i=m+1;i<=r;i++) hi[i]='hi-purple';
+    snap(arr, hi, `Divide [${l}..${r}] at mid=${m}: left=[${l}..${m}], right=[${m+1}..${r}]`);
+    
+    mergeSort(a, l, m);
+    mergeSort(a, m+1, r);
+    
+    // Merge
+    let left = arr.slice(l, m+1);
+    let right = arr.slice(m+1, r+1);
+    let i=0, j=0, k=l;
+    
+    while(i<left.length && j<right.length){
+      if(left[i]<=right[j]){ arr[k]=left[i]; i++; }
+      else { arr[k]=right[j]; j++; }
+      k++;
+    }
+    while(i<left.length){ arr[k]=left[i]; i++; k++; }
+    while(j<right.length){ arr[k]=right[j]; j++; k++; }
+    
+    let mhi = {};
+    for(let x=l;x<=r;x++) mhi[x]='hi-green';
+    snap(arr, mhi, `Merge [${l}..${r}] → [${arr.slice(l,r+1).join(', ')}]`);
+  }
+  
+  snap(arr, {}, `Initial array: [${arr.join(', ')}]`);
+  mergeSort(arr, 0, arr.length-1);
+  
+  let finalHi = {};
+  for(let i=0;i<arr.length;i++) finalHi[i]='hi-green';
+  snap(arr, finalHi, `DONE! Sorted: [${arr.join(', ')}]`);
+  
+  msCtrl.snapshots = snaps;
+  msCtrl.idx = 0;
+  msCtrl.render();
+}
+
+function msApply(){ msBuild(); }
+function msStep(){ msCtrl.step(); }
+function msBack(){ msCtrl.back(); }
+function msPlay(){ msCtrl.play(); }
+function msPause(){ msCtrl.pause(); }
+function msReset(){ msCtrl.reset(); }
+
+// ═══════════════════════════════════════════════════════════════
+// 11. QUICK SORT
+// ═══════════════════════════════════════════════════════════════
+let qsCtrl = new AnimController('quick');
+
+function qsBuild(){
+  const orig = parseArr(document.getElementById('quick-arr').value);
+  let snaps = [];
+  let arr = [...orig];
+  
+  function snap(hi, msg){
+    snaps.push({ display: renderBoxes([...arr], hi||{}), log: msg });
+  }
+  
+  function partition(lo, hi_idx){
+    let pivot = arr[hi_idx];
+    let pHi = {}; pHi[hi_idx]='hi-orange';
+    snap(pHi, `Partition [${lo}..${hi_idx}], pivot=${pivot} (last element)`);
+    
+    let i = lo - 1;
+    for(let j=lo;j<hi_idx;j++){
+      let h = {}; h[hi_idx]='hi-orange'; h[j]='hi-yellow';
+      if(i>=lo) h[i]='hi-cyan';
+      
+      if(arr[j]<=pivot){
+        i++;
+        [arr[i],arr[j]]=[arr[j],arr[i]];
+        h = {}; h[hi_idx]='hi-orange'; h[i]='hi-green'; h[j]='hi-yellow';
+        snap(h, `arr[${j}]=${arr[j]}≤pivot=${pivot} → swap arr[${i}] and arr[${j}]`);
+      } else {
+        snap(h, `arr[${j}]=${arr[j]}>pivot=${pivot} → skip`);
+      }
+    }
+    
+    [arr[i+1],arr[hi_idx]]=[arr[hi_idx],arr[i+1]];
+    let fh = {}; fh[i+1]='hi-green';
+    snap(fh, `Place pivot ${pivot} at index ${i+1}. Array: [${arr.join(', ')}]`);
+    return i+1;
+  }
+  
+  function quickSort(lo, hi_idx){
+    if(lo<hi_idx){
+      let pi = partition(lo, hi_idx);
+      quickSort(lo, pi-1);
+      quickSort(pi+1, hi_idx);
+    }
+  }
+  
+  snap({}, `Initial array: [${arr.join(', ')}]`);
+  quickSort(0, arr.length-1);
+  
+  let finalHi = {};
+  for(let i=0;i<arr.length;i++) finalHi[i]='hi-green';
+  snap(finalHi, `DONE! Sorted: [${arr.join(', ')}]`);
+  
+  qsCtrl.snapshots = snaps;
+  qsCtrl.idx = 0;
+  qsCtrl.render();
+}
+
+function qsApply(){ qsBuild(); }
+function qsStep(){ qsCtrl.step(); }
+function qsBack(){ qsCtrl.back(); }
+function qsPlay(){ qsCtrl.play(); }
+function qsPause(){ qsCtrl.pause(); }
+function qsReset(){ qsCtrl.reset(); }
+
+// ═══════════════════════════════════════════════════════════════
+// 12. BINARY SEARCH
+// ═══════════════════════════════════════════════════════════════
+let bsCtrl = new AnimController('bsearch');
+
+function bsBuild(){
+  const arr = parseArr(document.getElementById('bsearch-arr').value);
+  const target = parseInt(document.getElementById('bsearch-target').value);
+  let snaps = [];
+  
+  let lo=0, hi=arr.length-1;
+  
+  function snap(lo,hi,mid,msg,found){
+    let h = {};
+    for(let i=0;i<arr.length;i++){
+      if(i<lo||i>hi) h[i]='dim';
+    }
+    if(mid>=0 && mid<arr.length){
+      h[mid] = found ? 'hi-green' : 'hi-yellow';
+    }
+    let labels = {};
+    if(lo<=hi){
+      labels.lo = {text:'lo',cls:'red',indices:[lo]};
+      labels.hi = {text:'hi',cls:'purple',indices:[hi]};
+    }
+    if(mid>=0) labels.mid = {text:'mid',cls:'blue',indices:[mid]};
+    snaps.push({ display: renderBoxes(arr, h, labels), log: msg });
+  }
+  
+  snap(lo,hi,-1,`Binary search for target=${target} in [${arr.join(', ')}]. lo=0, hi=${hi}.`, false);
+  
+  let found = false;
+  while(lo<=hi && !found){
+    let mid = Math.floor(lo+(hi-lo)/2);
+    if(arr[mid]===target){
+      snap(lo,hi,mid,`mid=${mid}, arr[${mid}]=${arr[mid]} == target=${target}. FOUND at index ${mid}!`, true);
+      found = true;
+    } else if(arr[mid]<target){
+      snap(lo,hi,mid,`mid=${mid}, arr[${mid}]=${arr[mid]} < target=${target} → search right half. lo=${mid+1}`, false);
+      lo = mid+1;
+    } else {
+      snap(lo,hi,mid,`mid=${mid}, arr[${mid}]=${arr[mid]} > target=${target} → search left half. hi=${mid-1}`, false);
+      hi = mid-1;
+    }
+  }
+  
+  if(!found){
+    snaps.push({ display: renderBoxes(arr,{}), log: `Target ${target} not found in array.` });
+  }
+  
+  bsCtrl.snapshots = snaps;
+  bsCtrl.idx = 0;
+  bsCtrl.render();
+}
+
+function bsApply(){ bsBuild(); }
+function bsStep(){ bsCtrl.step(); }
+function bsBack(){ bsCtrl.back(); }
+function bsPlay(){ bsCtrl.play(); }
+function bsPause(){ bsCtrl.pause(); }
+function bsReset(){ bsCtrl.reset(); }
+
+// ═══════════════════════════════════════════════════════════════
+// 13. BFS SHORTEST PATH (Canvas-based graph)
+// ═══════════════════════════════════════════════════════════════
+let bfsCtrl = new AnimController('bfs');
+
+function parseEdges(str){
+  return str.split(',').map(s=>s.trim()).filter(s=>s).map(e=>{
+    let parts = e.split('-');
+    return [parseInt(parts[0]), parseInt(parts[1])];
+  });
+}
+
+function getGraphLayout(nodeCount, width, height){
+  let pos = [];
+  let cx=width/2, cy=height/2, r=Math.min(width,height)*0.38;
+  for(let i=0;i<nodeCount;i++){
+    let angle = (2*Math.PI*i/nodeCount) - Math.PI/2;
+    pos.push({x: cx+r*Math.cos(angle), y: cy+r*Math.sin(angle)});
+  }
+  return pos;
+}
+
+function drawGraph(canvasId, edges, nodeCount, nodeColors, edgeColors, nodeLabels){
+  let canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  let ctx = canvas.getContext('2d');
+  let W=canvas.width, H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  
+  let pos = getGraphLayout(nodeCount, W, H);
+  
+  // Draw edges
+  for(let [u,v] of edges){
+    ctx.beginPath();
+    ctx.moveTo(pos[u].x, pos[u].y);
+    ctx.lineTo(pos[v].x, pos[v].y);
+    let eKey = u+'-'+v;
+    ctx.strokeStyle = (edgeColors && edgeColors[eKey]) || '#ccc';
+    ctx.lineWidth = (edgeColors && edgeColors[eKey]) ? 3 : 2;
+    ctx.stroke();
+  }
+  
+  // Draw nodes
+  for(let i=0;i<nodeCount;i++){
+    ctx.beginPath();
+    ctx.arc(pos[i].x, pos[i].y, 18, 0, 2*Math.PI);
+    ctx.fillStyle = (nodeColors && nodeColors[i]) || '#fff';
+    ctx.fill();
+    ctx.strokeStyle = '#2c3e50';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    
+    ctx.fillStyle = (nodeColors && nodeColors[i] && nodeColors[i]!=='#fff') ? '#fff' : '#333';
+    ctx.font = 'bold 13px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    let label = (nodeLabels && nodeLabels[i]!==undefined) ? nodeLabels[i] : i;
+    ctx.fillText(label, pos[i].x, pos[i].y);
+  }
+}
+
+function bfsBuild(){
+  let edgeStr = document.getElementById('bfs-edges').value;
+  let src = parseInt(document.getElementById('bfs-src').value);
+  let edges = parseEdges(edgeStr);
+  
+  // Find node count
+  let maxNode = 0;
+  for(let [u,v] of edges) maxNode = Math.max(maxNode, u, v);
+  let nodeCount = maxNode + 1;
+  
+  // Build adjacency list
+  let adj = Array.from({length:nodeCount},()=>[]);
+  for(let [u,v] of edges){ adj[u].push(v); adj[v].push(u); }
+  
+  let snaps = [];
+  let dist = Array(nodeCount).fill(-1);
+  let queue = [src];
+  dist[src] = 0;
+  
+  function snap(nc, ec, msg){
+    snaps.push({
+      renderFn: ()=>{
+        let nl = {};
+        for(let i=0;i<nodeCount;i++) nl[i] = dist[i]>=0 ? `${i}(d=${dist[i]})` : i;
+        drawGraph('bfs-canvas', edges, nodeCount, {...nc}, {...ec}, nl);
+        document.getElementById('bfs-log').textContent = msg;
+      },
+      log: msg
+    });
+  }
+  
+  let nc = {}; nc[src]='#3498db';
+  snap(nc, {}, `Start BFS from node ${src}. dist[${src}]=0.`);
+  
+  while(queue.length>0){
+    let u = queue.shift();
+    let nc2 = {};
+    for(let i=0;i<nodeCount;i++) if(dist[i]>=0) nc2[i]='#d5f5e3';
+    nc2[u] = '#f1c40f';
+    snap(nc2, {}, `Dequeue node ${u} (dist=${dist[u]}). Exploring neighbors...`);
+    
+    for(let v of adj[u]){
+      if(dist[v]===-1){
+        dist[v] = dist[u]+1;
+        queue.push(v);
+        let nc3 = {};
+        for(let i=0;i<nodeCount;i++) if(dist[i]>=0) nc3[i]='#d5f5e3';
+        nc3[u]='#f1c40f';
+        nc3[v]='#2ecc71';
+        let ec = {}; ec[u+'-'+v]='#2ecc71'; ec[v+'-'+u]='#2ecc71';
+        snap(nc3, ec, `  Discover node ${v} via ${u}. dist[${v}]=${dist[v]}.`);
+      }
+    }
+  }
+  
+  let ncFinal = {};
+  for(let i=0;i<nodeCount;i++) ncFinal[i] = dist[i]>=0 ? '#2ecc71' : '#e74c3c';
+  snap(ncFinal, {}, `BFS complete! Distances: ${dist.map((d,i)=>`${i}:${d}`).join(', ')}`);
+  
+  bfsCtrl.snapshots = snaps;
+  bfsCtrl.idx = 0;
+  bfsCtrl.render();
+}
+
+function bfsApply(){ bfsBuild(); }
+function bfsStep(){ bfsCtrl.step(); }
+function bfsBack(){ bfsCtrl.back(); }
+function bfsPlay(){ bfsCtrl.play(); }
+function bfsPause(){ bfsCtrl.pause(); }
+function bfsReset(){ bfsCtrl.reset(); }
+
+// ═══════════════════════════════════════════════════════════════
+// 14. TOPOLOGICAL SORT
+// ═══════════════════════════════════════════════════════════════
+let topoCtrl = new AnimController('topo');
+
+function parseDirectedEdges(str){
+  return str.split(',').map(s=>s.trim()).filter(s=>s).map(e=>{
+    let parts = e.split(/[→>]/);
+    return [parseInt(parts[0]), parseInt(parts[1])];
+  });
+}
+
+function drawDirectedGraph(canvasId, edges, nodeCount, nodeColors, nodeLabels){
+  let canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  let ctx = canvas.getContext('2d');
+  let W=canvas.width, H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  let pos = getGraphLayout(nodeCount, W, H);
+  
+  // Draw directed edges with arrows
+  for(let [u,v] of edges){
+    let dx=pos[v].x-pos[u].x, dy=pos[v].y-pos[u].y;
+    let len=Math.sqrt(dx*dx+dy*dy);
+    let ux=dx/len, uy=dy/len;
+    let sx=pos[u].x+18*ux, sy=pos[u].y+18*uy;
+    let ex=pos[v].x-18*ux, ey=pos[v].y-18*uy;
+    
+    ctx.beginPath();
+    ctx.moveTo(sx,sy);
+    ctx.lineTo(ex,ey);
+    ctx.strokeStyle='#999';
+    ctx.lineWidth=2;
+    ctx.stroke();
+    
+    // Arrowhead
+    let aLen=10, aAng=Math.PI/6;
+    let angle=Math.atan2(ey-sy,ex-sx);
+    ctx.beginPath();
+    ctx.moveTo(ex,ey);
+    ctx.lineTo(ex-aLen*Math.cos(angle-aAng), ey-aLen*Math.sin(angle-aAng));
+    ctx.lineTo(ex-aLen*Math.cos(angle+aAng), ey-aLen*Math.sin(angle+aAng));
+    ctx.closePath();
+    ctx.fillStyle='#999';
+    ctx.fill();
+  }
+  
+  // Draw nodes
+  for(let i=0;i<nodeCount;i++){
+    ctx.beginPath();
+    ctx.arc(pos[i].x, pos[i].y, 18, 0, 2*Math.PI);
+    ctx.fillStyle = (nodeColors && nodeColors[i]) || '#fff';
+    ctx.fill();
+    ctx.strokeStyle='#2c3e50';
+    ctx.lineWidth=2;
+    ctx.stroke();
+    ctx.fillStyle = (nodeColors && nodeColors[i] && nodeColors[i]!=='#fff') ? '#fff' : '#333';
+    ctx.font='bold 13px sans-serif';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText(nodeLabels?nodeLabels[i]:i, pos[i].x, pos[i].y);
+  }
+}
+
+function topoBuild(){
+  let edgeStr = document.getElementById('topo-edges').value;
+  let edges = parseDirectedEdges(edgeStr);
+  let maxNode = 0;
+  for(let [u,v] of edges) maxNode = Math.max(maxNode, u, v);
+  let nodeCount = maxNode + 1;
+  
+  let adj = Array.from({length:nodeCount},()=>[]);
+  for(let [u,v] of edges) adj[u].push(v);
+  
+  let snaps = [];
+  let visited = Array(nodeCount).fill(false);
+  let stack = [];
+  let nc = {};
+  
+  function snap(nc2, msg){
+    let ncCopy = {...nc2};
+    let stackCopy = [...stack];
+    snaps.push({
+      renderFn: ()=>{
+        drawDirectedGraph('topo-canvas', edges, nodeCount, ncCopy);
+        document.getElementById('topo-log').textContent = msg + ` | Stack: [${stackCopy.join(', ')}]`;
+      },
+      log: msg
+    });
+  }
+  
+  snap({}, `Topological Sort via DFS. ${nodeCount} nodes, ${edges.length} edges.`);
+  
+  function dfs(u){
+    visited[u] = true;
+    nc[u] = '#f1c40f';
+    snap(nc, `DFS: Visiting node ${u}...`);
+    
+    for(let v of adj[u]){
+      if(!visited[v]) dfs(v);
+    }
+    
+    stack.push(u);
+    nc[u] = '#2ecc71';
+    snap(nc, `DFS: Node ${u} finished → push to stack.`);
+  }
+  
+  for(let i=nodeCount-1;i>=0;i--){
+    if(!visited[i]) dfs(i);
+  }
+  
+  let order = [...stack].reverse();
+  let ncFinal = {};
+  for(let i=0;i<nodeCount;i++) ncFinal[i]='#2ecc71';
+  let orderCopy = [...order];
+  snaps.push({
+    renderFn: ()=>{
+      drawDirectedGraph('topo-canvas', edges, nodeCount, ncFinal);
+      document.getElementById('topo-log').textContent = `DONE! Topological order: [${orderCopy.join(' → ')}]`;
+    },
+    log: `DONE! Topological order: [${orderCopy.join(' → ')}]`
+  });
+  
+  topoCtrl.snapshots = snaps;
+  topoCtrl.idx = 0;
+  topoCtrl.render();
+}
+
+function topoApply(){ topoBuild(); }
+function topoStep(){ topoCtrl.step(); }
+function topoBack(){ topoCtrl.back(); }
+function topoPlay(){ topoCtrl.play(); }
+function topoPause(){ topoCtrl.pause(); }
+function topoReset(){ topoCtrl.reset(); }
+
+// ═══════════════════════════════════════════════════════════════
+// 15. DIJKSTRA'S ALGORITHM
+// ═══════════════════════════════════════════════════════════════
+let dijCtrl = new AnimController('dijkstra');
+
+function parseWeightedEdges(str){
+  return str.split(',').map(s=>s.trim()).filter(s=>s).map(e=>{
+    let [nodes, w] = e.split(':');
+    let [u,v] = nodes.split('-').map(Number);
+    return [u, v, parseInt(w)];
+  });
+}
+
+function drawWeightedGraph(canvasId, edges, nodeCount, nodeColors, nodeLabels, highlightEdges){
+  let canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  let ctx = canvas.getContext('2d');
+  let W=canvas.width, H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  let pos = getGraphLayout(nodeCount, W, H);
+  
+  for(let [u,v,w] of edges){
+    let eKey = Math.min(u,v)+'-'+Math.max(u,v);
+    let isHi = highlightEdges && highlightEdges.has(eKey);
+    ctx.beginPath();
+    ctx.moveTo(pos[u].x, pos[u].y);
+    ctx.lineTo(pos[v].x, pos[v].y);
+    ctx.strokeStyle = isHi ? '#2ecc71' : '#ccc';
+    ctx.lineWidth = isHi ? 3 : 2;
+    ctx.stroke();
+    // Weight label
+    let mx=(pos[u].x+pos[v].x)/2, my=(pos[u].y+pos[v].y)/2;
+    ctx.fillStyle='#e74c3c';
+    ctx.font='bold 11px sans-serif';
+    ctx.textAlign='center';
+    ctx.fillText(w, mx+8, my-8);
+  }
+  
+  for(let i=0;i<nodeCount;i++){
+    ctx.beginPath();
+    ctx.arc(pos[i].x, pos[i].y, 18, 0, 2*Math.PI);
+    ctx.fillStyle = (nodeColors && nodeColors[i]) || '#fff';
+    ctx.fill();
+    ctx.strokeStyle='#2c3e50';
+    ctx.lineWidth=2;
+    ctx.stroke();
+    ctx.fillStyle = (nodeColors && nodeColors[i] && nodeColors[i]!=='#fff') ? '#fff' : '#333';
+    ctx.font='bold 11px sans-serif';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    let label = nodeLabels ? nodeLabels[i] : i;
+    ctx.fillText(label, pos[i].x, pos[i].y);
+  }
+}
+
+function dijBuild(){
+  let edgeStr = document.getElementById('dijkstra-edges').value;
+  let src = parseInt(document.getElementById('dijkstra-src').value);
+  let edges = parseWeightedEdges(edgeStr);
+  
+  let maxNode = 0;
+  for(let [u,v] of edges) maxNode = Math.max(maxNode, u, v);
+  let nodeCount = maxNode + 1;
+  
+  let adj = Array.from({length:nodeCount},()=>[]);
+  for(let [u,v,w] of edges){ adj[u].push([v,w]); adj[v].push([u,w]); }
+  
+  let snaps = [];
+  let dist = Array(nodeCount).fill(Infinity);
+  let finalized = Array(nodeCount).fill(false);
+  let parent = Array(nodeCount).fill(-1);
+  dist[src] = 0;
+  
+  // Simple priority queue simulation
+  function snap(nc, hiEdges, msg){
+    let ncCopy = {...nc};
+    let nlCopy = {};
+    for(let i=0;i<nodeCount;i++) nlCopy[i] = `${i}(${dist[i]===Infinity?'∞':dist[i]})`;
+    let hiE = hiEdges ? new Set(hiEdges) : new Set();
+    snaps.push({
+      renderFn: ()=>{
+        drawWeightedGraph('dijkstra-canvas', edges, nodeCount, ncCopy, nlCopy, hiE);
+        document.getElementById('dijkstra-log').textContent = msg;
+      },
+      log: msg
+    });
+  }
+  
+  snap({[src]:'#3498db'}, [], `Start Dijkstra from node ${src}. dist[${src}]=0, all others=∞.`);
+  
+  for(let iter=0;iter<nodeCount;iter++){
+    // Find min dist unfinalized
+    let u=-1, minD=Infinity;
+    for(let i=0;i<nodeCount;i++){
+      if(!finalized[i] && dist[i]<minD){ minD=dist[i]; u=i; }
+    }
+    if(u===-1) break;
+    
+    finalized[u] = true;
+    let nc = {};
+    for(let i=0;i<nodeCount;i++){
+      if(finalized[i]) nc[i]='#2ecc71';
+      else if(dist[i]<Infinity) nc[i]='#f1c40f';
+    }
+    nc[u] = '#e67e22';
+    
+    let treeEdges = [];
+    for(let i=0;i<nodeCount;i++){
+      if(parent[i]>=0){
+        treeEdges.push(Math.min(i,parent[i])+'-'+Math.max(i,parent[i]));
+      }
+    }
+    
+    snap(nc, treeEdges, `Extract min: node ${u} with dist=${dist[u]}. Finalized.`);
+    
+    for(let [v,w] of adj[u]){
+      if(!finalized[v] && dist[u]+w < dist[v]){
+        dist[v] = dist[u]+w;
+        parent[v] = u;
+        let nc2 = {...nc};
+        nc2[v] = '#f1c40f';
+        let te2 = [...treeEdges, Math.min(u,v)+'-'+Math.max(u,v)];
+        snap(nc2, te2, `  Relax edge ${u}→${v}: dist[${v}] updated to ${dist[v]} (via ${u}).`);
+      }
+    }
+  }
+  
+  let ncFinal = {};
+  for(let i=0;i<nodeCount;i++) ncFinal[i]='#2ecc71';
+  let treeEdges = [];
+  for(let i=0;i<nodeCount;i++){
+    if(parent[i]>=0) treeEdges.push(Math.min(i,parent[i])+'-'+Math.max(i,parent[i]));
+  }
+  snap(ncFinal, treeEdges, `DONE! Shortest distances: ${dist.map((d,i)=>`${i}:${d}`).join(', ')}`);
+  
+  dijCtrl.snapshots = snaps;
+  dijCtrl.idx = 0;
+  dijCtrl.render();
+}
+
+function dijApply(){ dijBuild(); }
+function dijStep(){ dijCtrl.step(); }
+function dijBack(){ dijCtrl.back(); }
+function dijPlay(){ dijCtrl.play(); }
+function dijPause(){ dijCtrl.pause(); }
+function dijReset(){ dijCtrl.reset(); }
+
+// ═══════════════════════════════════════════════════════════════
+// 16. FIBONACCI
+// ═══════════════════════════════════════════════════════════════
+let fibCtrl = new AnimController('fib');
+
+function fibBuild(){
+  let n = parseInt(document.getElementById('fib-n').value);
+  let mode = document.getElementById('fib-mode').value;
+  let snaps = [];
+  
+  if(mode==='tabulation'){
+    let dp = Array(n+1).fill(null);
+    dp[0]=0;
+    if(n>=1) dp[1]=1;
+    
+    function snap(hi, msg){
+      let h='';
+      for(let i=0;i<=n;i++){
+        let cls='box';
+        if(hi && hi[i]) cls+=' '+hi[i];
+        h+=`<div class="${cls}" style="position:relative;width:50px"><span class="box-label blue" style="top:-18px">F(${i})</span>${dp[i]!==null?dp[i]:'?'}</div>`;
+      }
+      snaps.push({ display: h, log: msg });
+    }
+    
+    snap({0:'hi-green', 1:'hi-green'}, `Initialize: F(0)=0, F(1)=1.`);
+    
+    for(let i=2;i<=n;i++){
+      dp[i] = dp[i-1]+dp[i-2];
+      let hi = {};
+      hi[i-2]='hi-yellow'; hi[i-1]='hi-yellow'; hi[i]='hi-green';
+      snap(hi, `F(${i}) = F(${i-1}) + F(${i-2}) = ${dp[i-1]} + ${dp[i-2]} = ${dp[i]}`);
+    }
+    
+    let finalHi = {};
+    for(let i=0;i<=n;i++) finalHi[i]='hi-green';
+    finalHi[n]='hi-purple';
+    snap(finalHi, `DONE! F(${n}) = ${dp[n]}`);
+    
+  } else {
+    // Memoization — show call tree
+    let memo = {};
+    let calls = [];
+    
+    function fib(k){
+      if(k<=1){ memo[k]=k; calls.push({n:k, result:k, cached:false}); return k; }
+      if(memo[k]!==undefined){ calls.push({n:k, result:memo[k], cached:true}); return memo[k]; }
+      calls.push({n:k, result:null, cached:false});
+      let r = fib(k-1)+fib(k-2);
+      memo[k]=r;
+      calls.push({n:k, result:r, cached:false});
+      return r;
+    }
+    fib(n);
+    
+    let dp = Array(n+1).fill(null);
+    let callIdx = 0;
+    
+    snaps.push({
+      display: renderBoxes(Array(n+1).fill('?'), {}),
+      log: `Memoization: Starting fib(${n}). Memo table empty.`
+    });
+    
+    for(let c of calls){
+      if(c.result!==null) dp[c.n]=c.result;
+      let hi = {};
+      hi[c.n] = c.cached ? 'hi-cyan' : 'hi-green';
+      let h='';
+      for(let i=0;i<=n;i++){
+        let cls='box';
+        if(i===c.n) cls+=' '+(c.cached?'hi-cyan':'hi-green');
+        else if(dp[i]!==null) cls+=' hi-yellow';
+        h+=`<div class="${cls}" style="position:relative;width:50px"><span class="box-label blue" style="top:-18px">F(${i})</span>${dp[i]!==null?dp[i]:'?'}</div>`;
+      }
+      let action = c.cached ? `CACHE HIT: fib(${c.n})=${c.result}` : (c.result!==null ? `Computed: fib(${c.n})=${c.result}` : `Calling fib(${c.n})...`);
+      snaps.push({ display: h, log: action });
+    }
+  }
+  
+  fibCtrl.snapshots = snaps;
+  fibCtrl.idx = 0;
+  fibCtrl.render();
+}
+
+function fibApply(){ fibBuild(); }
+function fibStep(){ fibCtrl.step(); }
+function fibBack(){ fibCtrl.back(); }
+function fibPlay(){ fibCtrl.play(); }
+function fibPause(){ fibCtrl.pause(); }
+function fibReset(){ fibCtrl.reset(); }
+
+// ═══════════════════════════════════════════════════════════════
+// 17. 0/1 KNAPSACK
+// ═══════════════════════════════════════════════════════════════
+let knapCtrl = new AnimController('knapsack');
+
+function knapBuild(){
+  let weights = parseArr(document.getElementById('knap-w').value);
+  let values = parseArr(document.getElementById('knap-v').value);
+  let W = parseInt(document.getElementById('knap-cap').value);
+  let n = weights.length;
+  let snaps = [];
+  
+  let dp = Array.from({length:n+1},()=>Array(W+1).fill(0));
+  
+  function renderDP(hiCell, msg){
+    let h='<table class="dp-table"><tr><th></th>';
+    for(let w=0;w<=W;w++) h+=`<th>w=${w}</th>`;
+    h+='</tr>';
+    for(let i=0;i<=n;i++){
+      h+=`<tr><th>${i===0?'0 items':`Item ${i} (w=${weights[i-1]},v=${values[i-1]})`}</th>`;
+      for(let w=0;w<=W;w++){
+        let cls='';
+        if(hiCell && hiCell.i===i && hiCell.w===w) cls='hi-green';
+        else if(hiCell && hiCell.from && ((hiCell.from.i===i && hiCell.from.w===w)||(hiCell.from2 && hiCell.from2.i===i && hiCell.from2.w===w))) cls='hi-yellow';
+        h+=`<td class="${cls}">${dp[i][w]}</td>`;
+      }
+      h+='</tr>';
+    }
+    h+='</table>';
+    snaps.push({ display: h, log: msg });
+  }
+  
+  renderDP(null, `Initialize DP table. ${n} items, capacity=${W}. All zeros.`);
+  
+  for(let i=1;i<=n;i++){
+    for(let w=0;w<=W;w++){
+      if(weights[i-1]>w){
+        dp[i][w] = dp[i-1][w];
+        renderDP({i,w, from:{i:i-1,w}}, `Item ${i} (w=${weights[i-1]},v=${values[i-1]}), cap=${w}: Too heavy. dp[${i}][${w}]=${dp[i][w]}`);
+      } else {
+        let skip = dp[i-1][w];
+        let take = dp[i-1][w-weights[i-1]]+values[i-1];
+        dp[i][w] = Math.max(skip, take);
+        let decision = take>skip ? 'TAKE' : 'SKIP';
+        renderDP({i,w, from:{i:i-1,w}, from2:{i:i-1,w:w-weights[i-1]}}, 
+          `Item ${i}, cap=${w}: skip=${skip}, take=${take}. ${decision}! dp[${i}][${w}]=${dp[i][w]}`);
+      }
+    }
+  }
+  
+  renderDP({i:n,w:W}, `DONE! Maximum value = ${dp[n][W]}`);
+  
+  knapCtrl.snapshots = snaps;
+  knapCtrl.idx = 0;
+  knapCtrl.render();
+}
+
+function knapApply(){ knapBuild(); }
+function knapStep(){ knapCtrl.step(); }
+function knapBack(){ knapCtrl.back(); }
+function knapPlay(){ knapCtrl.play(); }
+function knapPause(){ knapCtrl.pause(); }
+function knapReset(){ knapCtrl.reset(); }
+
+// ═══════════════════════════════════════════════════════════════
+// 18. LONGEST COMMON SUBSEQUENCE
+// ═══════════════════════════════════════════════════════════════
+let lcsCtrl = new AnimController('lcs');
+
+function lcsBuild(){
+  let s1 = document.getElementById('lcs-s1').value;
+  let s2 = document.getElementById('lcs-s2').value;
+  let m = s1.length, n = s2.length;
+  let snaps = [];
+  
+  let dp = Array.from({length:m+1},()=>Array(n+1).fill(0));
+  
+  function renderLCS(hiCell, msg, backtrack){
+    let h='<table class="dp-table"><tr><th></th><th></th>';
+    for(let j=1;j<=n;j++) h+=`<th>${s2[j-1]}</th>`;
+    h+='</tr>';
+    for(let i=0;i<=m;i++){
+      h+=`<tr><th>${i===0?'':s1[i-1]}</th>`;
+      for(let j=0;j<=n;j++){
+        let cls='';
+        if(hiCell && hiCell.i===i && hiCell.j===j) cls='hi-green';
+        else if(hiCell && hiCell.from && hiCell.from.i===i && hiCell.from.j===j) cls='hi-yellow';
+        if(backtrack && backtrack.has(i+','+j)) cls='hi-purple';
+        h+=`<td class="${cls}">${dp[i][j]}</td>`;
+      }
+      h+='</tr>';
+    }
+    h+='</table>';
+    snaps.push({ display: h, log: msg });
+  }
+  
+  renderLCS(null, `LCS of "${s1}" and "${s2}". Initialize DP table.`);
+  
+  for(let i=1;i<=m;i++){
+    for(let j=1;j<=n;j++){
+      if(s1[i-1]===s2[j-1]){
+        dp[i][j] = dp[i-1][j-1]+1;
+        renderLCS({i,j, from:{i:i-1,j:j-1}}, `s1[${i-1}]='${s1[i-1]}' == s2[${j-1}]='${s2[j-1]}' → dp[${i}][${j}] = dp[${i-1}][${j-1}]+1 = ${dp[i][j]}`);
+      } else {
+        dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1]);
+        let dir = dp[i-1][j]>=dp[i][j-1] ? '↑' : '←';
+        renderLCS({i,j, from:{i: dp[i-1][j]>=dp[i][j-1]?i-1:i, j: dp[i-1][j]>=dp[i][j-1]?j:j-1}}, 
+          `s1[${i-1}]='${s1[i-1]}' ≠ s2[${j-1}]='${s2[j-1]}' → dp[${i}][${j}] = max(${dp[i-1][j]},${dp[i][j-1]}) = ${dp[i][j]} ${dir}`);
+      }
+    }
+  }
+  
+  // Backtrack to find LCS
+  let bt = new Set();
+  let lcs = '';
+  let i=m, j=n;
+  while(i>0 && j>0){
+    bt.add(i+','+j);
+    if(s1[i-1]===s2[j-1]){ lcs=s1[i-1]+lcs; i--; j--; }
+    else if(dp[i-1][j]>dp[i][j-1]) i--;
+    else j--;
+  }
+  bt.add(i+','+j);
+  
+  renderLCS(null, `DONE! LCS length = ${dp[m][n]}, LCS = "${lcs}"`, bt);
+  
+  lcsCtrl.snapshots = snaps;
+  lcsCtrl.idx = 0;
+  lcsCtrl.render();
+}
+
+function lcsApply(){ lcsBuild(); }
+function lcsStep(){ lcsCtrl.step(); }
+function lcsBack(){ lcsCtrl.back(); }
+function lcsPlay(){ lcsCtrl.play(); }
+function lcsPause(){ lcsCtrl.pause(); }
+function lcsReset(){ lcsCtrl.reset(); }
+
+// ═══════════════════════════════════════════════════════════════
+// INITIALIZE ALL ANIMATIONS ON LOAD
+// ═══════════════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', function(){
+  tsBuild();
+  kadBuild();
+  dnfBuild();
+  revBuild();
+  floydBuild();
+  parBuild();
+  travBuild();
+  lcaBuild();
+  msBuild();
+  qsBuild();
+  bsBuild();
+  bfsBuild();
+  topoBuild();
+  dijBuild();
+  fibBuild();
+  knapBuild();
+  lcsBuild();
+});
+</script>
+
+</body>
+</html>

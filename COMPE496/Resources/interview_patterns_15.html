@@ -1,0 +1,2531 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Programming Interview Patterns — Interactive Study Guide (incl. 15 LeetCode Patterns)</title>
+<style>
+  :root {
+    --bg: #0f1220;
+    --panel: #161a2e;
+    --panel-2: #1c2140;
+    --ink: #e8ecf8;
+    --muted: #9aa3c4;
+    --accent: #6ea8ff;
+    --accent-2: #7cf0c1;
+    --warn: #ffb86b;
+    --bad: #ff6b8a;
+    --good: #7cf0c1;
+    --border: #2a3060;
+    --code-bg: #0a0d1a;
+    --hl: #ffe066;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f6f8ff;
+      --panel: #ffffff;
+      --panel-2: #f0f3ff;
+      --ink: #14172b;
+      --muted: #5b6485;
+      --accent: #2f5cff;
+      --accent-2: #16a87c;
+      --warn: #c66a00;
+      --bad: #c5314f;
+      --good: #1f8e6a;
+      --border: #d6dcf2;
+      --code-bg: #eef1fb;
+      --hl: #fff3a3;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { background: var(--bg); color: var(--ink); margin: 0; padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.55;
+  }
+  header.top {
+    position: sticky; top: 0; z-index: 50;
+    background: linear-gradient(180deg, var(--panel) 0%, rgba(22,26,46,0.92) 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 22px; backdrop-filter: blur(8px);
+  }
+  header.top h1 { margin: 0 0 4px 0; font-size: 1.25rem; letter-spacing: 0.2px; }
+  header.top p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+  .layout { display: grid; grid-template-columns: 280px 1fr; gap: 0; }
+  @media (max-width: 980px) { .layout { grid-template-columns: 1fr; } nav.side { position: static !important; height: auto !important; max-height: none !important; } }
+  nav.side {
+    position: sticky; top: 70px; align-self: start;
+    height: calc(100vh - 70px); overflow-y: auto;
+    border-right: 1px solid var(--border); background: var(--panel);
+    padding: 14px 12px;
+  }
+  nav.side h3 { margin: 8px 6px 6px 6px; font-size: 0.85rem; text-transform: uppercase; color: var(--muted); letter-spacing: 1px; }
+  nav.side a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--ink); text-decoration: none; font-size: 0.92rem; }
+  nav.side a:hover { background: var(--panel-2); }
+  main { padding: 18px 26px 60px 26px; max-width: 1200px; }
+  section.group {
+    margin: 28px 0 12px; padding: 14px 16px; border: 1px solid var(--border);
+    background: var(--panel); border-radius: 12px;
+  }
+  section.group > h2 { margin: 0 0 4px 0; font-size: 1.25rem; }
+  section.group > .group-desc { color: var(--muted); margin-bottom: 8px; }
+  details.problem {
+    margin: 14px 0; border: 1px solid var(--border); border-radius: 10px;
+    background: var(--panel-2); overflow: hidden;
+  }
+  details.problem > summary {
+    cursor: pointer; padding: 12px 14px; list-style: none;
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 600;
+  }
+  details.problem > summary::-webkit-details-marker { display: none; }
+  details.problem > summary::before {
+    content: "▸"; color: var(--muted); transition: transform 0.15s ease;
+  }
+  details.problem[open] > summary::before { transform: rotate(90deg); display: inline-block; }
+  details.problem .pill {
+    margin-left: auto; font-size: 0.75rem; color: var(--muted);
+    border: 1px solid var(--border); padding: 2px 8px; border-radius: 999px;
+  }
+  details.problem .body { padding: 0 16px 16px 16px; }
+  details.problem h4 { margin: 12px 0 4px; font-size: 0.95rem; color: var(--accent); }
+  details.problem p, details.problem ul { margin: 4px 0 8px; }
+  details.problem ul { padding-left: 20px; }
+  .complexity { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--accent-2); }
+  .viz {
+    margin-top: 12px; border: 1px dashed var(--border); border-radius: 10px;
+    background: var(--bg); padding: 12px;
+  }
+  .viz-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
+  .viz-controls input[type=text], .viz-controls input[type=number] {
+    background: var(--code-bg); color: var(--ink); border: 1px solid var(--border);
+    border-radius: 6px; padding: 6px 8px; font-family: ui-monospace, monospace; font-size: 0.9rem;
+    min-width: 140px;
+  }
+  .viz-controls label { font-size: 0.85rem; color: var(--muted); }
+  .viz button {
+    background: var(--panel-2); color: var(--ink); border: 1px solid var(--border);
+    border-radius: 6px; padding: 6px 10px; cursor: pointer; font-size: 0.9rem;
+  }
+  .viz button:hover { border-color: var(--accent); }
+  .viz button.primary { background: var(--accent); color: #0b1024; border-color: var(--accent); font-weight: 600; }
+  .viz button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .stage { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; min-height: 80px; padding: 8px 4px; }
+  .cell {
+    min-width: 36px; height: 44px; border: 1px solid var(--border);
+    background: var(--panel); border-radius: 6px; display: flex; align-items: center; justify-content: center;
+    font-family: ui-monospace, monospace; font-size: 0.95rem;
+    position: relative; transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+  }
+  .cell .idx { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--muted); }
+  .cell.left { border-color: var(--accent); box-shadow: inset 0 0 0 2px var(--accent); }
+  .cell.right { border-color: var(--accent-2); box-shadow: inset 0 0 0 2px var(--accent-2); }
+  .cell.mid { border-color: var(--warn); box-shadow: inset 0 0 0 2px var(--warn); }
+  .cell.curr { border-color: var(--warn); box-shadow: inset 0 0 0 2px var(--warn); }
+  .cell.match { background: var(--good); color: #0b1024; }
+  .cell.bad { background: var(--bad); color: #0b1024; }
+  .cell.dim { opacity: 0.35; }
+  .cell.in-window { background: rgba(110,168,255,0.18); border-color: var(--accent); }
+  .cell.peek { background: var(--hl); color: #0b1024; }
+  .log {
+    margin-top: 10px; background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 6px; padding: 8px 10px; font-family: ui-monospace, monospace;
+    font-size: 0.85rem; min-height: 56px; white-space: pre-wrap; color: var(--ink);
+  }
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 0.8rem; color: var(--muted); margin-top: 6px; }
+  .legend .swatch { display: inline-block; width: 12px; height: 12px; vertical-align: middle; margin-right: 4px; border-radius: 3px; border: 1px solid var(--border); }
+  .grid { display: grid; gap: 4px; padding: 6px; background: var(--panel); border-radius: 8px; width: max-content; }
+  .grid .cell { width: 36px; min-width: 36px; height: 36px; }
+  .tree {
+    position: relative; min-height: 220px; padding: 10px;
+    background: var(--panel); border-radius: 8px;
+  }
+  .tree svg { width: 100%; height: 220px; }
+  .tree .node circle { fill: var(--panel-2); stroke: var(--border); stroke-width: 1.5; transition: fill 0.18s; }
+  .tree .node text { fill: var(--ink); font-family: ui-monospace, monospace; font-size: 12px; text-anchor: middle; dominant-baseline: middle; }
+  .tree .node.visited circle { fill: rgba(110,168,255,0.35); stroke: var(--accent); }
+  .tree .node.curr circle { fill: var(--warn); stroke: var(--warn); }
+  .tree .node.match circle { fill: var(--good); stroke: var(--good); }
+  .tree line { stroke: var(--border); stroke-width: 1.5; }
+  .ll-stage { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 6px; }
+  .ll-node {
+    border: 1px solid var(--border); background: var(--panel);
+    border-radius: 6px; padding: 6px 10px; font-family: ui-monospace, monospace;
+    transition: background 0.18s, border-color 0.18s, transform 0.18s;
+  }
+  .ll-arrow { color: var(--muted); font-family: ui-monospace, monospace; }
+  .ll-node.slow { border-color: var(--accent); box-shadow: inset 0 0 0 2px var(--accent); }
+  .ll-node.fast { border-color: var(--accent-2); box-shadow: inset 0 0 0 2px var(--accent-2); }
+  .ll-node.curr { border-color: var(--warn); box-shadow: inset 0 0 0 2px var(--warn); }
+  .ll-node.prev { background: rgba(110,168,255,0.2); }
+  .ll-node.match { background: var(--good); color: #0b1024; }
+  .ll-node.dim { opacity: 0.4; }
+  .stack-stage, .heap-stage { display: flex; flex-direction: column-reverse; gap: 4px; padding: 6px; min-height: 80px; background: var(--panel); border-radius: 8px; width: max-content; }
+  .stack-stage .cell, .heap-stage .cell { min-width: 56px; }
+  .map-stage { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 6px; padding: 6px; background: var(--panel); border-radius: 8px; }
+  .map-cell { background: var(--code-bg); border: 1px solid var(--border); padding: 4px 8px; font-family: ui-monospace, monospace; font-size: 0.85rem; border-radius: 4px; }
+  .map-cell.flash { background: var(--hl); color: #0b1024; }
+  .interval-stage { padding: 12px 6px; background: var(--panel); border-radius: 8px; min-height: 80px; }
+  .interval-bar { height: 18px; border-radius: 3px; margin-bottom: 4px; position: relative; }
+  .interval-label { font-family: ui-monospace, monospace; font-size: 0.78rem; color: var(--muted); margin-left: 6px; }
+  .row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+  .dp-table { border-collapse: collapse; font-family: ui-monospace, monospace; font-size: 0.85rem; }
+  .dp-table td, .dp-table th { border: 1px solid var(--border); padding: 4px 8px; min-width: 36px; text-align: center; }
+  .dp-table td.curr { background: var(--warn); color: #0b1024; }
+  .dp-table td.read { background: rgba(110,168,255,0.25); }
+  .dp-table td.set { background: var(--good); color: #0b1024; }
+  .pattern-cheat {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 10px; margin-top: 10px;
+  }
+  .pattern-cheat .card {
+    background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .pattern-cheat .card h4 { margin: 0 0 4px 0; color: var(--accent); }
+  .pattern-cheat .card p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+  .toc-section { font-size: 0.78rem; color: var(--muted); margin: 10px 6px 4px; text-transform: uppercase; letter-spacing: 1px; }
+  footer { padding: 22px; color: var(--muted); font-size: 0.85rem; text-align: center; border-top: 1px solid var(--border); margin-top: 30px; }
+  .speed-input { width: 70px; }
+  .step-counter { font-family: ui-monospace, monospace; font-size: 0.85rem; color: var(--muted); }
+  .kbd { font-family: ui-monospace, monospace; background: var(--code-bg); border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; padding: 1px 6px; font-size: 0.8rem; }
+  .pitfalls { color: var(--bad); }
+  .tactics { color: var(--accent-2); }
+  /* 15 LeetCode patterns summary grid */
+  .fifteen-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 12px; margin-top: 8px; }
+  .fifteen-card { background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; }
+  .fifteen-card .num { display:inline-block; background: var(--accent); color: #0b1024; font-weight: 700; border-radius: 999px; padding: 2px 9px; font-size: 0.78rem; margin-right: 8px; }
+  .fifteen-card h3 { margin: 0; font-size: 1.05rem; display: flex; align-items: center; }
+  .fifteen-card .what { color: var(--ink); font-size: 0.92rem; margin: 0; }
+  .fifteen-card .when { color: var(--muted); font-size: 0.88rem; margin: 0; }
+  .fifteen-card .when b { color: var(--accent-2); }
+  .fifteen-card .tech { color: var(--ink); font-size: 0.88rem; background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .fifteen-card .ex { color: var(--muted); font-size: 0.85rem; }
+  .fifteen-card .ex b { color: var(--ink); }
+  .fifteen-card .links { font-size: 0.82rem; color: var(--muted); }
+  .fifteen-card .links a { color: var(--accent); text-decoration: none; }
+  .fifteen-card .links a:hover { text-decoration: underline; }
+  .fifteen-card .jump { font-size: 0.82rem; }
+  .fifteen-card .jump a { color: var(--warn); text-decoration: none; }
+  .fifteen-card .jump a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Programming Interview Patterns — Interactive Study Guide</h1>
+  <p>Includes the <a href="#fifteen" style="color:var(--accent)"><b>15 LeetCode Patterns Summary</b></a>, definitions, approaches, pitfalls, and step-by-step animations. Use <span class="kbd">Run</span>, <span class="kbd">Pause</span>, <span class="kbd">◀</span>, <span class="kbd">▶</span> to control each visualizer.</p>
+</header>
+
+<div class="layout">
+  <nav class="side" aria-label="Table of contents">
+    <div class="toc-section">Quick Reference</div>
+    <a href="#fifteen"><b>15 LeetCode Patterns — Summary</b></a>
+    <a href="#cheat">Pattern Recognition Cheat Sheet</a>
+    <div class="toc-section">Patterns (with visualizers)</div>
+    <a href="#g-hash">1. Hash Map Lookup</a>
+    <a href="#g-twoptr">2. Two Pointers</a>
+    <a href="#g-window">3. Sliding Window</a>
+    <a href="#g-bsearch">4. Binary Search</a>
+    <a href="#g-intervals">5. Intervals (Sort + Sweep / Heap)</a>
+    <a href="#g-stack">6. Stack &amp; Monotonic Stack</a>
+    <a href="#g-ll">7. Linked List</a>
+    <a href="#g-tree">8. Tree &amp; Graph Traversal</a>
+    <a href="#g-heap">9. Heap / Selection</a>
+    <a href="#g-backtrack">10. Backtracking</a>
+    <a href="#g-dp">11. Dynamic Programming</a>
+    <a href="#g-design">12. Design</a>
+    <a href="#tactics">Cross-Problem Tactics</a>
+  </nav>
+  <main>
+    <section class="group" id="fifteen">
+      <h2>15 LeetCode Patterns — Summary</h2>
+      <p class="group-desc">A condensed reference of the fifteen problem-solving patterns popularized by Ashish Pratap Singh's <a href="https://blog.algomaster.io/p/15-leetcode-patterns" style="color:var(--accent)">“LeetCode was HARD until I Learned these 15 Patterns”</a> For each pattern: <em>what it is</em>, <em>when to use it</em>, the <em>core technique</em>, and a small <em>example</em>. Many of these are demonstrated interactively in the sections below.</p>
+      <div class="fifteen-grid"></div>
+    </section>
+
+    <section class="group" id="cheat">
+      <h2>Pattern Recognition Cheat Sheet</h2>
+      <p class="group-desc">A mental decision tree for spotting the right technique from problem language alone.</p>
+      <div class="pattern-cheat">
+        <div class="card"><h4>Hash map</h4><p>Need fast lookup of seen values, frequencies, complements, or indices.</p></div>
+        <div class="card"><h4>Two pointers</h4><p>Sorted data, pair/triple search, in-place dedupe, partitioning, or window boundaries.</p></div>
+        <div class="card"><h4>Sliding window</h4><p>Contiguous subarray/substring with a running constraint.</p></div>
+        <div class="card"><h4>Sort + intervals</h4><p>Need to merge, detect overlap, or schedule resources.</p></div>
+        <div class="card"><h4>Stack / monotonic stack</h4><p>Matching, rollback, nearest greater/smaller, histogram geometry.</p></div>
+        <div class="card"><h4>Binary search</h4><p>Monotonic answer space or sorted structure.</p></div>
+        <div class="card"><h4>BFS / DFS</h4><p>Connectivity, layers, reachability, or recursive tree/graph structure.</p></div>
+        <div class="card"><h4>Heap</h4><p>Repeated access to min/max among a changing candidate set.</p></div>
+        <div class="card"><h4>Backtracking</h4><p>Enumerate valid choices with pruning.</p></div>
+        <div class="card"><h4>Dynamic programming</h4><p>Optimal answer built from overlapping subproblems.</p></div>
+      </div>
+    </section>
+
+    <!-- GROUPS WILL BE INSERTED HERE BY SCRIPT TEMPLATE OR INLINE BELOW -->
+    <div id="content-root"></div>
+
+    <section class="group" id="tactics">
+      <h2>Cross-Problem Tactics to Teach Explicitly</h2>
+      <ul>
+        <li><b>Always start with the brute force baseline.</b> It demonstrates understanding and creates a contrast with the optimized method.</li>
+        <li><b>Name the invariant.</b> e.g., "the window is valid", "the stack is monotonic decreasing", "dp[i] means the best answer ending at i".</li>
+        <li><b>Justify the data structure.</b> Queue for layers, stack for reversal/nearest greater, heap for rolling min/max among active candidates.</li>
+        <li><b>State how duplicates are handled.</b> Crucial in 3Sum, intervals, subsets/combinations, and hash-map grouping.</li>
+        <li><b>Define the recursive return value contract</b> before writing code (especially LCA, tree DP).</li>
+        <li><b>Group cases into phases</b> rather than branching on every micro-scenario (Insert Interval).</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<footer>
+  Self-contained study guide. All animations run locally in your browser — no network needed.
+</footer>
+
+<script>
+/* ===========================================================
+   STEP-RECORDER ENGINE
+   - Each visualizer registers an "algorithm" that produces
+     a list of immutable frames (steps) from a parsed input.
+   - The player renders frames forward & backward, supports
+     play/pause, step forward/back, speed control, and reset.
+   =========================================================== */
+(function(){
+  "use strict";
+
+  // --------------------- Player factory ---------------------
+  function createPlayer(opts) {
+    /*
+      opts = {
+        root: HTMLElement (the .viz container),
+        defaultInput: string,
+        inputLabel: string ("Input array (comma-separated)"),
+        secondInput: { label, default } | null  (optional 2nd input, e.g., target),
+        thirdInput: { label, default } | null,
+        parse: (s1, s2?, s3?) => parsedInput,    (throws on error)
+        run:   (parsedInput) => frames[]         (each frame: {desc, ...state})
+        render:(frame, root) => void             (renders state into stage)
+      }
+    */
+    var root = opts.root;
+    var stageHTML =
+      '<div class="viz-controls">' +
+        '<label>'+opts.inputLabel+': <input type="text" class="vinput" /></label>' +
+        (opts.secondInput ? '<label>'+opts.secondInput.label+': <input type="text" class="vinput2" /></label>' : '') +
+        (opts.thirdInput  ? '<label>'+opts.thirdInput.label+': <input type="text" class="vinput3" /></label>' : '') +
+        '<button class="primary brun">▶ Run</button>' +
+        '<button class="bpause" disabled>❚❚ Pause</button>' +
+        '<button class="bback" disabled>◀ Step</button>' +
+        '<button class="bfwd" disabled>Step ▶</button>' +
+        '<button class="breset">⟲ Reset</button>' +
+        '<label>Speed: <input type="number" class="speed-input bspeed" min="50" max="3000" step="50" value="700" /> ms</label>' +
+        '<span class="step-counter bcounter">step 0 / 0</span>' +
+      '</div>' +
+      '<div class="stage-host"></div>' +
+      '<div class="log blog">Edit the input and press Run.</div>';
+
+    root.innerHTML = stageHTML;
+    var $input  = root.querySelector('.vinput');
+    var $input2 = root.querySelector('.vinput2');
+    var $input3 = root.querySelector('.vinput3');
+    var $run    = root.querySelector('.brun');
+    var $pause  = root.querySelector('.bpause');
+    var $back   = root.querySelector('.bback');
+    var $fwd    = root.querySelector('.bfwd');
+    var $reset  = root.querySelector('.breset');
+    var $speed  = root.querySelector('.bspeed');
+    var $counter= root.querySelector('.bcounter');
+    var $stage  = root.querySelector('.stage-host');
+    var $log    = root.querySelector('.blog');
+
+    $input.value = opts.defaultInput || '';
+    if ($input2 && opts.secondInput) $input2.value = opts.secondInput.default || '';
+    if ($input3 && opts.thirdInput)  $input3.value = opts.thirdInput.default  || '';
+
+    var frames = [];
+    var idx = -1;
+    var timer = null;
+    var playing = false;
+
+    function setBtns() {
+      $pause.disabled = !playing;
+      $fwd.disabled  = !(frames.length>0) || idx >= frames.length-1;
+      $back.disabled = !(frames.length>0) || idx <= 0;
+    }
+    function updateCounter() {
+      $counter.textContent = 'step ' + (idx<0?0:idx+1) + ' / ' + frames.length;
+    }
+    function show(i) {
+      if (i<0 || i>=frames.length) return;
+      idx = i;
+      var f = frames[i];
+      opts.render(f, $stage);
+      $log.textContent = (f.desc || '');
+      updateCounter();
+      setBtns();
+    }
+    function stopTimer() {
+      if (timer) { clearTimeout(timer); timer=null; }
+      playing = false;
+      setBtns();
+    }
+    function play() {
+      if (frames.length === 0) return;
+      playing = true; setBtns();
+      var loop = function() {
+        if (!playing) return;
+        if (idx >= frames.length-1) { stopTimer(); return; }
+        show(idx+1);
+        var ms = parseInt($speed.value,10) || 700;
+        timer = setTimeout(loop, ms);
+      };
+      var ms0 = parseInt($speed.value,10) || 700;
+      timer = setTimeout(loop, ms0);
+    }
+    function build() {
+      stopTimer();
+      try {
+        var p = opts.parse(
+          $input.value,
+          $input2 ? $input2.value : null,
+          $input3 ? $input3.value : null
+        );
+        frames = opts.run(p) || [];
+        if (!Array.isArray(frames) || frames.length===0) {
+          frames = [{desc:"No frames produced.",}];
+        }
+        idx = -1;
+        show(0);
+      } catch (e) {
+        frames = [];
+        idx = -1;
+        $stage.innerHTML = '';
+        $log.textContent = 'Input error: ' + e.message;
+        updateCounter();
+        setBtns();
+      }
+    }
+    $run.addEventListener('click', function(){
+      if (frames.length===0 || idx<0) build();
+      // if at end, restart from beginning before playing
+      if (idx >= frames.length-1) show(0);
+      play();
+    });
+    $pause.addEventListener('click', stopTimer);
+    $fwd.addEventListener('click', function(){ stopTimer(); if (idx<frames.length-1) show(idx+1); });
+    $back.addEventListener('click', function(){ stopTimer(); if (idx>0) show(idx-1); });
+    $reset.addEventListener('click', function(){ stopTimer(); build(); });
+
+    // build initially so user can step before pressing Run
+    build();
+    setBtns();
+    return { rebuild: build };
+  }
+
+  // expose factory
+  window.__createPlayer = createPlayer;
+
+  // --------------------- Helpers ---------------------
+  function parseIntList(s) {
+    if (!s || !s.trim()) return [];
+    var out = s.split(/[\s,]+/).filter(function(x){return x.length;}).map(function(x){
+      var n = Number(x);
+      if (!Number.isFinite(n)) throw new Error('Invalid number: ' + x);
+      return n;
+    });
+    return out;
+  }
+  function parseString(s) {
+    if (s == null) return '';
+    return String(s);
+  }
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function el(tag, cls, txt) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (txt!==undefined && txt!==null) n.textContent = txt;
+    return n;
+  }
+  window.__viz = { parseIntList: parseIntList, parseString: parseString, clone: clone, el: el };
+})();
+</script>
+
+<!-- All algorithm definitions and registrations are loaded below -->
+<script id="algs"></script>
+
+<script>
+/* ===========================================================
+   CONTENT + ALGORITHMS
+   We define each problem with metadata + a renderer + algorithm.
+   Then we render the whole page from this data.
+   =========================================================== */
+(function(){
+  "use strict";
+  var H = window.__viz;
+  var createPlayer = window.__createPlayer;
+
+  // ---- Visualizer types -------------------------------------------------
+
+  // Generic array renderer using "marks" map: {idx: classlist}
+  function renderArray(frame, root, opts) {
+    opts = opts || {};
+    root.innerHTML = '';
+    var stage = H.el('div','stage');
+    var arr = frame.arr || [];
+    var marks = frame.marks || {};
+    arr.forEach(function(v,i){
+      var c = H.el('div','cell');
+      var idx = H.el('span','idx', String(i));
+      c.appendChild(idx);
+      c.appendChild(document.createTextNode(String(v)));
+      if (marks[i]) c.className += ' ' + marks[i];
+      stage.appendChild(c);
+    });
+    root.appendChild(stage);
+
+    // optional secondary panel: hash map / pointers / window
+    if (frame.map) {
+      var lab = H.el('div'); lab.style.color = 'var(--muted)'; lab.style.fontSize='0.85rem'; lab.textContent = 'Hash map (val → idx):';
+      root.appendChild(lab);
+      var m = H.el('div','map-stage');
+      Object.keys(frame.map).forEach(function(k){
+        var c = H.el('div','map-cell', k+' → '+frame.map[k]);
+        if (frame.mapFlash && String(frame.mapFlash) === String(k)) c.className += ' flash';
+        m.appendChild(c);
+      });
+      if (Object.keys(frame.map).length===0) m.appendChild(H.el('div','map-cell','(empty)'));
+      root.appendChild(m);
+    }
+    if (frame.legend) {
+      var lg = H.el('div','legend', frame.legend);
+      root.appendChild(lg);
+    }
+  }
+
+  // ----------------------- ALGORITHMS -----------------------
+
+  /* 1. Two Sum */
+  function algoTwoSum(arr, target) {
+    var frames = [];
+    var map = {};
+    frames.push({ arr: arr.slice(), marks:{}, map:{}, desc:'Initialize empty hash map. Target = '+target+'.' });
+    for (var i=0;i<arr.length;i++){
+      var need = target - arr[i];
+      var marks = {}; marks[i] = 'curr';
+      var snap = Object.assign({}, map);
+      frames.push({ arr: arr.slice(), marks: marks, map: snap, desc:'Look for complement '+need+' (= '+target+' − '+arr[i]+').' });
+      if (Object.prototype.hasOwnProperty.call(map, need)) {
+        var j = map[need];
+        var marks2 = {}; marks2[i]='match'; marks2[j]='match';
+        frames.push({ arr: arr.slice(), marks: marks2, map: Object.assign({}, map), mapFlash: need,
+                       desc:'Found! '+arr[j]+' + '+arr[i]+' = '+target+'. Return indices ['+j+', '+i+'].' });
+        return frames;
+      }
+      map[arr[i]] = i;
+      var marks3 = {}; marks3[i]='in-window';
+      frames.push({ arr: arr.slice(), marks: marks3, map: Object.assign({}, map), mapFlash: arr[i],
+                     desc:'Complement not seen. Store '+arr[i]+' → '+i+' in map.' });
+    }
+    frames.push({ arr: arr.slice(), marks: {}, map: Object.assign({}, map),
+                   desc:'Scanned full array, no pair sums to '+target+'. Return [].' });
+    return frames;
+  }
+
+  /* 3. Longest Substring Without Repeating Characters */
+  function algoLongestUnique(s) {
+    var frames = [];
+    var arr = s.split('');
+    var last = {};
+    var L = 0, best = 0, bestL=0, bestR=-1;
+    frames.push({ arr: arr, marks:{}, desc:'Initialize window L=0; track last-seen index per character.' });
+    for (var R=0; R<arr.length; R++){
+      var ch = arr[R];
+      if (last[ch] !== undefined && last[ch] >= L) {
+        var oldL = L;
+        L = last[ch]+1;
+        var marks={};
+        for (var k=L;k<=R;k++) marks[k]='in-window';
+        marks[R]='curr';
+        frames.push({ arr: arr, marks: marks,
+          desc:'Char "'+ch+'" repeats (was at '+last[ch]+'). Shrink L from '+oldL+' to '+L+'.' });
+      }
+      last[ch]=R;
+      var marks2 = {};
+      for (var k=L;k<=R;k++) marks2[k]='in-window';
+      marks2[R]='curr';
+      var len = R-L+1;
+      if (len>best) { best=len; bestL=L; bestR=R; }
+      frames.push({ arr: arr, marks: marks2,
+        desc:'Window ['+L+'..'+R+'] = "'+arr.slice(L,R+1).join('')+'", length '+len+'. Best so far = '+best+'.' });
+    }
+    var marks3 = {};
+    for (var k=bestL;k<=bestR;k++) marks3[k]='match';
+    frames.push({ arr: arr, marks: marks3,
+      desc:'Done. Longest substring without repeats has length '+best+(best>0?' = "'+arr.slice(bestL,bestR+1).join('')+'"':'')+'.' });
+    return frames;
+  }
+
+  /* 4. Minimum Window Substring */
+  function algoMinWindow(s, t) {
+    var frames = [];
+    var arr = s.split('');
+    var need = {}, have = {}, types=0, satisfied=0;
+    for (var i=0;i<t.length;i++){ if (need[t[i]]==null){need[t[i]]=0; types++;} need[t[i]]++; }
+    var L=0, bestL=-1, bestR=-1, bestLen=Infinity;
+    frames.push({arr:arr, marks:{}, desc:'Required counts: '+JSON.stringify(need)+'. Need '+types+' satisfied char-types.'});
+    for (var R=0;R<arr.length;R++){
+      var ch = arr[R];
+      have[ch] = (have[ch]||0)+1;
+      if (need[ch] && have[ch]===need[ch]) satisfied++;
+      var marks={}; for (var k=L;k<=R;k++) marks[k]='in-window'; marks[R]='curr';
+      frames.push({arr:arr, marks:marks, desc:'Expand R='+R+' ("'+ch+'"). satisfied='+satisfied+'/'+types+'.'});
+      while (satisfied===types) {
+        var len=R-L+1;
+        if (len<bestLen){ bestLen=len; bestL=L; bestR=R; }
+        var m2={}; for (var k=L;k<=R;k++) m2[k]='in-window'; m2[L]='left'; m2[R]='right';
+        frames.push({arr:arr, marks:m2, desc:'Valid window ['+L+'..'+R+'] len='+len+'. Try shrinking from L.'});
+        var lc = arr[L]; have[lc]--;
+        if (need[lc] && have[lc] < need[lc]) satisfied--;
+        L++;
+      }
+    }
+    if (bestL>=0) {
+      var m3={}; for (var k=bestL;k<=bestR;k++) m3[k]='match';
+      frames.push({arr:arr, marks:m3, desc:'Minimum window = "'+arr.slice(bestL,bestR+1).join('')+'" (length '+bestLen+').'});
+    } else {
+      frames.push({arr:arr, marks:{}, desc:'No valid window found.'});
+    }
+    return frames;
+  }
+
+  /* 5. 3Sum */
+  function algo3Sum(arr) {
+    var frames = [];
+    var a = arr.slice().sort(function(x,y){return x-y;});
+    frames.push({arr:a.slice(), marks:{}, desc:'Sort: ['+a.join(',')+']. Fix i, then two pointers L,R on suffix.'});
+    var triples = [];
+    for (var i=0;i<a.length-2;i++){
+      if (i>0 && a[i]===a[i-1]) {
+        var ms={}; ms[i]='dim';
+        frames.push({arr:a.slice(),marks:ms,desc:'Skip duplicate anchor a[i]='+a[i]+' at i='+i+'.'});
+        continue;
+      }
+      var L=i+1, R=a.length-1;
+      while (L<R){
+        var s = a[i]+a[L]+a[R];
+        var ms={}; ms[i]='curr'; ms[L]='left'; ms[R]='right';
+        frames.push({arr:a.slice(),marks:ms,desc:'i='+i+' L='+L+' R='+R+'. Sum='+a[i]+'+'+a[L]+'+'+a[R]+'='+s+'.'});
+        if (s===0){
+          triples.push([a[i],a[L],a[R]]);
+          var ms2={}; ms2[i]='match'; ms2[L]='match'; ms2[R]='match';
+          frames.push({arr:a.slice(),marks:ms2,desc:'Triplet found: ['+a[i]+','+a[L]+','+a[R]+']. Skip duplicates.'});
+          while (L<R && a[L]===a[L+1]) L++;
+          while (L<R && a[R]===a[R-1]) R--;
+          L++; R--;
+        } else if (s<0) { L++; }
+        else { R--; }
+      }
+    }
+    var allM = {};
+    frames.push({arr:a.slice(), marks:allM, desc:'Done. Triplets: '+(triples.length?JSON.stringify(triples):'(none)')+'.'});
+    return frames;
+  }
+
+  /* 6. Container With Most Water */
+  function algoMaxArea(arr) {
+    var frames = [];
+    var L=0, R=arr.length-1, best=0, bestL=0, bestR=arr.length-1;
+    frames.push({arr:arr.slice(),marks:{},desc:'Start with widest container.'});
+    while (L<R){
+      var area = Math.min(arr[L],arr[R]) * (R-L);
+      if (area>best){best=area; bestL=L; bestR=R;}
+      var ms={}; ms[L]='left'; ms[R]='right';
+      frames.push({arr:arr.slice(),marks:ms,desc:'Area = min('+arr[L]+','+arr[R]+') × ('+R+'−'+L+') = '+area+'. Best='+best+'.'});
+      if (arr[L] < arr[R]) L++;
+      else R--;
+    }
+    var mf={}; mf[bestL]='match'; mf[bestR]='match';
+    frames.push({arr:arr.slice(),marks:mf,desc:'Maximum area = '+best+' between indices '+bestL+' and '+bestR+'.'});
+    return frames;
+  }
+
+  /* Binary Search */
+  function algoBinarySearch(arr, target) {
+    var frames=[];
+    var a = arr.slice().sort(function(x,y){return x-y;});
+    var L=0, R=a.length-1;
+    frames.push({arr:a.slice(),marks:{},desc:'Sorted (binary search requires sorted input): ['+a.join(',')+']. target='+target+'.'});
+    while (L<=R){
+      var M = Math.floor((L+R)/2);
+      var ms={}; ms[L]='left'; ms[R]='right'; ms[M]='mid';
+      frames.push({arr:a.slice(),marks:ms,desc:'L='+L+' R='+R+' M='+M+' a[M]='+a[M]+'.'});
+      if (a[M]===target){
+        var mf={}; mf[M]='match';
+        frames.push({arr:a.slice(),marks:mf,desc:'Found target '+target+' at index '+M+'.'});
+        return frames;
+      } else if (a[M]<target){
+        L=M+1;
+        frames.push({arr:a.slice(),marks:{},desc:'a[M] < target → search right half. L='+L+'.'});
+      } else {
+        R=M-1;
+        frames.push({arr:a.slice(),marks:{},desc:'a[M] > target → search left half. R='+R+'.'});
+      }
+    }
+    frames.push({arr:a.slice(),marks:{},desc:'L > R, target '+target+' not found. Return -1.'});
+    return frames;
+  }
+
+  /* Search in Rotated Sorted Array */
+  function algoSearchRotated(arr, target) {
+    var frames=[];
+    var a = arr.slice();
+    var L=0, R=a.length-1;
+    frames.push({arr:a.slice(),marks:{},desc:'Rotated sorted array. target='+target+'. One half is always sorted.'});
+    while (L<=R){
+      var M = Math.floor((L+R)/2);
+      var ms={}; ms[L]='left'; ms[R]='right'; ms[M]='mid';
+      frames.push({arr:a.slice(),marks:ms,desc:'L='+L+' R='+R+' M='+M+' a[M]='+a[M]+'.'});
+      if (a[M]===target){
+        var mf={}; mf[M]='match';
+        frames.push({arr:a.slice(),marks:mf,desc:'Found at '+M+'.'});
+        return frames;
+      }
+      if (a[L] <= a[M]) {
+        // left half sorted
+        if (a[L] <= target && target < a[M]) { R = M-1; frames.push({arr:a.slice(),marks:{},desc:'Left half [L..M] sorted; target inside it. R='+R+'.'}); }
+        else { L = M+1; frames.push({arr:a.slice(),marks:{},desc:'Left half sorted but target not inside. L='+L+'.'}); }
+      } else {
+        if (a[M] < target && target <= a[R]) { L = M+1; frames.push({arr:a.slice(),marks:{},desc:'Right half [M..R] sorted; target inside it. L='+L+'.'}); }
+        else { R = M-1; frames.push({arr:a.slice(),marks:{},desc:'Right half sorted but target not inside. R='+R+'.'}); }
+      }
+    }
+    frames.push({arr:a.slice(),marks:{},desc:'Not found. Return -1.'});
+    return frames;
+  }
+
+  /* Median of two sorted arrays — partition idea (simplified visualization: merge highlight) */
+  function algoMedianTwo(a, b) {
+    var frames=[];
+    var merged=[];
+    var i=0,j=0;
+    frames.push({arr:a.concat(['|']).concat(b),marks:{},desc:'Two sorted arrays separated by | . We will partition both so left half ≤ right half.'});
+    while (i<a.length || j<b.length){
+      if (j>=b.length || (i<a.length && a[i]<=b[j])) { merged.push(a[i]); i++; }
+      else { merged.push(b[j]); j++; }
+    }
+    var n = merged.length;
+    var marks={};
+    var midIdx;
+    if (n%2===1){ midIdx = (n-1)/2; marks[midIdx]='match'; }
+    else { marks[n/2-1]='match'; marks[n/2]='match'; midIdx = n/2; }
+    frames.push({arr:merged.slice(),marks:marks,
+      desc:'Merged length '+n+'. Median = '+(n%2===1? merged[(n-1)/2] : ((merged[n/2-1]+merged[n/2])/2))+'. (Optimal solution uses O(log min(n,m)) binary partition.)'});
+    return frames;
+  }
+
+  /* Merge Intervals */
+  function algoMergeIntervals(intervals) {
+    var frames = [];
+    var arr = intervals.slice().sort(function(a,b){return a[0]-b[0];});
+    frames.push({intervals: arr.map(function(x){return x.slice();}), highlight:[], merged:[], desc:'Sort by start: '+JSON.stringify(arr)+'.'});
+    var merged=[];
+    for (var i=0;i<arr.length;i++){
+      var iv = arr[i];
+      if (merged.length===0 || merged[merged.length-1][1] < iv[0]){
+        merged.push(iv.slice());
+        frames.push({intervals: arr.map(function(x){return x.slice();}), highlight:[i], merged: merged.map(function(x){return x.slice();}), desc:'Append '+JSON.stringify(iv)+' (no overlap with previous).'});
+      } else {
+        var prev = merged[merged.length-1];
+        prev[1] = Math.max(prev[1], iv[1]);
+        frames.push({intervals: arr.map(function(x){return x.slice();}), highlight:[i], merged: merged.map(function(x){return x.slice();}), desc:'Overlap → extend last merged to ['+prev[0]+','+prev[1]+'].'});
+      }
+    }
+    frames.push({intervals: arr.map(function(x){return x.slice();}), highlight:[], merged: merged.map(function(x){return x.slice();}), desc:'Result: '+JSON.stringify(merged)+'.'});
+    return frames;
+  }
+
+  /* Insert Interval */
+  function algoInsertInterval(intervals, ni) {
+    var frames=[];
+    var res=[];
+    var i=0, n=intervals.length;
+    frames.push({intervals: intervals.map(function(x){return x.slice();}), highlight:[], merged:[ni.slice()], desc:'Insert new '+JSON.stringify(ni)+'. Phase 1: append intervals ending before new.start.'});
+    while (i<n && intervals[i][1] < ni[0]) { res.push(intervals[i].slice()); frames.push({intervals: intervals.map(function(x){return x.slice();}), highlight:[i], merged: res.map(function(x){return x.slice();}).concat([ni.slice()]), desc:'Append '+JSON.stringify(intervals[i])+' (ends before new.start).'}); i++; }
+    var cur = ni.slice();
+    while (i<n && intervals[i][0] <= cur[1]) { cur[0]=Math.min(cur[0],intervals[i][0]); cur[1]=Math.max(cur[1],intervals[i][1]); frames.push({intervals: intervals.map(function(x){return x.slice();}), highlight:[i], merged: res.map(function(x){return x.slice();}).concat([cur.slice()]), desc:'Phase 2: merge with overlapping '+JSON.stringify(intervals[i])+' → '+JSON.stringify(cur)+'.'}); i++; }
+    res.push(cur);
+    while (i<n) { res.push(intervals[i].slice()); frames.push({intervals: intervals.map(function(x){return x.slice();}), highlight:[i], merged: res.map(function(x){return x.slice();}), desc:'Phase 3: append remaining '+JSON.stringify(intervals[i])+'.'}); i++; }
+    frames.push({intervals: intervals.map(function(x){return x.slice();}), highlight:[], merged: res.map(function(x){return x.slice();}), desc:'Result: '+JSON.stringify(res)+'.'});
+    return frames;
+  }
+
+  /* Meeting Rooms II */
+  function algoMeetingRooms(intervals) {
+    var frames=[];
+    var arr = intervals.slice().sort(function(a,b){return a[0]-b[0];});
+    var heap = []; // simple min-heap behavior via sort
+    frames.push({intervals: arr.map(function(x){return x.slice();}), highlight:[], merged:[], heap:[], desc:'Sort by start: '+JSON.stringify(arr)+'. Maintain min-heap of end times.'});
+    for (var i=0;i<arr.length;i++){
+      var iv = arr[i];
+      heap.sort(function(a,b){return a-b;});
+      if (heap.length>0 && heap[0] <= iv[0]) {
+        var freed = heap.shift();
+        frames.push({intervals: arr.map(function(x){return x.slice();}), highlight:[i], heap: heap.slice(), desc:'Earliest room frees at '+freed+' ≤ start '+iv[0]+'. Reuse it.'});
+      }
+      heap.push(iv[1]);
+      frames.push({intervals: arr.map(function(x){return x.slice();}), highlight:[i], heap: heap.slice().sort(function(a,b){return a-b;}), desc:'Allocate room for '+JSON.stringify(iv)+'. Heap='+JSON.stringify(heap.slice().sort(function(a,b){return a-b;}))+' (size='+heap.length+').'});
+    }
+    frames.push({intervals: arr.map(function(x){return x.slice();}), highlight:[], heap: heap.slice().sort(function(a,b){return a-b;}), desc:'Minimum rooms required = '+heap.length+'.'});
+    return frames;
+  }
+
+  /* Valid Parentheses */
+  function algoValidParens(s){
+    var frames=[];
+    var arr = s.split('');
+    var stack=[];
+    var pair = {')':'(', ']':'[', '}':'{'};
+    frames.push({arr:arr,marks:{},stack:stack.slice(),desc:'Scan left→right. Push openers; on closer, top must match.'});
+    for (var i=0;i<arr.length;i++){
+      var c = arr[i];
+      var ms = {}; ms[i]='curr';
+      if (c==='('||c==='['||c==='{'){
+        stack.push(c);
+        frames.push({arr:arr,marks:ms,stack:stack.slice(),desc:'Push opener "'+c+'". Stack=['+stack.join(',')+'].'});
+      } else if (pair[c]){
+        var top = stack[stack.length-1];
+        if (top===pair[c]){
+          stack.pop();
+          frames.push({arr:arr,marks:ms,stack:stack.slice(),desc:'Closer "'+c+'" matches top "'+top+'". Pop.'});
+        } else {
+          var bm={}; bm[i]='bad';
+          frames.push({arr:arr,marks:bm,stack:stack.slice(),desc:'Mismatch: closer "'+c+'" vs top "'+(top||'∅')+'". INVALID.'});
+          return frames;
+        }
+      } else {
+        frames.push({arr:arr,marks:ms,stack:stack.slice(),desc:'Non-bracket char "'+c+'" (assumed allowed; skip).'});
+      }
+    }
+    frames.push({arr:arr,marks:{},stack:stack.slice(),desc: stack.length===0 ? 'Stack empty at end → VALID.' : 'Stack non-empty at end → INVALID. Stack=['+stack.join(',')+'].'});
+    return frames;
+  }
+
+  /* Daily Temperatures */
+  function algoDailyTemps(arr){
+    var frames=[];
+    var stack=[]; // indices
+    var ans = new Array(arr.length).fill(0);
+    frames.push({arr:arr.slice(),marks:{},stack:[],ans:ans.slice(),desc:'Monotonic decreasing stack of indices.'});
+    for (var i=0;i<arr.length;i++){
+      var ms={}; ms[i]='curr'; stack.forEach(function(k){ ms[k]='in-window'; });
+      frames.push({arr:arr.slice(),marks:ms,stack:stack.slice(),ans:ans.slice(),desc:'i='+i+' temp='+arr[i]+'. Pop while stack top’s temp < current.'});
+      while (stack.length && arr[stack[stack.length-1]] < arr[i]) {
+        var j = stack.pop();
+        ans[j] = i - j;
+        var ms2={}; ms2[i]='curr'; ms2[j]='match'; stack.forEach(function(k){ ms2[k]='in-window'; });
+        frames.push({arr:arr.slice(),marks:ms2,stack:stack.slice(),ans:ans.slice(),desc:'Resolve idx '+j+': wait '+(i-j)+' day(s) for warmer '+arr[i]+'.'});
+      }
+      stack.push(i);
+      var ms3={}; stack.forEach(function(k){ ms3[k]='in-window'; }); ms3[i]='curr';
+      frames.push({arr:arr.slice(),marks:ms3,stack:stack.slice(),ans:ans.slice(),desc:'Push '+i+'. Stack indices=['+stack.join(',')+'].'});
+    }
+    frames.push({arr:arr.slice(),marks:{},stack:stack.slice(),ans:ans.slice(),desc:'Result: ['+ans.join(',')+'].'});
+    return frames;
+  }
+
+  /* Largest Rectangle in Histogram */
+  function algoHistogram(arr){
+    var frames=[];
+    var stack=[]; var best=0; var bestL=-1,bestR=-1,bestH=0;
+    var a = arr.slice(); a.push(0); // sentinel
+    frames.push({arr:a.slice(),marks:{},stack:[],desc:'Append sentinel 0 to flush. Maintain increasing-height index stack.'});
+    for (var i=0;i<a.length;i++){
+      var ms={}; ms[i]='curr'; stack.forEach(function(k){ ms[k]='in-window'; });
+      frames.push({arr:a.slice(),marks:ms,stack:stack.slice(),desc:'i='+i+' h='+a[i]+'.'});
+      while (stack.length && a[stack[stack.length-1]] > a[i]) {
+        var j = stack.pop();
+        var h = a[j];
+        var w = stack.length===0 ? i : (i - stack[stack.length-1] - 1);
+        var area = h*w;
+        if (area>best){best=area; bestH=h; bestR=i-1; bestL=stack.length===0?0:stack[stack.length-1]+1;}
+        var ms2={}; stack.forEach(function(k){ ms2[k]='in-window'; }); ms2[j]='peek'; ms2[i]='curr';
+        frames.push({arr:a.slice(),marks:ms2,stack:stack.slice(),desc:'Pop '+j+' (h='+h+'), width='+w+', area='+area+'. Best='+best+'.'});
+      }
+      stack.push(i);
+    }
+    frames.push({arr:a.slice(),marks:{},stack:stack.slice(),desc:'Largest rectangle area = '+best+' (height '+bestH+' between cols '+bestL+'..'+bestR+').'});
+    return frames;
+  }
+
+  /* Climbing Stairs */
+  function algoClimbingStairs(n){
+    var frames=[];
+    var dp = new Array(n+1).fill(0);
+    dp[0]=1; dp[1]=1;
+    frames.push({dp:dp.slice(),curr:-1,read:[],desc:'Base: dp[0]=1 (empty), dp[1]=1.'});
+    for (var i=2;i<=n;i++){
+      frames.push({dp:dp.slice(),curr:i,read:[i-1,i-2],desc:'dp['+i+'] = dp['+(i-1)+'] + dp['+(i-2)+'] = '+dp[i-1]+'+'+dp[i-2]});
+      dp[i]=dp[i-1]+dp[i-2];
+      frames.push({dp:dp.slice(),curr:i,read:[],set:[i],desc:'Set dp['+i+'] = '+dp[i]+'.'});
+    }
+    frames.push({dp:dp.slice(),curr:-1,read:[],desc:'Answer: dp['+n+'] = '+dp[n]+'.'});
+    return frames;
+  }
+
+  /* Coin Change */
+  function algoCoinChange(coins, amount){
+    var frames=[];
+    var INF = amount+1;
+    var dp = new Array(amount+1).fill(INF);
+    dp[0]=0;
+    frames.push({dp:dp.slice(),curr:-1,read:[],desc:'dp[0]=0, others=∞. dp[a]=min coins to make amount a.'});
+    for (var a=1;a<=amount;a++){
+      for (var c=0;c<coins.length;c++){
+        if (a-coins[c]>=0){
+          frames.push({dp:dp.slice(),curr:a,read:[a-coins[c]],desc:'Try coin '+coins[c]+' for amount '+a+': candidate = dp['+(a-coins[c])+']+1 = '+(dp[a-coins[c]]===INF?'∞':dp[a-coins[c]]+1)});
+          if (dp[a-coins[c]]+1 < dp[a]){
+            dp[a]=dp[a-coins[c]]+1;
+            frames.push({dp:dp.slice(),curr:a,read:[],set:[a],desc:'Update dp['+a+'] = '+dp[a]+'.'});
+          }
+        }
+      }
+    }
+    var ans = dp[amount]===INF? -1 : dp[amount];
+    frames.push({dp:dp.slice(),curr:-1,read:[],desc:'Answer = '+ans+'.'});
+    return frames;
+  }
+
+  /* House Robber */
+  function algoHouseRobber(arr){
+    var frames=[];
+    var n=arr.length;
+    var dp = new Array(n).fill(0);
+    if (n===0){ frames.push({dp:dp,curr:-1,read:[],desc:'Empty.'}); return frames; }
+    dp[0]=arr[0];
+    frames.push({dp:dp.slice(),curr:0,read:[],set:[0],desc:'dp[0] = nums[0] = '+arr[0]+'.'});
+    if (n===1){ frames.push({dp:dp.slice(),curr:-1,read:[],desc:'Answer = '+dp[0]+'.'}); return frames; }
+    dp[1]=Math.max(arr[0],arr[1]);
+    frames.push({dp:dp.slice(),curr:1,read:[0],set:[1],desc:'dp[1] = max(nums[0], nums[1]) = '+dp[1]+'.'});
+    for (var i=2;i<n;i++){
+      frames.push({dp:dp.slice(),curr:i,read:[i-1,i-2],desc:'Compare rob ('+arr[i]+'+dp['+(i-2)+']='+(arr[i]+dp[i-2])+') vs skip (dp['+(i-1)+']='+dp[i-1]+').'});
+      dp[i]=Math.max(dp[i-1], arr[i]+dp[i-2]);
+      frames.push({dp:dp.slice(),curr:i,read:[],set:[i],desc:'dp['+i+'] = '+dp[i]+'.'});
+    }
+    frames.push({dp:dp.slice(),curr:-1,read:[],desc:'Answer = '+dp[n-1]+'.'});
+    return frames;
+  }
+
+  /* Longest Increasing Subsequence (n^2) */
+  function algoLIS(arr){
+    var frames=[];
+    var n=arr.length;
+    var dp = new Array(n).fill(1);
+    frames.push({dp:dp.slice(),curr:-1,read:[],desc:'dp[i] = LIS length ending at i. Init all = 1.'});
+    for (var i=1;i<n;i++){
+      for (var j=0;j<i;j++){
+        if (arr[j]<arr[i]){
+          frames.push({dp:dp.slice(),curr:i,read:[j],desc:'arr[j='+j+']='+arr[j]+' < arr[i='+i+']='+arr[i]+': candidate dp['+j+']+1='+(dp[j]+1)});
+          if (dp[j]+1>dp[i]){
+            dp[i]=dp[j]+1;
+            frames.push({dp:dp.slice(),curr:i,read:[],set:[i],desc:'Update dp['+i+'] = '+dp[i]+'.'});
+          }
+        }
+      }
+    }
+    frames.push({dp:dp.slice(),curr:-1,read:[],desc:'LIS length = max(dp) = '+Math.max.apply(null,dp)+'.'});
+    return frames;
+  }
+
+  /* Longest Palindromic Substring (expand around center) */
+  function algoLongestPalin(s){
+    var frames=[];
+    var arr = s.split('');
+    var bestL=0, bestR=0;
+    frames.push({arr:arr,marks:{},desc:'Expand around each center (single and double).'});
+    function expand(L,R){
+      while (L>=0 && R<arr.length && arr[L]===arr[R]){
+        var ms={}; for (var k=L;k<=R;k++) ms[k]='in-window';
+        frames.push({arr:arr,marks:ms,desc:'Expand: ['+L+'..'+R+'] = "'+arr.slice(L,R+1).join('')+'" is palindrome.'});
+        if (R-L > bestR-bestL){ bestL=L; bestR=R; }
+        L--; R++;
+      }
+    }
+    for (var c=0;c<arr.length;c++){
+      var ms={}; ms[c]='curr';
+      frames.push({arr:arr,marks:ms,desc:'Center '+c+' ("'+arr[c]+'"). Try odd-length expansion.'});
+      expand(c,c);
+      if (c+1<arr.length){
+        var ms2={}; ms2[c]='left'; ms2[c+1]='right';
+        frames.push({arr:arr,marks:ms2,desc:'Center between '+c+' and '+(c+1)+'. Try even-length expansion.'});
+        expand(c,c+1);
+      }
+    }
+    var mf={}; for (var k=bestL;k<=bestR;k++) mf[k]='match';
+    frames.push({arr:arr,marks:mf,desc:'Longest palindrome = "'+arr.slice(bestL,bestR+1).join('')+'" (length '+(bestR-bestL+1)+').'});
+    return frames;
+  }
+
+  /* Group Anagrams */
+  function algoGroupAnagrams(words){
+    var frames=[];
+    var groups = {};
+    frames.push({words:words.slice(),curr:-1,groups: clone(groups), desc:'Use sorted-letters as canonical key.'});
+    function clone(o){return JSON.parse(JSON.stringify(o));}
+    for (var i=0;i<words.length;i++){
+      var key = words[i].split('').sort().join('');
+      if (!groups[key]) groups[key]=[];
+      groups[key].push(words[i]);
+      frames.push({words:words.slice(),curr:i,groups:clone(groups),desc:'"'+words[i]+'" → key="'+key+'". groups['+key+']='+JSON.stringify(groups[key])});
+    }
+    frames.push({words:words.slice(),curr:-1,groups:clone(groups),desc:'Result: '+JSON.stringify(Object.values(groups))+'.'});
+    return frames;
+  }
+
+  /* Number of Islands */
+  function algoIslands(grid){
+    var frames=[];
+    var R = grid.length, C = grid[0].length;
+    var g = grid.map(function(r){return r.slice();});
+    var visited = {};
+    var count=0;
+    frames.push({grid: g.map(function(r){return r.slice();}), visited:{}, curr:null, count:count, desc:'Scan each cell. On unvisited land, BFS/DFS flood-fill.'});
+    var dirs=[[1,0],[-1,0],[0,1],[0,-1]];
+    for (var r=0;r<R;r++){
+      for (var c=0;c<C;c++){
+        var key=r+','+c;
+        if (g[r][c]===1 && !visited[key]){
+          count++;
+          var stack=[[r,c]]; visited[key]=true;
+          frames.push({grid:g.map(function(r){return r.slice();}),visited:Object.assign({},visited),curr:[r,c],count:count,desc:'Found new island #'+count+' at ('+r+','+c+'). Start DFS.'});
+          while (stack.length){
+            var p=stack.pop();
+            var pr=p[0], pc=p[1];
+            for (var d=0;d<4;d++){
+              var nr=pr+dirs[d][0], nc=pc+dirs[d][1];
+              var nk=nr+','+nc;
+              if (nr>=0&&nr<R&&nc>=0&&nc<C&&g[nr][nc]===1&&!visited[nk]){
+                visited[nk]=true;
+                stack.push([nr,nc]);
+                frames.push({grid:g.map(function(r){return r.slice();}),visited:Object.assign({},visited),curr:[nr,nc],count:count,desc:'Visit ('+nr+','+nc+'). island #'+count+'.'});
+              }
+            }
+          }
+        }
+      }
+    }
+    frames.push({grid:g.map(function(r){return r.slice();}),visited:Object.assign({},visited),curr:null,count:count,desc:'Total islands = '+count+'.'});
+    return frames;
+  }
+
+  /* Course Schedule (cycle detection via DFS) */
+  function algoCourseSchedule(numCourses, prereqs){
+    var frames=[];
+    var graph = {};
+    for (var i=0;i<numCourses;i++) graph[i]=[];
+    prereqs.forEach(function(p){ graph[p[0]].push(p[1]); });
+    var WHITE=0, GRAY=1, BLACK=2;
+    var color = new Array(numCourses).fill(WHITE);
+    frames.push({nodes: numCourses, edges: prereqs.slice(), color: color.slice(), curr:-1, desc:'Build graph. WHITE=unvisited, GRAY=in stack, BLACK=done. Cycle iff GRAY revisited.'});
+    function dfs(u){
+      color[u]=GRAY;
+      frames.push({nodes:numCourses,edges:prereqs.slice(),color:color.slice(),curr:u,desc:'Enter '+u+' → GRAY.'});
+      for (var k=0;k<graph[u].length;k++){
+        var v = graph[u][k];
+        if (color[v]===GRAY){
+          frames.push({nodes:numCourses,edges:prereqs.slice(),color:color.slice(),curr:v,desc:'Edge '+u+'→'+v+': '+v+' is GRAY. CYCLE detected.'});
+          return false;
+        }
+        if (color[v]===WHITE){
+          if (!dfs(v)) return false;
+        }
+      }
+      color[u]=BLACK;
+      frames.push({nodes:numCourses,edges:prereqs.slice(),color:color.slice(),curr:u,desc:'Finish '+u+' → BLACK.'});
+      return true;
+    }
+    var ok = true;
+    for (var i=0;i<numCourses && ok;i++){
+      if (color[i]===WHITE) ok = dfs(i);
+    }
+    frames.push({nodes:numCourses,edges:prereqs.slice(),color:color.slice(),curr:-1,desc: ok?'No cycles → all courses can finish.':'Cycle exists → cannot finish.'});
+    return frames;
+  }
+
+  /* Reverse Linked List */
+  function algoReverseList(arr){
+    var frames=[];
+    var prev=null, curr=0;
+    var nodes = arr.slice();
+    var next = nodes.map(function(_,i){ return i+1<nodes.length? i+1 : null; });
+    frames.push({nodes:nodes.slice(), next:next.slice(), prev:prev, curr:curr, desc:'prev=null, curr=head.'});
+    while (curr!==null){
+      var nx = next[curr];
+      next[curr] = prev; // reverse
+      var nextSnap = next.slice();
+      frames.push({nodes:nodes.slice(),next:nextSnap,prev:prev,curr:curr,desc:'curr='+nodes[curr]+'. Save next='+(nx===null?'null':nodes[nx])+'. Reverse curr.next → '+(prev===null?'null':nodes[prev])+'.'});
+      prev = curr;
+      curr = nx;
+      frames.push({nodes:nodes.slice(),next:next.slice(),prev:prev,curr:curr,desc:'Advance: prev='+(prev===null?'null':nodes[prev])+', curr='+(curr===null?'null':nodes[curr])+'.'});
+    }
+    frames.push({nodes:nodes.slice(),next:next.slice(),prev:prev,curr:null,desc:'Reversed list head = '+(prev===null?'null':nodes[prev])+'.'});
+    return frames;
+  }
+
+  /* Linked List Cycle */
+  function algoLinkedListCycle(arr, cyclePos){
+    var frames=[];
+    var n = arr.length;
+    var next = arr.map(function(_,i){ return i+1<n? i+1 : (cyclePos>=0 && cyclePos<n ? cyclePos : null); });
+    var slow=0, fast=0;
+    frames.push({nodes:arr.slice(),next:next.slice(),slow:slow,fast:fast,desc:'slow=fast=head. Tortoise moves 1, hare moves 2.'});
+    while (true){
+      if (fast===null || next[fast]===null){
+        frames.push({nodes:arr.slice(),next:next.slice(),slow:slow,fast:fast,desc:'fast hit null → no cycle.'});
+        return frames;
+      }
+      slow = next[slow];
+      fast = next[next[fast]];
+      frames.push({nodes:arr.slice(),next:next.slice(),slow:slow,fast:fast,desc:'slow→'+(slow===null?'null':arr[slow])+', fast→'+(fast===null?'null':arr[fast])+'.'});
+      if (slow===fast){
+        frames.push({nodes:arr.slice(),next:next.slice(),slow:slow,fast:fast,match:true,desc:'Pointers met → cycle exists at node '+arr[slow]+'.'});
+        return frames;
+      }
+      // safety
+      if (frames.length>200) { frames.push({nodes:arr.slice(),next:next.slice(),slow:slow,fast:fast,desc:'(safety stop)'}); return frames;}
+    }
+  }
+
+  /* Merge Two Sorted Lists */
+  function algoMergeTwoLists(a, b){
+    var frames=[];
+    var i=0,j=0;
+    var out=[];
+    frames.push({a:a.slice(),b:b.slice(),i:i,j:j,out:out.slice(),desc:'Two pointers; pick smaller, advance.'});
+    while (i<a.length && j<b.length){
+      if (a[i] <= b[j]) {
+        out.push(a[i]);
+        frames.push({a:a.slice(),b:b.slice(),i:i,j:j,out:out.slice(),desc:'a['+i+']='+a[i]+' ≤ b['+j+']='+b[j]+'. Take from A.'});
+        i++;
+      } else {
+        out.push(b[j]);
+        frames.push({a:a.slice(),b:b.slice(),i:i,j:j,out:out.slice(),desc:'b['+j+']='+b[j]+' < a['+i+']='+a[i]+'. Take from B.'});
+        j++;
+      }
+    }
+    while (i<a.length){ out.push(a[i]); i++; frames.push({a:a.slice(),b:b.slice(),i:i,j:j,out:out.slice(),desc:'Drain A.'}); }
+    while (j<b.length){ out.push(b[j]); j++; frames.push({a:a.slice(),b:b.slice(),i:i,j:j,out:out.slice(),desc:'Drain B.'}); }
+    frames.push({a:a.slice(),b:b.slice(),i:i,j:j,out:out.slice(),desc:'Merged: ['+out.join(',')+'].'});
+    return frames;
+  }
+
+  /* LRU Cache */
+  function algoLRU(capacity, ops){
+    var frames=[];
+    var order = []; // most-recent at end
+    var map = {};
+    frames.push({order:order.slice(),map:Object.assign({},map),op:'init',desc:'LRU capacity='+capacity+'. Hash map + doubly-linked-list. Right end = most recent.'});
+    ops.forEach(function(op){
+      var t = op[0], k = op[1], v = op[2];
+      if (t==='put'){
+        if (Object.prototype.hasOwnProperty.call(map,k)){
+          map[k]=v;
+          var idx=order.indexOf(k); order.splice(idx,1); order.push(k);
+          frames.push({order:order.slice(),map:Object.assign({},map),op:'put '+k+'='+v,desc:'Key '+k+' exists. Update value, move to MRU.'});
+        } else {
+          if (order.length>=capacity){
+            var ev = order.shift();
+            delete map[ev];
+            frames.push({order:order.slice(),map:Object.assign({},map),op:'put '+k+'='+v,desc:'Capacity full. Evict LRU = '+ev+'.'});
+          }
+          map[k]=v; order.push(k);
+          frames.push({order:order.slice(),map:Object.assign({},map),op:'put '+k+'='+v,desc:'Insert '+k+'='+v+' as MRU.'});
+        }
+      } else if (t==='get'){
+        if (Object.prototype.hasOwnProperty.call(map,k)){
+          var idx=order.indexOf(k); order.splice(idx,1); order.push(k);
+          frames.push({order:order.slice(),map:Object.assign({},map),op:'get '+k+' → '+map[k],desc:'Hit. Move '+k+' to MRU. Return '+map[k]+'.'});
+        } else {
+          frames.push({order:order.slice(),map:Object.assign({},map),op:'get '+k+' → -1',desc:'Miss. Return -1.'});
+        }
+      }
+    });
+    return frames;
+  }
+
+  /* Binary Tree Level Order Traversal */
+  function algoLevelOrder(tree){
+    // tree is parsed as array (level-order with nulls)
+    var frames=[];
+    var nodes = tree.slice();
+    var queue = [0];
+    var levels = [];
+    var visited = {};
+    frames.push({nodes:nodes,visited:{},curr:-1,levels:[],desc:'Init queue with root index 0.'});
+    while (queue.length){
+      var size = queue.length;
+      var lvl = [];
+      for (var i=0;i<size;i++){
+        var u = queue.shift();
+        if (u===null || u>=nodes.length || nodes[u]===null) continue;
+        visited[u]=true;
+        lvl.push(nodes[u]);
+        var f = {}; for (var k in visited) f[k]=true;
+        frames.push({nodes:nodes,visited:f,curr:u,levels:levels.concat([lvl.slice()]),desc:'Visit node '+nodes[u]+' at index '+u+'.'});
+        var L = 2*u+1, R = 2*u+2;
+        if (L<nodes.length && nodes[L]!==null) queue.push(L);
+        if (R<nodes.length && nodes[R]!==null) queue.push(R);
+      }
+      levels.push(lvl);
+    }
+    var f2={}; for (var k in visited) f2[k]=true;
+    frames.push({nodes:nodes,visited:f2,curr:-1,levels:levels.slice(),desc:'Levels: '+JSON.stringify(levels)+'.'});
+    return frames;
+  }
+
+  /* LCA in Binary Tree */
+  function algoLCA(tree, p, q){
+    var frames=[];
+    var nodes = tree.slice();
+    var visited = {};
+    function dfs(i){
+      if (i>=nodes.length || nodes[i]===null) return null;
+      visited[i]=true;
+      var f={}; for (var k in visited) f[k]=true;
+      frames.push({nodes:nodes,visited:f,curr:i,desc:'Visit '+nodes[i]+'.'});
+      if (nodes[i]===p || nodes[i]===q) {
+        var f2={}; for (var k in visited) f2[k]=true;
+        frames.push({nodes:nodes,visited:f2,curr:i,match:i,desc:'Found target '+nodes[i]+'. Return self.'});
+        return i;
+      }
+      var L = dfs(2*i+1);
+      var R = dfs(2*i+2);
+      if (L!==null && R!==null){
+        var f3={}; for (var k in visited) f3[k]=true;
+        frames.push({nodes:nodes,visited:f3,curr:i,match:i,desc:'Both subtrees returned non-null at '+nodes[i]+' → LCA = '+nodes[i]+'.'});
+        return i;
+      }
+      return L!==null ? L : R;
+    }
+    var ans = dfs(0);
+    frames.push({nodes:nodes,visited:visited,curr:-1,match: ans, desc: ans!==null ? 'LCA = '+nodes[ans]+'.' : 'Not found.'});
+    return frames;
+  }
+
+  /* Clone Graph - render adjacency growth */
+  function algoCloneGraph(adj){
+    var frames=[];
+    var nodes = Object.keys(adj).map(Number).sort(function(a,b){return a-b;});
+    var clone={};
+    var visited={};
+    var queue=[nodes[0]];
+    visited[nodes[0]]=true;
+    clone[nodes[0]]=[];
+    frames.push({adj: JSON.parse(JSON.stringify(adj)), clone: JSON.parse(JSON.stringify(clone)), curr: nodes[0], desc:'BFS from '+nodes[0]+'. Map original→cloned, copy edges.'});
+    while (queue.length){
+      var u = queue.shift();
+      (adj[u]||[]).forEach(function(v){
+        if (!clone[v]){
+          clone[v]=[];
+          visited[v]=true;
+          queue.push(v);
+        }
+        if (clone[u].indexOf(v)===-1) clone[u].push(v);
+        frames.push({adj: JSON.parse(JSON.stringify(adj)), clone: JSON.parse(JSON.stringify(clone)), curr: u, edge:[u,v], desc:'Copy edge '+u+'→'+v+'.'});
+      });
+    }
+    frames.push({adj: JSON.parse(JSON.stringify(adj)), clone: JSON.parse(JSON.stringify(clone)), curr: -1, desc:'Clone complete.'});
+    return frames;
+  }
+
+  /* Kth Largest (min-heap of size k) */
+  function algoKthLargest(arr, k){
+    var frames=[];
+    var heap=[];
+    function heapifyUp(i){
+      while (i>0){
+        var p = Math.floor((i-1)/2);
+        if (heap[p]>heap[i]){ var t=heap[p]; heap[p]=heap[i]; heap[i]=t; i=p; } else break;
+      }
+    }
+    function heapifyDown(i){
+      var n=heap.length;
+      while (true){
+        var l=2*i+1, r=2*i+2, s=i;
+        if (l<n && heap[l]<heap[s]) s=l;
+        if (r<n && heap[r]<heap[s]) s=r;
+        if (s===i) break;
+        var t=heap[s]; heap[s]=heap[i]; heap[i]=t; i=s;
+      }
+    }
+    frames.push({arr:arr.slice(),heap:heap.slice(),curr:-1,desc:'Maintain min-heap of size k='+k+'. Top = kth largest.'});
+    for (var i=0;i<arr.length;i++){
+      heap.push(arr[i]); heapifyUp(heap.length-1);
+      frames.push({arr:arr.slice(),heap:heap.slice(),curr:i,desc:'Push '+arr[i]+'. Heap='+JSON.stringify(heap)+'.'});
+      if (heap.length>k){
+        var popped = heap[0]; heap[0]=heap[heap.length-1]; heap.pop(); heapifyDown(0);
+        frames.push({arr:arr.slice(),heap:heap.slice(),curr:i,desc:'Heap size > k. Pop min '+popped+'. Heap='+JSON.stringify(heap)+'.'});
+      }
+    }
+    frames.push({arr:arr.slice(),heap:heap.slice(),curr:-1,desc: heap.length===k ? 'kth largest = heap top = '+heap[0]+'.' : 'k>n; not enough elements.'});
+    return frames;
+  }
+
+  /* Combination Sum */
+  function algoCombinationSum(cands, target){
+    var frames=[];
+    var a = cands.slice().sort(function(x,y){return x-y;});
+    var path=[];
+    var results=[];
+    frames.push({cands:a.slice(),path:[],results:[],remaining:target,desc:'Sort candidates: ['+a.join(',')+']. Backtrack: choose, recurse, unchoose.'});
+    function bt(start, remaining){
+      if (remaining===0){
+        results.push(path.slice());
+        frames.push({cands:a.slice(),path:path.slice(),results:results.slice(),remaining:remaining,desc:'remaining=0 → record combo ['+path.join(',')+'].'});
+        return;
+      }
+      for (var i=start;i<a.length;i++){
+        if (a[i]>remaining){
+          frames.push({cands:a.slice(),path:path.slice(),results:results.slice(),remaining:remaining,curr:i,desc:'Prune: '+a[i]+' > remaining '+remaining+'. (Sorted → break.)'});
+          break;
+        }
+        path.push(a[i]);
+        frames.push({cands:a.slice(),path:path.slice(),results:results.slice(),remaining:remaining-a[i],curr:i,desc:'Choose '+a[i]+'. path=['+path.join(',')+'], remaining='+(remaining-a[i])+'.'});
+        bt(i, remaining-a[i]);
+        path.pop();
+        frames.push({cands:a.slice(),path:path.slice(),results:results.slice(),remaining:remaining,curr:i,desc:'Unchoose. Backtrack.'});
+      }
+    }
+    bt(0, target);
+    frames.push({cands:a.slice(),path:[],results:results.slice(),remaining:0,desc:'Done. Combinations: '+JSON.stringify(results)+'.'});
+    return frames;
+  }
+
+  // ----------------------- RENDERERS -----------------------
+
+  // Generic stack/queue side panel
+  function renderStackBelow(root, stack, label) {
+    var lab = H.el('div'); lab.style.color='var(--muted)'; lab.style.fontSize='0.85rem'; lab.textContent = (label||'Stack')+' (top → bottom):';
+    root.appendChild(lab);
+    var s = H.el('div','stack-stage');
+    if (stack.length===0) s.appendChild(H.el('div','map-cell','(empty)'));
+    stack.forEach(function(v,i){
+      var c = H.el('div','cell');
+      c.textContent = v;
+      if (i===stack.length-1) c.className += ' peek';
+      s.appendChild(c);
+    });
+    root.appendChild(s);
+  }
+  function renderHeapBelow(root, heap, label) {
+    var lab = H.el('div'); lab.style.color='var(--muted)'; lab.style.fontSize='0.85rem'; lab.textContent = (label||'Min-heap (sorted view)')+':';
+    root.appendChild(lab);
+    var s = H.el('div','stack-stage');
+    var sorted = heap.slice().sort(function(a,b){return a-b;});
+    if (sorted.length===0) s.appendChild(H.el('div','map-cell','(empty)'));
+    sorted.forEach(function(v,i){
+      var c = H.el('div','cell'); c.textContent = v;
+      if (i===0) c.className += ' peek';
+      s.appendChild(c);
+    });
+    root.appendChild(s);
+  }
+
+  function renderArrayWithStack(frame, root) {
+    renderArray(frame, root, {});
+    if (frame.stack) renderStackBelow(root, frame.stack);
+    if (frame.ans)   {
+      var lab = H.el('div'); lab.style.color='var(--muted)'; lab.style.fontSize='0.85rem'; lab.textContent='answer:';
+      root.appendChild(lab);
+      var stage = H.el('div','stage');
+      frame.ans.forEach(function(v,i){
+        var c=H.el('div','cell'); var idx=H.el('span','idx',String(i)); c.appendChild(idx); c.appendChild(document.createTextNode(String(v)));
+        stage.appendChild(c);
+      });
+      root.appendChild(stage);
+    }
+  }
+  function renderArrayPlain(frame, root) { renderArray(frame, root, {}); }
+  function renderArrayWithMap(frame, root){ renderArray(frame, root, {}); }
+  function renderArrayWithHeap(frame, root){ renderArray(frame, root, {}); if (frame.heap) renderHeapBelow(root, frame.heap); }
+
+  // Intervals renderer
+  function renderIntervals(frame, root){
+    root.innerHTML='';
+    var ivs = frame.intervals||[];
+    var merged = frame.merged||[];
+    var hl = frame.highlight||[];
+    var max = 0; ivs.forEach(function(x){ if (x[1]>max) max=x[1]; }); merged.forEach(function(x){ if (x[1]>max) max=x[1]; });
+    if (max===0) max=1;
+    var stage = H.el('div','interval-stage');
+    var lab1 = H.el('div'); lab1.style.color='var(--muted)'; lab1.style.fontSize='0.85rem'; lab1.textContent='Sorted intervals:';
+    stage.appendChild(lab1);
+    ivs.forEach(function(iv,i){
+      var row = H.el('div','row');
+      var bar = H.el('div','interval-bar');
+      var W = 320;
+      bar.style.width = ((iv[1]-iv[0])/max*W + 8)+'px';
+      bar.style.marginLeft = (iv[0]/max*W)+'px';
+      bar.style.background = hl.indexOf(i)>=0 ? 'var(--warn)' : 'var(--accent)';
+      var label = H.el('span','interval-label','['+iv[0]+', '+iv[1]+']');
+      row.appendChild(bar); row.appendChild(label);
+      stage.appendChild(row);
+    });
+    if (merged.length){
+      var lab2 = H.el('div'); lab2.style.color='var(--muted)'; lab2.style.fontSize='0.85rem'; lab2.textContent='Result so far:'; lab2.style.marginTop='8px';
+      stage.appendChild(lab2);
+      merged.forEach(function(iv){
+        var row = H.el('div','row');
+        var bar = H.el('div','interval-bar'); var W=320;
+        bar.style.width = ((iv[1]-iv[0])/max*W + 8)+'px';
+        bar.style.marginLeft = (iv[0]/max*W)+'px';
+        bar.style.background = 'var(--good)';
+        var label = H.el('span','interval-label','['+iv[0]+', '+iv[1]+']');
+        row.appendChild(bar); row.appendChild(label);
+        stage.appendChild(row);
+      });
+    }
+    if (frame.heap){
+      var lab3 = H.el('div'); lab3.style.color='var(--muted)'; lab3.style.fontSize='0.85rem'; lab3.textContent='Min-heap of end times: ['+frame.heap.join(', ')+']'; lab3.style.marginTop='8px';
+      stage.appendChild(lab3);
+    }
+    root.appendChild(stage);
+  }
+
+  // Grid renderer (Number of Islands)
+  function renderGrid(frame, root){
+    root.innerHTML='';
+    var g = frame.grid||[]; var v = frame.visited||{}; var cur = frame.curr;
+    var grid = H.el('div','grid'); grid.style.gridTemplateColumns = 'repeat('+(g[0]?g[0].length:1)+', 36px)';
+    for (var r=0;r<g.length;r++){
+      for (var c=0;c<g[r].length;c++){
+        var cell = H.el('div','cell', g[r][c]===1 ? '■' : '·');
+        if (g[r][c]===0) cell.style.opacity = 0.4;
+        if (v[r+','+c]) cell.className += ' in-window';
+        if (cur && cur[0]===r && cur[1]===c) cell.className += ' curr';
+        grid.appendChild(cell);
+      }
+    }
+    root.appendChild(grid);
+    var info = H.el('div'); info.style.marginTop='6px'; info.style.color='var(--muted)'; info.style.fontSize='0.85rem';
+    info.textContent = 'Islands found: '+(frame.count||0);
+    root.appendChild(info);
+  }
+
+  // Course schedule renderer (graph circular layout)
+  function renderCourseGraph(frame, root){
+    root.innerHTML='';
+    var n = frame.nodes; var edges = frame.edges; var color = frame.color; var curr = frame.curr;
+    var W=380, Hsvg=220, R=80, cx=W/2, cy=Hsvg/2;
+    var svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('width', W); svg.setAttribute('height', Hsvg); svg.style.background='var(--panel)';
+    svg.style.borderRadius='8px';
+    var pos = [];
+    for (var i=0;i<n;i++){
+      var a = -Math.PI/2 + i*(2*Math.PI/n);
+      pos.push([cx+R*Math.cos(a), cy+R*Math.sin(a)]);
+    }
+    // edges
+    edges.forEach(function(e){
+      var p1=pos[e[0]], p2=pos[e[1]];
+      var line = document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1',p1[0]); line.setAttribute('y1',p1[1]);
+      line.setAttribute('x2',p2[0]); line.setAttribute('y2',p2[1]);
+      line.setAttribute('stroke','var(--border)'); line.setAttribute('stroke-width','1.5');
+      line.setAttribute('marker-end','url(#arrow)');
+      svg.appendChild(line);
+    });
+    // arrow marker
+    var defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+    defs.innerHTML = '<marker id="arrow" markerWidth="8" markerHeight="8" refX="14" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,4 L0,8 z" fill="#9aa3c4"/></marker>';
+    svg.appendChild(defs);
+    // nodes
+    for (var i=0;i<n;i++){
+      var g = document.createElementNS('http://www.w3.org/2000/svg','g');
+      g.setAttribute('class','node');
+      var circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      circle.setAttribute('cx',pos[i][0]); circle.setAttribute('cy',pos[i][1]); circle.setAttribute('r',16);
+      var fill = '#1c2140'; var stroke='var(--border)';
+      if (color[i]===1){ fill='var(--warn)'; stroke='var(--warn)'; }
+      else if (color[i]===2){ fill='var(--good)'; stroke='var(--good)'; }
+      if (curr===i){ stroke='var(--accent)'; circle.setAttribute('stroke-width','3'); }
+      circle.setAttribute('fill', fill); circle.setAttribute('stroke', stroke);
+      g.appendChild(circle);
+      var t = document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('x',pos[i][0]); t.setAttribute('y',pos[i][1]); t.setAttribute('text-anchor','middle'); t.setAttribute('dominant-baseline','middle');
+      t.setAttribute('fill','#e8ecf8'); t.setAttribute('font-family','ui-monospace,monospace'); t.setAttribute('font-size','12');
+      t.textContent = String(i);
+      g.appendChild(t);
+      svg.appendChild(g);
+    }
+    var wrap = H.el('div','tree'); wrap.appendChild(svg);
+    root.appendChild(wrap);
+    var lg = H.el('div','legend'); lg.innerHTML = '<span><span class="swatch" style="background:#1c2140"></span>WHITE</span><span><span class="swatch" style="background:var(--warn)"></span>GRAY (in DFS stack)</span><span><span class="swatch" style="background:var(--good)"></span>BLACK (done)</span>';
+    root.appendChild(lg);
+  }
+
+  // Linked list renderer (generic with prev/curr/slow/fast)
+  function renderLLReverse(frame, root){
+    root.innerHTML='';
+    var st = H.el('div','ll-stage');
+    var nodes = frame.nodes||[]; var nx = frame.next||[];
+    var prev = frame.prev, curr = frame.curr;
+    nodes.forEach(function(v,i){
+      var n = H.el('div','ll-node', String(v));
+      if (i===prev) n.className += ' prev';
+      if (i===curr) n.className += ' curr';
+      st.appendChild(n);
+      var arrow = H.el('div','ll-arrow', '→ '+(nx[i]===null? 'null' : nodes[nx[i]]));
+      st.appendChild(arrow);
+    });
+    root.appendChild(st);
+    var info = H.el('div'); info.style.color='var(--muted)'; info.style.fontSize='0.85rem';
+    info.textContent = 'prev = '+(prev===null||prev===undefined?'null':nodes[prev])+', curr = '+(curr===null||curr===undefined?'null':nodes[curr]);
+    root.appendChild(info);
+  }
+  function renderLLCycle(frame, root){
+    root.innerHTML='';
+    var st = H.el('div','ll-stage');
+    var nodes = frame.nodes||[]; var nx = frame.next||[];
+    nodes.forEach(function(v,i){
+      var cls = 'll-node';
+      if (frame.slow===i && frame.fast===i) cls += ' match';
+      else if (frame.slow===i) cls += ' slow';
+      else if (frame.fast===i) cls += ' fast';
+      var n = H.el('div',cls, String(v));
+      st.appendChild(n);
+      var arrow = H.el('div','ll-arrow', '→ '+(nx[i]===null? 'null' : nodes[nx[i]]+(nx[i]<i?' (cycle)':'')));
+      st.appendChild(arrow);
+    });
+    root.appendChild(st);
+  }
+  function renderMergeLists(frame, root){
+    root.innerHTML='';
+    var aBox = H.el('div'); aBox.style.color='var(--muted)'; aBox.style.fontSize='0.85rem'; aBox.textContent='List A:'; root.appendChild(aBox);
+    var aSt = H.el('div','ll-stage');
+    frame.a.forEach(function(v,k){
+      var n = H.el('div','ll-node', String(v));
+      if (k<frame.i) n.className += ' dim';
+      else if (k===frame.i
+) n.className += ' curr';
+      aSt.appendChild(n);
+      aSt.appendChild(H.el('div','ll-arrow','→'));
+    });
+    root.appendChild(aSt);
+    var bBox = H.el('div'); bBox.style.color='var(--muted)'; bBox.style.fontSize='0.85rem'; bBox.textContent='List B:'; root.appendChild(bBox);
+    var bSt = H.el('div','ll-stage');
+    frame.b.forEach(function(v,k){
+      var n = H.el('div','ll-node', String(v));
+      if (k<frame.j) n.className += ' dim';
+      else if (k===frame.j) n.className += ' curr';
+      bSt.appendChild(n);
+      bSt.appendChild(H.el('div','ll-arrow','→'));
+    });
+    root.appendChild(bSt);
+    var oBox = H.el('div'); oBox.style.color='var(--muted)'; oBox.style.fontSize='0.85rem'; oBox.textContent='Output:'; root.appendChild(oBox);
+    var oSt = H.el('div','ll-stage');
+    frame.out.forEach(function(v){
+      var n = H.el('div','ll-node match', String(v)); oSt.appendChild(n); oSt.appendChild(H.el('div','ll-arrow','→'));
+    });
+    root.appendChild(oSt);
+  }
+
+  // LRU renderer
+  function renderLRU(frame, root){
+    root.innerHTML='';
+    var lab = H.el('div'); lab.style.color='var(--muted)'; lab.style.fontSize='0.85rem'; lab.textContent='Last operation: '+(frame.op||'-');
+    root.appendChild(lab);
+    var lab2 = H.el('div'); lab2.style.color='var(--muted)'; lab2.style.fontSize='0.85rem'; lab2.textContent='LRU order (left = least recent, right = MRU):';
+    root.appendChild(lab2);
+    var st = H.el('div','ll-stage');
+    if (frame.order.length===0) st.appendChild(H.el('div','map-cell','(empty)'));
+    frame.order.forEach(function(k,i){
+      var n = H.el('div','ll-node', k+'='+frame.map[k]);
+      if (i===frame.order.length-1) n.className += ' match';
+      else if (i===0) n.className += ' slow';
+      st.appendChild(n);
+      if (i<frame.order.length-1) st.appendChild(H.el('div','ll-arrow','⇄'));
+    });
+    root.appendChild(st);
+  }
+
+  // Tree renderer (level-order array tree)
+  function renderTree(frame, root){
+    root.innerHTML='';
+    var nodes = frame.nodes; var visited = frame.visited||{}; var curr = frame.curr; var match = frame.match;
+    // compute positions
+    var n = nodes.length;
+    var depth = Math.floor(Math.log2(n))+1;
+    var W = 600, Hsvg = Math.min(360, 60*depth+40);
+    var svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('width', W); svg.setAttribute('height', Hsvg); svg.style.background='var(--panel)'; svg.style.borderRadius='8px';
+    function pos(i){
+      var d = Math.floor(Math.log2(i+1));
+      var idxInLvl = (i+1) - Math.pow(2,d);
+      var nLvl = Math.pow(2,d);
+      var x = W*(idxInLvl+0.5)/nLvl;
+      var y = 30 + d*(Hsvg-50)/Math.max(depth,1);
+      return [x,y];
+    }
+    // edges
+    for (var i=0;i<n;i++){
+      if (nodes[i]===null || nodes[i]===undefined) continue;
+      var p = pos(i);
+      [2*i+1,2*i+2].forEach(function(j){
+        if (j<n && nodes[j]!==null && nodes[j]!==undefined){
+          var q = pos(j);
+          var line = document.createElementNS('http://www.w3.org/2000/svg','line');
+          line.setAttribute('x1',p[0]); line.setAttribute('y1',p[1]);
+          line.setAttribute('x2',q[0]); line.setAttribute('y2',q[1]);
+          line.setAttribute('stroke','var(--border)'); line.setAttribute('stroke-width','1.5');
+          svg.appendChild(line);
+        }
+      });
+    }
+    for (var i=0;i<n;i++){
+      if (nodes[i]===null || nodes[i]===undefined) continue;
+      var p = pos(i);
+      var fill='#1c2140', stroke='var(--border)';
+      if (visited[i]) { fill='rgba(110,168,255,0.35)'; stroke='var(--accent)'; }
+      if (curr===i){ fill='var(--warn)'; stroke='var(--warn)'; }
+      if (match===i){ fill='var(--good)'; stroke='var(--good)'; }
+      var c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      c.setAttribute('cx',p[0]); c.setAttribute('cy',p[1]); c.setAttribute('r',16);
+      c.setAttribute('fill',fill); c.setAttribute('stroke',stroke); c.setAttribute('stroke-width','2');
+      svg.appendChild(c);
+      var t = document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('x',p[0]); t.setAttribute('y',p[1]); t.setAttribute('text-anchor','middle'); t.setAttribute('dominant-baseline','middle');
+      t.setAttribute('fill','#e8ecf8'); t.setAttribute('font-family','ui-monospace,monospace'); t.setAttribute('font-size','12');
+      t.textContent = String(nodes[i]);
+      svg.appendChild(t);
+    }
+    var wrap = H.el('div','tree'); wrap.appendChild(svg);
+    root.appendChild(wrap);
+    if (frame.levels){
+      var info = H.el('div'); info.style.color='var(--muted)'; info.style.fontSize='0.85rem'; info.style.marginTop='6px';
+      info.textContent = 'Levels: '+JSON.stringify(frame.levels);
+      root.appendChild(info);
+    }
+  }
+
+  // Adjacency renderer (Clone Graph)
+  function renderCloneGraph(frame, root){
+    root.innerHTML='';
+    var t1 = H.el('div'); t1.style.color='var(--muted)'; t1.style.fontSize='0.85rem'; t1.textContent='Original adjacency:'; root.appendChild(t1);
+    var m1 = H.el('div','map-stage');
+    Object.keys(frame.adj).forEach(function(k){
+      m1.appendChild(H.el('div','map-cell', k+': ['+frame.adj[k].join(',')+']'));
+    });
+    root.appendChild(m1);
+    var t2 = H.el('div'); t2.style.color='var(--muted)'; t2.style.fontSize='0.85rem'; t2.textContent='Cloned adjacency (so far):'; root.appendChild(t2);
+    var m2 = H.el('div','map-stage');
+    if (Object.keys(frame.clone).length===0) m2.appendChild(H.el('div','map-cell','(empty)'));
+    Object.keys(frame.clone).forEach(function(k){
+      var c = H.el('div','map-cell', k+"': ["+frame.clone[k].join(',')+"]");
+      if (frame.curr!==undefined && Number(k)===frame.curr) c.className += ' flash';
+      m2.appendChild(c);
+    });
+    root.appendChild(m2);
+  }
+
+  // DP table renderer
+  function renderDP(frame, root){
+    root.innerHTML='';
+    var dp = frame.dp; var read = frame.read||[]; var set = frame.set||[]; var curr = frame.curr;
+    var t = H.el('table','dp-table');
+    var hr = H.el('tr'); hr.appendChild(H.el('th','','i'));
+    for (var i=0;i<dp.length;i++) hr.appendChild(H.el('th','',String(i)));
+    t.appendChild(hr);
+    var vr = H.el('tr'); vr.appendChild(H.el('th','','dp'));
+    for (var i=0;i<dp.length;i++){
+      var td = H.el('td','', dp[i]>=Infinity ? '∞' : String(dp[i]));
+      if (curr===i) td.className = 'curr';
+      else if (read.indexOf(i)>=0) td.className = 'read';
+      else if (set.indexOf(i)>=0) td.className = 'set';
+      vr.appendChild(td);
+    }
+    t.appendChild(vr);
+    root.appendChild(t);
+  }
+
+  // Group anagrams renderer
+  function renderGroupAna(frame, root){
+    root.innerHTML='';
+    var st = H.el('div','stage');
+    frame.words.forEach(function(w,i){
+      var c = H.el('div','cell'); c.style.minWidth='auto'; c.style.padding='0 8px'; c.textContent = w;
+      if (frame.curr===i) c.className += ' curr';
+      st.appendChild(c);
+    });
+    root.appendChild(st);
+    var lab = H.el('div'); lab.style.color='var(--muted)'; lab.style.fontSize='0.85rem'; lab.style.marginTop='6px'; lab.textContent='Groups by sorted-letters key:';
+    root.appendChild(lab);
+    var m = H.el('div','map-stage');
+    var keys = Object.keys(frame.groups);
+    if (keys.length===0) m.appendChild(H.el('div','map-cell','(empty)'));
+    keys.forEach(function(k){ m.appendChild(H.el('div','map-cell', k+': ['+frame.groups[k].join(',')+']')); });
+    root.appendChild(m);
+  }
+
+  // Combination Sum renderer
+  function renderCombo(frame, root){
+    root.innerHTML='';
+    var st = H.el('div','stage');
+    frame.cands.forEach(function(v,i){
+      var c = H.el('div','cell'); var idx=H.el('span','idx',String(i)); c.appendChild(idx); c.appendChild(document.createTextNode(String(v)));
+      if (frame.curr===i) c.className += ' curr';
+      st.appendChild(c);
+    });
+    root.appendChild(st);
+    var info = H.el('div'); info.style.color='var(--muted)'; info.style.fontSize='0.85rem'; info.style.marginTop='6px';
+    info.textContent = 'path = ['+(frame.path||[]).join(',')+'], remaining = '+(frame.remaining===undefined?'?':frame.remaining);
+    root.appendChild(info);
+    var lab = H.el('div'); lab.style.color='var(--muted)'; lab.style.fontSize='0.85rem'; lab.textContent='Combinations found:'; root.appendChild(lab);
+    var m = H.el('div','map-stage');
+    if (!frame.results || frame.results.length===0) m.appendChild(H.el('div','map-cell','(none yet)'));
+    (frame.results||[]).forEach(function(c){ m.appendChild(H.el('div','map-cell', '['+c.join(',')+']')); });
+    root.appendChild(m);
+  }
+
+  // ----------------------- CONTENT DEFINITIONS -----------------------
+  // Each problem entry: id, title, definition, approach, pitfalls (optional), tactics (optional),
+  // complexity, demo: {inputLabel, default, secondInput?, parse, run, render}
+
+  var GROUPS = [
+    {
+      id:'g-hash', title:'1. Hash Map Lookup',
+      desc:'Trade brute-force scans for O(n) lookups by remembering what you have seen. Useful for complements, frequencies, deduplication, and grouping by a canonical key.',
+      problems:[
+        {
+          id:'two-sum', title:'Two Sum',
+          definition:'Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to <code>target</code>. Each input has exactly one solution and you may not use the same element twice.',
+          approach:'Iterate once. For each value <code>x</code>, check if <code>target - x</code> is already in a hash map. If yes, return the stored index and current index. Otherwise store <code>x → currentIndex</code>.',
+          pitfalls:['Returning values instead of indices.','Storing before checking, which can let an element pair with itself when duplicates exist.','Falling back to nested loops (O(n²)).'],
+          tactics:['Start from O(n²) brute force, then ask: what information from previous elements would make the current element easy to resolve?','Hash map beats sorting because original indices are required.'],
+          complexity:'Time O(n), space O(n).',
+          demo:{
+            inputLabel:'nums',
+            default:'2, 7, 11, 15',
+            secondInput:{label:'target', default:'9'},
+            parse:function(s,t){ return { arr:H.parseIntList(s), target: Number(t) }; },
+            run:function(p){ return algoTwoSum(p.arr, p.target); },
+            render: renderArrayWithMap
+          }
+        },
+        {
+          id:'group-anagrams', title:'Group Anagrams',
+          definition:'Given an array of strings, group strings that are anagrams of each other.',
+          approach:'Use a canonical key: sorted letters (or a 26-count signature) per word. Append each word to <code>map[key]</code>. Return <code>Object.values(map)</code>.',
+          pitfalls:['Using a mutable list as a hash key.','Ignoring character-set assumptions (ASCII vs Unicode).'],
+          tactics:['26-count signature avoids the per-word O(k log k) sort.','State the trade-off explicitly to the interviewer.'],
+          complexity:'Time O(n·k log k) with sorted keys, O(n·k) with counts. Space O(n·k).',
+          demo:{
+            inputLabel:'words (comma separated)',
+            default:'eat, tea, tan, ate, nat, bat',
+            parse:function(s){ return s.split(/[,\s]+/).filter(function(x){return x.length;}); },
+            run:function(words){ return algoGroupAnagrams(words); },
+            render: renderGroupAna
+          }
+        }
+      ]
+    },
+    {
+      id:'g-twoptr', title:'2. Two Pointers',
+      desc:'When data is sorted or has symmetric structure, two pointers reduce nested loops by walking inward, outward, or in lockstep.',
+      problems:[
+        {
+          id:'three-sum', title:'3Sum',
+          definition:'Given an integer array <code>nums</code>, return all unique triplets <code>[a,b,c]</code> such that <code>a+b+c == 0</code> and indices are distinct.',
+          approach:'Sort the array. For each anchor <code>i</code>, run two pointers <code>L = i+1</code> and <code>R = n−1</code>. Move <code>L</code> right when sum is too small, <code>R</code> left when too large. Skip duplicate values for <code>i</code>, <code>L</code>, and <code>R</code>.',
+          pitfalls:['Emitting duplicate triplets.','Forgetting to skip duplicate anchors.','Triple nested loops (O(n³)).'],
+          tactics:['Sorting changes the problem from lookup to ordered search and gives monotonic pointer movement.','Duplicate skipping is as important as the pointer logic.'],
+          complexity:'Time O(n²), space O(1) extra (excluding output).',
+          demo:{
+            inputLabel:'nums',
+            default:'-1, 0, 1, 2, -1, -4',
+            parse:function(s){ return H.parseIntList(s); },
+            run:function(arr){ return algo3Sum(arr); },
+            render: renderArrayPlain
+          }
+        },
+        {
+          id:'container', title:'Container With Most Water',
+          definition:'Given <code>n</code> non-negative integers representing line heights, find two lines that with the x-axis form a container holding the most water.',
+          approach:'Start with the widest container (left=0, right=n−1). Compute area = min(h[L], h[R]) × (R−L). Move the pointer at the shorter line inward; the taller side cannot help while the shorter remains limiting and the width shrinks.',
+          pitfalls:['Moving the taller pointer.','Not justifying correctness — this problem is more about reasoning than code.'],
+          tactics:['State the elimination proof aloud before coding.'],
+          complexity:'Time O(n), space O(1).',
+          demo:{
+            inputLabel:'heights',
+            default:'1, 8, 6, 2, 5, 4, 8, 3, 7',
+            parse:function(s){ return H.parseIntList(s); },
+            run:function(arr){ return algoMaxArea(arr); },
+            render: renderArrayPlain
+          }
+        }
+      ]
+    },
+    {
+      id:'g-window', title:'3. Sliding Window',
+      desc:'Maintain a contiguous range satisfying a constraint by expanding the right boundary and shrinking the left when invariants break.',
+      problems:[
+        {
+          id:'longest-unique', title:'Longest Substring Without Repeating Characters',
+          definition:'Given a string <code>s</code>, find the length of the longest substring with all distinct characters.',
+          approach:'Track the last-seen index per character. Expand <code>R</code>; when <code>s[R]</code> was seen at index <code>≥ L</code>, jump <code>L</code> to <code>last[s[R]]+1</code>. Update best length each step.',
+          pitfalls:['Resetting the window incorrectly.','Counting subsequences instead of substrings.','Moving <code>L</code> backward.'],
+          tactics:['Invariant: window always contains unique characters.','Direct jump on duplicate avoids repeated shrinking.'],
+          complexity:'Time O(n), space O(min(n, alphabet)).',
+          demo:{
+            inputLabel:'string',
+            default:'abcabcbb',
+            parse:function(s){ return s.replace(/\s+/g,''); },
+            run:function(s){ return algoLongestUnique(s); },
+            render: renderArrayPlain
+          }
+        },
+        {
+          id:'min-window', title:'Minimum Window Substring',
+          definition:'Given strings <code>s</code> and <code>t</code>, return the smallest substring of <code>s</code> that contains all characters of <code>t</code> (multiset, case-sensitive).',
+          approach:'Build target frequency map. Expand <code>R</code> increasing have-counts; once <em>all required character types</em> are satisfied, shrink <code>L</code> while still valid, tracking the best window.',
+          pitfalls:['Confusing distinct-chars with total-chars.','Shrinking too eagerly and losing validity tracking.'],
+          tactics:['Track <code>satisfied == requiredTypes</code> as the validity condition; updating only when a count crosses the boundary keeps it O(n).'],
+          complexity:'Time O(n), space O(alphabet).',
+          demo:{
+            inputLabel:'s',
+            default:'ADOBECODEBANC',
+            secondInput:{label:'t', default:'ABC'},
+            parse:function(s,t){ return { s:s.replace(/\s+/g,''), t:(t||'').replace(/\s+/g,'') }; },
+            run:function(p){ return algoMinWindow(p.s, p.t); },
+            render: renderArrayPlain
+          }
+        }
+      ]
+    },
+    {
+      id:'g-bsearch', title:'4. Binary Search',
+      desc:'Use binary search whenever the answer space is monotonic or the data is sorted. The key is identifying which half is guaranteed to contain the answer.',
+      problems:[
+        {
+          id:'binary-search', title:'Binary Search',
+          definition:'Given a sorted array of integers and a target value, return the index of the target if it exists, otherwise return -1.',
+          approach:'Maintain <code>L</code> and <code>R</code>. Compute <code>M = L + (R-L)/2</code>. If <code>arr[M] == target</code> return; if smaller, search the right half; otherwise the left half.',
+          pitfalls:['Infinite loops from wrong update of L/R.','Off-by-one in <code>L &lt;= R</code> vs <code>L &lt; R</code>.','Integer overflow on (L+R)/2 in some languages.'],
+          tactics:['Pick the loop invariant explicitly: "answer, if any, is in [L, R]".'],
+          complexity:'Time O(log n), space O(1).',
+          demo:{
+            inputLabel:'sorted nums',
+            default:'-1, 0, 3, 5, 9, 12',
+            secondInput:{label:'target', default:'9'},
+            parse:function(s,t){ return { arr:H.parseIntList(s), target: Number(t) }; },
+            run:function(p){ return algoBinarySearch(p.arr, p.target); },
+            render: renderArrayPlain
+          }
+        },
+        {
+          id:'search-rotated', title:'Search in Rotated Sorted Array',
+          definition:'Given an array sorted then rotated at an unknown pivot, return the index of <code>target</code> or -1.',
+          approach:'Standard binary search, but at each step decide which half is sorted: if <code>arr[L] &lt;= arr[M]</code>, the left half is sorted. If target lies in that sorted half, recurse there; otherwise the other half.',
+          pitfalls:['Wrong comparator when duplicates exist.','Mixing strict/non-strict inequalities.'],
+          tactics:['Always identify the sorted half first; that is the invariant of this problem.'],
+          complexity:'Time O(log n), space O(1).',
+          demo:{
+            inputLabel:'rotated nums',
+            default:'4, 5, 6, 7, 0, 1, 2',
+            secondInput:{label:'target', default:'0'},
+            parse:function(s,t){ return { arr:H.parseIntList(s), target: Number(t) }; },
+            run:function(p){ return algoSearchRotated(p.arr, p.target); },
+            render: renderArrayPlain
+          }
+        },
+        {
+          id:'median-two', title:'Median of Two Sorted Arrays',
+          definition:'Given two sorted arrays, return the median. Optimal complexity is O(log min(n, m)).',
+          approach:'Conceptually, partition both arrays so that left halves combined have the same total length as right halves and <code>max(leftA, leftB) ≤ min(rightA, rightB)</code>. Binary search the smaller array to find the partition. (Visualizer below shows the merge intuition.)',
+          pitfalls:['Off-by-one on partition boundaries.','Forgetting to use ±∞ sentinels for empty partitions.'],
+          tactics:['Binary-search on the smaller array to keep complexity tight.'],
+          complexity:'Time O(log min(n, m)), space O(1).',
+          demo:{
+            inputLabel:'A',
+            default:'1, 3',
+            secondInput:{label:'B', default:'2, 4'},
+            parse:function(s,t){ return { a:H.parseIntList(s).sort(function(x,y){return x-y;}), b:H.parseIntList(t).sort(function(x,y){return x-y;}) }; },
+            run:function(p){ return algoMedianTwo(p.a, p.b); },
+            render: renderArrayPlain
+          }
+        }
+      ]
+    },
+    {
+      id:'g-intervals', title:'5. Intervals (Sort + Sweep / Heap)',
+      desc:'Sort by start time, then either sweep with a single comparison against the last merged interval or maintain a priority queue of end times to count concurrent occupancy.',
+      problems:[
+        {
+          id:'merge-intervals', title:'Merge Intervals',
+          definition:'Given a collection of intervals, merge all overlapping intervals.',
+          approach:'Sort by start. Seed result with the first interval. For each next interval, if it overlaps the last merged interval, extend the last end; otherwise append.',
+          pitfalls:['Not sorting first.','Inconsistent handling of mutated input intervals.'],
+          tactics:['After sorting by start, only the last merged interval is relevant for the next comparison.'],
+          complexity:'Time O(n log n), space O(n) output.',
+          demo:{
+            inputLabel:'intervals (e.g. 1-3,2-6,8-10,15-18)',
+            default:'1-3, 2-6, 8-10, 15-18',
+            parse:function(s){ return s.split(/[,\s]+/).filter(function(x){return x.length;}).map(function(p){ var m=p.split('-').map(Number); if (m.length!==2||m.some(isNaN)) throw new Error('Bad interval: '+p); return m;}); },
+            run:function(ivs){ return algoMergeIntervals(ivs); },
+            render: renderIntervals
+          }
+        },
+        {
+          id:'insert-interval', title:'Insert Interval',
+          definition:'Given a sorted, non-overlapping list of intervals, insert a new interval and merge if necessary.',
+          approach:'Three phases: (1) append intervals ending strictly before the new starts, (2) merge all intervals overlapping the new one into a single accumulator, (3) append the rest.',
+          pitfalls:['Overcomplicated branching.','Missing the case where the new interval absorbs many existing ones.'],
+          tactics:['Lean on the sorted, non-overlapping precondition; do not re-sort.'],
+          complexity:'Time O(n), space O(n) output.',
+          demo:{
+            inputLabel:'existing (e.g. 1-3,6-9)',
+            default:'1-3, 6-9',
+            secondInput:{label:'new interval (e.g. 2-5)', default:'2-5'},
+            parse:function(s,t){
+              var parse = function(str){return str.split(/[,\s]+/).filter(function(x){return x.length;}).map(function(p){ var m=p.split('-').map(Number); if (m.length!==2||m.some(isNaN)) throw new Error('Bad interval: '+p); return m;});};
+              var a = parse(s).sort(function(x,y){return x[0]-y[0];});
+              var b = parse(t)[0]; if (!b) throw new Error('Provide one new interval.');
+              return { ivs:a, ni:b };
+            },
+            run:function(p){ return algoInsertInterval(p.ivs, p.ni); },
+            render: renderIntervals
+          }
+        },
+        {
+          id:'meeting-rooms', title:'Meeting Rooms II',
+          definition:'Given an array of meeting time intervals, return the minimum number of conference rooms required.',
+          approach:'Sort meetings by start. Use a min-heap of end times. If the earliest-ending meeting finishes before the current one starts, reuse its room (pop). Push the current meeting’s end. Heap size at the end equals rooms required.',
+          pitfalls:['Using a max-heap by accident.','Forgetting that one room can be reused exactly when end ≤ next start.'],
+          tactics:['Contrast with Merge Intervals: here we count concurrent occupancy, not merge ranges.'],
+          complexity:'Time O(n log n), space O(n).',
+          demo:{
+            inputLabel:'meetings (e.g. 0-30,5-10,15-20)',
+            default:'0-30, 5-10, 15-20',
+            parse:function(s){ return s.split(/[,\s]+/).filter(function(x){return x.length;}).map(function(p){ var m=p.split('-').map(Number); if (m.length!==2||m.some(isNaN)) throw new Error('Bad interval: '+p); return m;}); },
+            run:function(ivs){ return algoMeetingRooms(ivs); },
+            render: renderIntervals
+          }
+        }
+      ]
+    },
+    {
+      id:'g-stack', title:'6. Stack & Monotonic Stack',
+      desc:'Stacks model "last-opened, first-closed" structure. Monotonic stacks resolve nearest-greater/smaller queries in amortized O(n).',
+      problems:[
+        {
+          id:'valid-parens', title:'Valid Parentheses',
+          definition:'Given a string of brackets <code>()[]{}</code>, decide whether they are balanced and properly nested.',
+          approach:'Push openers; on a closer, the top must be the matching opener. Fail fast on mismatch or empty stack. Valid iff the stack is empty at the end.',
+          pitfalls:['Forgetting the empty-stack check at end-of-string.','Treating non-bracket chars without clarifying assumptions.'],
+          tactics:['Map closer → required opener for clean branching.','Explain why FIFO would fail but LIFO works.'],
+          complexity:'Time O(n), space O(n).',
+          demo:{
+            inputLabel:'string',
+            default:'([{}]){[()]}',
+            parse:function(s){ return s.replace(/\s+/g,''); },
+            run:function(s){ return algoValidParens(s); },
+            render: renderArrayWithStack
+          }
+        },
+        {
+          id:'daily-temps', title:'Daily Temperatures',
+          definition:'For each day’s temperature, find the number of days until a warmer temperature; 0 if none.',
+          approach:'Maintain a stack of unresolved indices with strictly decreasing temperatures. When today’s temperature exceeds the temperature at the stack top, pop and record distances. Push the current index.',
+          pitfalls:['Pushing values instead of indices (you need distances).','Not realizing each index is pushed/popped at most once → O(n) amortized.'],
+          tactics:['Read the stack as "a waiting room for indices not yet resolved by a warmer day".'],
+          complexity:'Time O(n), space O(n).',
+          demo:{
+            inputLabel:'temperatures',
+            default:'73, 74, 75, 71, 69, 72, 76, 73',
+            parse:function(s){ return H.parseIntList(s); },
+            run:function(arr){ return algoDailyTemps(arr); },
+            render: renderArrayWithStack
+          }
+        },
+        {
+          id:'histogram', title:'Largest Rectangle in Histogram',
+          definition:'Given an array of bar heights, find the largest rectangular area in the histogram.',
+          approach:'Use an increasing-height stack of indices. When the current bar is shorter than the top, pop bars; for each popped bar, its rectangle’s right boundary is the current index and its left boundary is the new stack top. Add a sentinel 0 to flush the stack at the end.',
+          pitfalls:['Wrong width formula.','Not understanding why pop time is when the popped bar’s maximal rectangle becomes decidable.'],
+          tactics:['Draw widths and boundaries explicitly. This is a proof-heavy problem.'],
+          complexity:'Time O(n), space O(n).',
+          demo:{
+            inputLabel:'bars',
+            default:'2, 1, 5, 6, 2, 3',
+            parse:function(s){ return H.parseIntList(s); },
+            run:function(arr){ return algoHistogram(arr); },
+            render: renderArrayWithStack
+          }
+        }
+      ]
+    },
+    {
+      id:'g-ll', title:'7. Linked List',
+      desc:'Linked-list problems test command of pointer mutation order. Always save <code>next</code> before breaking the old link.',
+      problems:[
+        {
+          id:'reverse-list', title:'Reverse Linked List',
+          definition:'Given the head of a singly linked list, reverse it in place.',
+          approach:'Track <code>prev</code>, <code>curr</code>, <code>next</code>. Save <code>next = curr.next</code>, then <code>curr.next = prev</code>, then advance <code>prev = curr; curr = next</code>.',
+          pitfalls:['Losing the rest of the list by overwriting <code>curr.next</code> too early.','Returning <code>curr</code> instead of <code>prev</code> at the end.'],
+          tactics:['Say out loud: "save next before breaking the old link".'],
+          complexity:'Time O(n), space O(1).',
+          demo:{
+            inputLabel:'list values',
+            default:'1, 2, 3, 4, 5',
+            parse:function(s){ return H.parseIntList(s); },
+            run:function(arr){ return algoReverseList(arr); },
+            render: renderLLReverse
+          }
+        },
+        {
+          id:'ll-cycle', title:'Linked List Cycle',
+          definition:'Given the head of a linked list, determine whether it contains a cycle, using O(1) extra space.',
+          approach:'Floyd’s tortoise/hare: <code>slow</code> moves 1 step, <code>fast</code> moves 2. If they meet, there is a cycle. If <code>fast</code> reaches null, no cycle. For cycle entry, reset one pointer to head after meeting and move both at speed 1.',
+          pitfalls:['Null checks in the wrong order.','Using extra memory when an O(1) solution is expected.'],
+          tactics:['Speed difference of 1 guarantees collision inside any cycle.'],
+          complexity:'Time O(n), space O(1).',
+          demo:{
+            inputLabel:'list values',
+            default:'3, 2, 0, -4',
+            secondInput:{label:'cycle index (-1 for none)', default:'1'},
+            parse:function(s,t){ return { arr:H.parseIntList(s), cyclePos:Number(t) }; },
+            run:function(p){ return algoLinkedListCycle(p.arr, p.cyclePos); },
+            render: renderLLCycle
+          }
+        },
+        {
+          id:'merge-two', title:'Merge Two Sorted Lists',
+          definition:'Merge two sorted singly linked lists into a single sorted list.',
+          approach:'Two pointers <code>i</code>, <code>j</code>. At each step, append the smaller head and advance that pointer. After one list is exhausted, append the remainder of the other.',
+          pitfalls:['Not handling unequal lengths cleanly.','Using <code>&lt;</code> instead of <code>&lt;=</code>, which still works but matters for stability.'],
+          tactics:['A dummy head node simplifies edge cases (we visualize the output array directly).'],
+          complexity:'Time O(n+m), space O(1) (excluding output).',
+          demo:{
+            inputLabel:'A (sorted)',
+            default:'1, 2, 4',
+            secondInput:{label:'B (sorted)', default:'1, 3, 4'},
+            parse:function(s,t){ return { a:H.parseIntList(s), b:H.parseIntList(t) }; },
+            run:function(p){ return algoMergeTwoLists(p.a, p.b); },
+            render: renderMergeLists
+          }
+        }
+      ]
+    },
+    {
+      id:'g-tree', title:'8. Tree & Graph Traversal',
+      desc:'BFS lays out nodes by depth; DFS dives recursively. Both work for connectivity, layering, and reachability — choose by what you need to compute on the way back up.',
+      problems:[
+        {
+          id:'level-order', title:'Binary Tree Level Order Traversal',
+          definition:'Given the root of a binary tree, return the level-order (breadth-first) traversal of its node values, grouped by level.',
+          approach:'Queue-based BFS. For each level, snapshot the queue size and iterate exactly that many nodes; collect their values and enqueue children.',
+          pitfalls:['Mixing nodes from different levels in one list.','Not guarding against null root.'],
+          tactics:['Use the queue length at the start of each iteration as the level boundary.'],
+          complexity:'Time O(n), space O(width).',
+          demo:{
+            inputLabel:'tree (level-order, "null" for missing)',
+            default:'3, 9, 20, null, null, 15, 7',
+            parse:function(s){
+              return s.split(/[,\s]+/).filter(function(x){return x.length;}).map(function(t){
+                if (t==='null'||t==='#'||t==='-') return null;
+                var n=Number(t); if (!Number.isFinite(n)) throw new Error('Bad token: '+t);
+                return n;
+              });
+            },
+            run:function(arr){ return algoLevelOrder(arr); },
+            render: renderTree
+          }
+        },
+        {
+          id:'lca', title:'Lowest Common Ancestor of a Binary Tree',
+          definition:'Given a binary tree and two nodes <code>p</code> and <code>q</code>, find their lowest common ancestor.',
+          approach:'Recursion with a precise return contract: a call returns the LCA if found inside its subtree, otherwise a found target, otherwise null. If both subtrees return non-null at a node, that node is the LCA.',
+          pitfalls:['Inventing parent pointers when none exist.','Not being precise about base cases.'],
+          tactics:['Write the return contract before writing the recursion.'],
+          complexity:'Time O(n), space O(h).',
+          demo:{
+            inputLabel:'tree (level-order)',
+            default:'3, 5, 1, 6, 2, 0, 8, null, null, 7, 4',
+            secondInput:{label:'p', default:'5'},
+            thirdInput:{label:'q', default:'4'},
+            parse:function(s,p,q){
+              var t = s.split(/[,\s]+/).filter(function(x){return x.length;}).map(function(t){ if (t==='null'||t==='#'||t==='-') return null; var n=Number(t); if (!Number.isFinite(n)) throw new Error('Bad token: '+t); return n; });
+              return { tree:t, p:Number(p), q:Number(q) };
+            },
+            run:function(p){ return algoLCA(p.tree, p.p, p.q); },
+            render: renderTree
+          }
+        },
+        {
+          id:'islands', title:'Number of Islands',
+          definition:'Given a 2D grid of <code>1</code>s (land) and <code>0</code>s (water), count the number of islands. An island is a maximal 4-connected region of land cells.',
+          approach:'Scan every cell. On unvisited land, increment count and DFS/BFS flood-fill the whole component.',
+          pitfalls:['Including diagonal neighbors when not specified.','Forgetting to mark visited and revisiting cells.'],
+          tactics:['Translate the 2D grid into graph language explicitly: cells are nodes, 4-neighbor relations are edges.'],
+          complexity:'Time O(m·n), space O(m·n) worst-case for recursion/queue.',
+          demo:{
+            inputLabel:'rows of 0/1 separated by ; (commas optional)',
+            default:'1 1 0 0 0; 1 1 0 0 0; 0 0 1 0 0; 0 0 0 1 1',
+            parse:function(s){
+              var rows = s.split(';').map(function(r){return r.trim();}).filter(function(r){return r.length;});
+              return rows.map(function(r){ return r.split(/[\s,]+/).filter(function(x){return x.length;}).map(function(x){var n=Number(x); if (n!==0&&n!==1) throw new Error('Use 0/1 only: '+x); return n;}); });
+            },
+            run:function(g){ return algoIslands(g); },
+            render: renderGrid
+          }
+        },
+        {
+          id:'course', title:'Course Schedule',
+          definition:'Given <code>numCourses</code> and a list of prerequisites <code>[a, b]</code> meaning <code>b</code> must come before <code>a</code>, decide whether all courses can be finished.',
+          approach:'Build a directed graph. Detect cycles using DFS with three colors (white/gray/black) or Kahn’s topological sort by in-degree.',
+          pitfalls:['Not detecting cycles.','Misusing visited states (only one of "started" or "finished" is not enough for DFS).'],
+          tactics:['"Can finish" ⇔ "graph has no directed cycle".'],
+          complexity:'Time O(V+E), space O(V+E).',
+          demo:{
+            inputLabel:'numCourses',
+            default:'4',
+            secondInput:{label:'prereqs (e.g. 1-0, 2-1, 3-2)', default:'1-0, 2-1, 3-2'},
+            parse:function(s,t){
+              var n = Number(s); if (!Number.isInteger(n)||n<=0) throw new Error('numCourses must be a positive integer.');
+              var pr = (t||'').split(/[,\s]+/).filter(function(x){return x.length;}).map(function(p){ var m=p.split('-').map(Number); if (m.length!==2||m.some(isNaN)) throw new Error('Bad prereq: '+p); return m;});
+              return { n:n, pr:pr };
+            },
+            run:function(p){ return algoCourseSchedule(p.n, p.pr); },
+            render: renderCourseGraph
+          }
+        },
+        {
+          id:'clone-graph', title:'Clone Graph',
+          definition:'Given a reference to a node in a connected undirected graph, return a deep copy.',
+          approach:'BFS or DFS while maintaining a hash map <code>original → clone</code>. Process each node once; copy its edges to clone neighbors lazily creating them.',
+          pitfalls:['Not storing the mapping ⇒ infinite recursion on cycles.','Confusing reference vs deep copy.'],
+          tactics:['The hash map <em>is</em> the visited set.'],
+          complexity:'Time O(V+E), space O(V).',
+          demo:{
+            inputLabel:'adjacency (e.g. 1:2,4 ; 2:1,3 ; 3:2,4 ; 4:1,3)',
+            default:'1: 2, 4 ; 2: 1, 3 ; 3: 2, 4 ; 4: 1, 3',
+            parse:function(s){
+              var adj = {};
+              s.split(';').forEach(function(part){
+                part = part.trim(); if (!part) return;
+                var idx = part.indexOf(':'); if (idx<0) throw new Error('Bad entry: '+part);
+                var k = Number(part.slice(0,idx).trim());
+                var rest = part.slice(idx+1).trim();
+                var ns = rest.length ? rest.split(/[,\s]+/).filter(function(x){return x.length;}).map(Number) : [];
+                if (!Number.isFinite(k) || ns.some(function(x){return !Number.isFinite(x);})) throw new Error('Non-numeric in: '+part);
+                adj[k] = ns;
+              });
+              if (Object.keys(adj).length===0) throw new Error('Empty graph.');
+              return adj;
+            },
+            run:function(adj){ return algoCloneGraph(adj); },
+            render: renderCloneGraph
+          }
+        }
+      ]
+    },
+    {
+      id:'g-heap', title:'9. Heap / Selection',
+      desc:'Heaps give repeated O(log n) access to the running min/max. Use a heap of size <code>k</code> for top-k problems.',
+      problems:[
+        {
+          id:'kth-largest', title:'Kth Largest Element',
+          definition:'Find the <code>k</code>-th largest element in an unsorted array.',
+          approach:'Maintain a min-heap of size <code>k</code>. Push every value; if the heap grows beyond <code>k</code>, pop the smallest. After scanning the array, the heap top is the answer. Quickselect provides O(n) average alternative.',
+          pitfalls:['Using a max-heap of all elements and claiming it is optimal.','Mixing kth-largest with kth-smallest sign conventions.'],
+          tactics:['Heap shines when input is streaming or partially known.'],
+          complexity:'Time O(n log k), space O(k).',
+          demo:{
+            inputLabel:'nums',
+            default:'3, 2, 1, 5, 6, 4',
+            secondInput:{label:'k', default:'2'},
+            parse:function(s,t){ var k=Number(t); if (!Number.isInteger(k)||k<=0) throw new Error('k must be a positive integer.'); return { arr:H.parseIntList(s), k:k }; },
+            run:function(p){ return algoKthLargest(p.arr, p.k); },
+            render: renderArrayWithHeap
+          }
+        }
+      ]
+    },
+    {
+      id:'g-backtrack', title:'10. Backtracking',
+      desc:'Frame the search tree explicitly: choose, recurse, unchoose. Use a <code>start</code> index to avoid permutation duplicates and prune as early as possible.',
+      problems:[
+        {
+          id:'combo-sum', title:'Combination Sum',
+          definition:'Given an array of distinct positive integers <code>candidates</code> and a positive integer <code>target</code>, return all combinations (with repetition allowed) that sum to <code>target</code>.',
+          approach:'Sort <code>candidates</code>. Recurse with <code>(start, remaining)</code>. For each <code>i ≥ start</code>, push <code>candidates[i]</code>, recurse with same <code>i</code> (reuse allowed) and decreased <code>remaining</code>, then pop. Break early when <code>candidates[i] &gt; remaining</code>.',
+          pitfalls:['Generating the same combo in multiple orders.','Forgetting to pop after recursion (stale path).'],
+          tactics:['Sorting unlocks early breaking.','The <code>start</code> parameter prevents permutation duplicates.'],
+          complexity:'Exponential in the search space; discuss pruning rather than memorize one bound.',
+          demo:{
+            inputLabel:'candidates',
+            default:'2, 3, 6, 7',
+            secondInput:{label:'target', default:'7'},
+            parse:function(s,t){ var k=Number(t); if (!Number.isFinite(k)) throw new Error('target must be numeric.'); return { c:H.parseIntList(s), t:k }; },
+            run:function(p){ return algoCombinationSum(p.c, p.t); },
+            render: renderCombo
+          }
+        }
+      ]
+    },
+    {
+      id:'g-dp', title:'11. Dynamic Programming',
+      desc:'Define state in plain English first ("dp[i] means..."). Then the recurrence, base case, and iteration order fall out almost mechanically.',
+      problems:[
+        {
+          id:'climbing-stairs', title:'Climbing Stairs',
+          definition:'You climb a staircase of <code>n</code> steps. Each move is 1 or 2 steps. How many distinct ways to reach the top?',
+          approach:'Linear DP: <code>f(n) = f(n−1) + f(n−2)</code>, with <code>f(0)=f(1)=1</code>. (This is exactly the Fibonacci recurrence.)',
+          pitfalls:['Recursing without memoization (exponential).','Missing or wrong base cases.'],
+          tactics:['Two rolling variables suffice for O(1) space.'],
+          complexity:'Time O(n), space O(1) optimized.',
+          demo:{
+            inputLabel:'n',
+            default:'8',
+            parse:function(s){ var n=Number(s); if (!Number.isInteger(n)||n<0||n>40) throw new Error('n must be 0..40.'); return n; },
+            run:function(n){ return algoClimbingStairs(n); },
+            render: renderDP
+          }
+        },
+        {
+          id:'coin-change', title:'Coin Change',
+          definition:'Given coin denominations and a target <code>amount</code>, return the fewest coins to make the amount, or -1 if impossible.',
+          approach:'Bottom-up DP. <code>dp[a]</code> = min coins to form amount <code>a</code>. For each <code>a</code> from 1 to amount, try every coin <code>c</code> with <code>c ≤ a</code>: <code>dp[a] = min(dp[a], dp[a−c]+1)</code>.',
+          pitfalls:['Using a too-small sentinel for "impossible".','Iterating in an order that breaks correctness for unbounded vs 0/1 variants.'],
+          tactics:['Distinguish "min coins" (this) from "number of ways" (different recurrence order).'],
+          complexity:'Time O(amount × coins), space O(amount).',
+          demo:{
+            inputLabel:'coins',
+            default:'1, 2, 5',
+            secondInput:{label:'amount', default:'11'},
+            parse:function(s,t){ var n=Number(t); if (!Number.isInteger(n)||n<0||n>40) throw new Error('amount must be 0..40 for visualization.'); return { coins:H.parseIntList(s), amount:n }; },
+            run:function(p){ return algoCoinChange(p.coins, p.amount); },
+            render: renderDP
+          }
+        },
+        {
+          id:'house-robber', title:'House Robber',
+          definition:'Given non-negative integers representing money in each house, return the maximum total robbed without taking from two adjacent houses.',
+          approach:'<code>dp[i] = max(dp[i−1], nums[i] + dp[i−2])</code>. Two rolling scalars are enough for O(1) space.',
+          pitfalls:['Off-by-one for n=0 or n=1.','Forgetting the include/exclude framing.'],
+          tactics:['State the dilemma at every house: rob i and skip i-1, or skip i.'],
+          complexity:'Time O(n), space O(1) optimized.',
+          demo:{
+            inputLabel:'nums',
+            default:'2, 7, 9, 3, 1',
+            parse:function(s){ return H.parseIntList(s); },
+            run:function(arr){ return algoHouseRobber(arr); },
+            render: renderDP
+          }
+        },
+        {
+          id:'lis', title:'Longest Increasing Subsequence',
+          definition:'Given an integer array <code>nums</code>, return the length of the longest strictly increasing subsequence.',
+          approach:'Basic O(n²) DP: <code>dp[i] = 1 + max(dp[j])</code> over all <code>j &lt; i</code> with <code>nums[j] &lt; nums[i]</code>. The patience-sorting / tails-array variant runs in O(n log n).',
+          pitfalls:['Confusing subsequence with substring.','Forgetting strict vs non-strict inequality.'],
+          tactics:['"dp[i] means LIS length ending at i" is the canonical sentence.'],
+          complexity:'Time O(n²) basic, O(n log n) optimized; space O(n).',
+          demo:{
+            inputLabel:'nums',
+            default:'10, 9, 2, 5, 3, 7, 101, 18',
+            parse:function(s){ return H.parseIntList(s); },
+            run:function(arr){ return algoLIS(arr); },
+            render: renderDP
+          }
+        },
+        {
+          id:'longest-palin', title:'Longest Palindromic Substring',
+          definition:'Given a string <code>s</code>, return the longest palindromic substring of <code>s</code>.',
+          approach:'Expand around each of the <code>2n−1</code> centers (each character and each gap between characters). Keep the longest seen. Manacher’s algorithm gives O(n).',
+          pitfalls:['Forgetting the even-length centers.','Index errors at boundaries.'],
+          tactics:['Center-expansion is easier to reason about than DP for this problem.'],
+          complexity:'Time O(n²), space O(1).',
+          demo:{
+            inputLabel:'string',
+            default:'babad',
+            parse:function(s){ return s.replace(/\s+/g,''); },
+            run:function(s){ return algoLongestPalin(s); },
+            render: renderArrayPlain
+          }
+        }
+      ]
+    },
+    {
+      id:'g-design', title:'12. Design',
+      desc:'Design problems test data-structure composition. Always state the operations and their complexities first, then design the simplest combination that meets them.',
+      problems:[
+        {
+          id:'lru', title:'LRU Cache',
+          definition:'Design a cache supporting <code>get(key)</code> and <code>put(key, value)</code> in amortized O(1), evicting the least-recently-used entry when capacity is exceeded.',
+          approach:'Hash map for O(1) lookup + doubly linked list for O(1) reordering. Map stores key → list-node. On every access, move the node to the MRU end. On insert past capacity, drop the LRU end.',
+          pitfalls:['Using an array/list, which makes removal O(n).','Buggy eviction order — always move-to-front before checking capacity.'],
+          tactics:['Define the invariant: "list head = LRU, list tail = MRU; map points into the list".'],
+          complexity:'Time O(1) per operation, space O(capacity).',
+          demo:{
+            inputLabel:'capacity',
+            default:'2',
+            secondInput:{label:'ops (e.g. put 1 1, put 2 2, get 1, put 3 3, get 2)', default:'put 1 1, put 2 2, get 1, put 3 3, get 2, put 4 4, get 1, get 3, get 4'},
+            parse:function(s,t){
+              var cap = Number(s); if (!Number.isInteger(cap)||cap<=0) throw new Error('capacity must be positive integer.');
+              var ops = (t||'').split(/[,;]/).map(function(x){return x.trim();}).filter(function(x){return x.length;}).map(function(op){
+                var parts = op.split(/\s+/);
+                var t = parts[0]; var k = Number(parts[1]);
+                if (t==='put') { var v = Number(parts[2]); if (!Number.isFinite(k)||!Number.isFinite(v)) throw new Error('Bad put: '+op); return ['put',k,v]; }
+                if (t==='get') { if (!Number.isFinite(k)) throw new Error('Bad get: '+op); return ['get',k]; }
+                throw new Error('Unknown op: '+op);
+              });
+              return { cap:cap, ops:ops };
+            },
+            run:function(p){ return algoLRU(p.cap, p.ops); },
+            render: renderLRU
+          }
+        }
+      ]
+    }
+  ];
+
+  // ----------------------- RENDER PAGE -----------------------
+  var root = document.getElementById('content-root');
+  var sideNav = document.querySelector('nav.side');
+
+  GROUPS.forEach(function(g){
+    var sec = H.el('section','group'); sec.id = g.id;
+    var h2 = H.el('h2','',g.title); sec.appendChild(h2);
+    var p = H.el('p','group-desc', g.desc); sec.appendChild(p);
+
+    g.problems.forEach(function(prob){
+      var det = H.el('details','problem'); det.id = prob.id;
+      // open the first problem of each group by default
+      if (prob === g.problems[0]) det.open = true;
+      var sum = H.el('summary');
+      var title = document.createElement('span'); title.textContent = prob.title; sum.appendChild(title);
+      var pill = H.el('span','pill', g.title.replace(/^\d+\.\s*/,'')); sum.appendChild(pill);
+      det.appendChild(sum);
+
+      var body = H.el('div','body');
+
+      var hDef = H.el('h4','','Definition'); body.appendChild(hDef);
+      var defP = document.createElement('p'); defP.innerHTML = prob.definition; body.appendChild(defP);
+
+      var hApp = H.el('h4','','Approach & Key Ideas'); body.appendChild(hApp);
+      var appP = document.createElement('p'); appP.innerHTML = prob.approach; body.appendChild(appP);
+
+      if (prob.pitfalls && prob.pitfalls.length){
+        var hPit = H.el('h4','','Common Pitfalls'); hPit.style.color = 'var(--bad)'; body.appendChild(hPit);
+        var ul = H.el('ul'); ul.className='pitfalls';
+        prob.pitfalls.forEach(function(t){ var li=document.createElement('li'); li.innerHTML=t; ul.appendChild(li); });
+        body.appendChild(ul);
+      }
+      if (prob.tactics && prob.tactics.length){
+        var hT = H.el('h4','','Tricks & Tactics'); hT.style.color = 'var(--accent-2)'; body.appendChild(hT);
+        var ul2 = H.el('ul'); ul2.className='tactics';
+        prob.tactics.forEach(function(t){ var li=document.createElement('li'); li.innerHTML=t; ul2.appendChild(li); });
+        body.appendChild(ul2);
+      }
+
+      if (prob.complexity){
+        var hC = H.el('h4','','Complexity'); body.appendChild(hC);
+        var pc = H.el('p'); pc.innerHTML = '<span class="complexity">'+prob.complexity+'</span>'; body.appendChild(pc);
+      }
+
+      var hViz = H.el('h4','','Interactive Visualization'); body.appendChild(hViz);
+      var viz = H.el('div','viz'); body.appendChild(viz);
+      det.appendChild(body);
+      sec.appendChild(det);
+
+      // create player after element is in DOM so layout sizes work
+      setTimeout(function(){
+        createPlayer({
+          root: viz,
+          inputLabel: prob.demo.inputLabel,
+          defaultInput: prob.demo.default,
+          secondInput: prob.demo.secondInput || null,
+          thirdInput: prob.demo.thirdInput || null,
+          parse: prob.demo.parse,
+          run: prob.demo.run,
+          render: prob.demo.render
+        });
+      }, 0);
+    });
+
+    root.appendChild(sec);
+  });
+
+  // Build sub-TOC links per group (problem-level)
+  GROUPS.forEach(function(g){
+    var head = document.querySelector('nav.side a[href="#'+g.id+'"]');
+    if (!head) return;
+    g.problems.forEach(function(prob){
+      var a = document.createElement('a');
+      a.href = '#'+prob.id;
+      a.textContent = '   • ' + prob.title;
+      a.style.fontSize = '0.85rem';
+      a.style.color = 'var(--muted)';
+      head.parentNode.insertBefore(a, head.nextSibling);
+    });
+  });
+
+  // ----------------------- 15 LEETCODE PATTERNS SUMMARY -----------------------
+  var FIFTEEN = [
+    {
+      n:1, name:'Prefix Sum',
+      what:'Pre-compute cumulative sums so that the sum of any subarray <code>nums[i..j]</code> can be answered in O(1) as <code>P[j+1] − P[i]</code>.',
+      when:'You face <b>repeated range-sum queries</b>, need cumulative counts, or want to convert “subarray sum equals K” into a hash-map lookup of seen prefix sums.',
+      tech:'P[0] = 0; P[i+1] = P[i] + nums[i]; sum(i..j) = P[j+1] − P[i].',
+      ex:'<b>Input:</b> nums = [1,2,3,4,5,6], range [1..3] → P = [0,1,3,6,10,15,21], answer = P[4]−P[1] = 10−1 = <b>9</b>.',
+      problems:'Range Sum Query — Immutable (303), Subarray Sum Equals K (560), Contiguous Array (525).',
+      jump:null
+    },
+    {
+      n:2, name:'Two Pointers',
+      what:'Walk two indices through a sequence — from both ends inward, in lockstep, or at different speeds — to find pairs/triples or partition data in linear time.',
+      when:'You have a <b>sorted array</b>, a palindrome check, an in-place dedupe / partition, or any pairwise comparison that would otherwise be O(n²).',
+      tech:'L = 0, R = n−1. While L &lt; R: inspect (a[L], a[R]); move L++ if you need a larger value, R−− if you need a smaller one.',
+      ex:'<b>Input:</b> sorted nums = [1,2,3,4,6], target = 6 → L=0,R=4 sum=7→R−−; L=0,R=3 sum=5→L++; L=1,R=3 sum=6 → indices <b>[1, 3]</b>.',
+      problems:'Two Sum II (167), 3Sum (15), Container With Most Water (11), Valid Palindrome (125).',
+      jump:'#g-twoptr'
+    },
+    {
+      n:3, name:'Sliding Window',
+      what:'Maintain a contiguous window [L..R] over an array/string and update its summary in O(1) per step instead of recomputing.',
+      when:'You need a <b>contiguous subarray or substring</b> satisfying a running constraint (max sum of size k, longest no-repeat substring, smallest covering window).',
+      tech:'Fixed window: slide R right, drop the element leaving on the left. Variable: expand R; while invariant breaks, shrink L.',
+      ex:'<b>Input:</b> nums = [2,1,5,1,3,2], k = 3. Initial sum = 8, slide → 7, 9, 6. Maximum = <b>9</b>.',
+      problems:'Maximum Average Subarray I (643), Longest Substring Without Repeating Characters (3), Minimum Window Substring (76).',
+      jump:'#g-window'
+    },
+    {
+      n:4, name:'Fast & Slow Pointers (Tortoise & Hare)',
+      what:'Two pointers move at different speeds (1 step vs 2 steps) over a sequence to detect cycles, find a midpoint, or detect repetition.',
+      when:'<b>Cycle detection</b> in a linked list, finding the middle node in one pass, Happy Number, or Find the Duplicate (treat array as functional graph).',
+      tech:'slow = head; fast = head; while fast && fast.next: slow = slow.next; fast = fast.next.next; if slow == fast: cycle.',
+      ex:'<b>Input:</b> 3 → 2 → 0 → −4 → (back to 2). slow/fast eventually meet inside the loop → <b>cycle exists</b>.',
+      problems:'Linked List Cycle (141), Happy Number (202), Find the Duplicate Number (287), Middle of the Linked List (876).',
+      jump:'#ll-cycle'
+    },
+    {
+      n:5, name:'In-place Reversal of a Linked List',
+      what:'Reverse pointers of a linked list (or a sublist) without allocating new nodes — just rewire <code>next</code> pointers.',
+      when:'<b>Reverse a list</b> entirely or a segment [m..n], reverse in groups of k, swap nodes in pairs, palindrome verification.',
+      tech:'prev = null; curr = head; while curr: nxt = curr.next; curr.next = prev; prev = curr; curr = nxt; return prev.',
+      ex:'<b>Input:</b> 1→2→3→4→5, m=2, n=4 → reverse middle segment → <b>1→4→3→2→5</b>.',
+      problems:'Reverse Linked List (206), Reverse Linked List II (92), Swap Nodes in Pairs (24), Reverse Nodes in k-Group (25).',
+      jump:'#reverse-list'
+    },
+    {
+      n:6, name:'Monotonic Stack',
+      what:'Maintain a stack whose values stay either monotonically increasing or decreasing; pop when the invariant would break to resolve “next greater / smaller” queries in amortized O(n).',
+      when:'You need the <b>next/previous greater or smaller element</b>, the largest rectangle, sliding-window maximum, or any “wait until a future witness” structure.',
+      tech:'For next-greater: iterate left→right; while stack top &lt; current, pop and record current as its answer; push current.',
+      ex:'<b>Input:</b> nums = [2,1,2,4,3] → next-greater per index = <b>[4, 2, 4, −1, −1]</b>.',
+      problems:'Next Greater Element I (496), Daily Temperatures (739), Largest Rectangle in Histogram (84), Trapping Rain Water (42).',
+      jump:'#g-stack'
+    },
+    {
+      n:7, name:'Top ‘K’ Elements',
+      what:'Use a heap of size k (or quickselect) to find the k largest/smallest/most-frequent items without fully sorting the data.',
+      when:'You hear <b>“top k”, “kth largest”, “k most frequent”</b>, or you need an order statistic over a streaming input.',
+      tech:'Min-heap of size k: push every element; if heap.size > k, pop the smallest. Heap top is the kth largest.',
+      ex:'<b>Input:</b> nums = [3,2,1,5,6,4], k = 2. Final heap = [5, 6]; root = <b>5</b> = 2nd largest.',
+      problems:'Kth Largest Element in an Array (215), Top K Frequent Elements (347), Find K Pairs with Smallest Sums (373).',
+      jump:'#kth-largest'
+    },
+    {
+      n:8, name:'Overlapping Intervals',
+      what:'Sort intervals by start time and either merge/extend the last seen interval or sweep with a heap of end times for resource counting.',
+      when:'<b>Merge, insert, count overlaps,</b> meeting rooms, calendars, scheduling, or non-overlapping interval selection.',
+      tech:'Sort by start. For each iv: if iv[0] ≤ last.end, last.end = max(last.end, iv[1]); else append iv to result.',
+      ex:'<b>Input:</b> [[1,3],[2,6],[8,10],[15,18]] → merged = <b>[[1,6],[8,10],[15,18]]</b>.',
+      problems:'Merge Intervals (56), Insert Interval (57), Non-Overlapping Intervals (435), Meeting Rooms II (253).',
+      jump:'#g-intervals'
+    },
+    {
+      n:9, name:'Modified Binary Search',
+      what:'Apply binary search not just to a sorted array but to any monotonic answer space — rotated arrays, peak finding, capacity/feasibility, square roots.',
+      when:'The answer space is <b>monotonic</b> (“if x works, all values above x work”), data is sorted possibly with rotation, or you can write a feasibility check in O(n).',
+      tech:'Binary search on the value space: while L ≤ R, M = L + (R−L)/2; if feasible(M): R = M−1; else L = M+1; return L.',
+      ex:'<b>Input:</b> rotated [4,5,6,7,0,1,2], target = 0. At each mid, identify which half is sorted and decide direction → found at index <b>4</b>.',
+      problems:'Search in Rotated Sorted Array (33), Find Minimum in Rotated Sorted Array (153), Find Peak Element (162), Koko Eating Bananas (875).',
+      jump:'#search-rotated'
+    },
+    {
+      n:10, name:'Binary Tree Traversal',
+      what:'Visit nodes in pre-, in-, post-, or level-order — recursively or iteratively with a stack/queue. The traversal kind dictates the kind of solution you can build.',
+      when:'<b>Anything tree-shaped</b>: serialize/deserialize, build expression trees, validate BST (in-order), boundary or vertical views, level-by-level processing (BFS).',
+      tech:'BFS: queue of nodes, pop layer by layer. DFS: recurse left, do work, recurse right (in-order). Iterative DFS uses an explicit stack.',
+      ex:'<b>Input:</b> [3,9,20,null,null,15,7] → level-order = <b>[[3],[9,20],[15,7]]</b>; in-order = [9,3,15,20,7].',
+      problems:'Binary Tree Level Order Traversal (102), Validate BST (98), Construct Tree from Preorder & Inorder (105), Serialize/Deserialize Binary Tree (297).',
+      jump:'#level-order'
+    },
+    {
+      n:11, name:'Depth-First Search (DFS)',
+      what:'Recursively (or with an explicit stack) explore as deep as possible along each branch before backtracking. Often combined with a <em>visited</em> set on graphs.',
+      when:'<b>Connectivity, path existence, topological sort, cycle detection,</b> tree recursion (LCA, diameter), island/region counting on grids.',
+      tech:'def dfs(u): mark u visited; for v in adj[u]: if v not visited: dfs(v). On grids, neighbors are the 4 (or 8) adjacent cells.',
+      ex:'<b>Input:</b> 4 courses with prereqs [[1,0],[2,1],[3,2]]. DFS with WHITE/GRAY/BLACK colors finishes all nodes BLACK → <b>can finish</b>.',
+      problems:'Number of Islands (200), Course Schedule (207), Clone Graph (133), Word Search (79), Pacific Atlantic Water Flow (417).',
+      jump:'#islands'
+    },
+    {
+      n:12, name:'Breadth-First Search (BFS)',
+      what:'Explore neighbors layer by layer using a FIFO queue. Guarantees the shortest path on unweighted graphs and naturally yields level-order results.',
+      when:'<b>Shortest path</b> on unweighted graphs/grids, level-order tree traversal, multi-source spreading (rotting oranges, walls and gates), word ladder.',
+      tech:'queue = [start]; visited = {start}; while queue: u = queue.popleft(); for v in adj[u] if not visited: mark and enqueue.',
+      ex:'<b>Input:</b> grid with land cells — BFS from each unvisited land marks the entire island in one wave → islands counted in O(m·n).',
+      problems:'Binary Tree Level Order Traversal (102), Word Ladder (127), Rotting Oranges (994), Shortest Path in Binary Matrix (1091).',
+      jump:'#level-order'
+    },
+    {
+      n:13, name:'Matrix / Grid Traversal',
+      what:'Apply DFS, BFS, dynamic programming, or specialized walks (spiral, diagonal, in-place rotation) on a 2D grid, treating cells as nodes with 4- or 8-neighbor edges.',
+      when:'<b>Grid problems</b>: islands, flood fill, shortest path on a board, robot moves, image rotation, matrix DP.',
+      tech:'dirs = [(1,0),(-1,0),(0,1),(0,-1)]; for each unvisited cell, DFS/BFS its component; bound checks: 0 ≤ r &lt; R, 0 ≤ c &lt; C.',
+      ex:'<b>Input:</b> grid of 0/1 land cells → sweep, flood-fill each component → <b>3 islands</b>.',
+      problems:'Number of Islands (200), Flood Fill (733), Spiral Matrix (54), Rotate Image (48), Walls and Gates (286).',
+      jump:'#islands'
+    },
+    {
+      n:14, name:'Backtracking',
+      what:'Build a candidate solution incrementally: <em>choose</em>, <em>recurse</em>, <em>unchoose</em>. Prune branches that cannot possibly lead to a valid answer.',
+      when:'<b>Enumerate</b> all permutations / combinations / subsets, solve N-Queens, Sudoku, word search, palindrome partitioning.',
+      tech:'def bt(state): if goal(state): record; for choice in choices(state): if valid(choice): apply; bt(state); undo.',
+      ex:'<b>Input:</b> candidates = [2,3,6,7], target = 7. Sorted, recurse with start index, prune when value &gt; remaining → <b>[[2,2,3], [7]]</b>.',
+      problems:'Subsets (78), Permutations (46), Combination Sum (39), N-Queens (51), Word Search (79), Palindrome Partitioning (131).',
+      jump:'#combo-sum'
+    },
+    {
+      n:15, name:'Dynamic Programming (DP)',
+      what:'Solve problems with overlapping sub-problems and optimal substructure by memoizing results or filling a DP table bottom-up.',
+      when:'You see <b>“min/max/count of ways”</b>, sequences with optional choices, knapsack-style trade-offs, edit distance, LIS, or grid path counts.',
+      tech:'1) Define <code>dp[i]</code> in plain English. 2) Recurrence in terms of smaller indices. 3) Base cases. 4) Iteration order. 5) Optimize space if a rolling window suffices.',
+      ex:'<b>Coin Change:</b> coins = [1,2,5], amount = 11 → dp[11] = min(dp[10], dp[9], dp[6]) + 1 = <b>3</b>.',
+      problems:'Climbing Stairs (70), Coin Change (322), House Robber (198), Longest Increasing Subsequence (300), Edit Distance (72), 0/1 Knapsack.',
+      jump:'#g-dp'
+    }
+  ];
+
+  var fGrid = document.querySelector('#fifteen .fifteen-grid');
+  if (fGrid){
+    FIFTEEN.forEach(function(p){
+      var card = H.el('div','fifteen-card');
+      var h3 = H.el('h3'); h3.innerHTML = '<span class="num">'+p.n+'</span> '+p.name; card.appendChild(h3);
+      var what = document.createElement('p'); what.className='what'; what.innerHTML = p.what; card.appendChild(what);
+      var when = document.createElement('p'); when.className='when'; when.innerHTML = '<b>When to use:</b> '+p.when; card.appendChild(when);
+      var tech = document.createElement('div'); tech.className='tech'; tech.innerHTML = p.tech; card.appendChild(tech);
+      var ex = document.createElement('p'); ex.className='ex'; ex.innerHTML = p.ex; card.appendChild(ex);
+      var links = document.createElement('p'); links.className='links'; links.innerHTML = '<b>Practice:</b> '+p.problems; card.appendChild(links);
+      if (p.jump){
+        var jp = document.createElement('p'); jp.className='jump'; jp.innerHTML = '→ <a href="'+p.jump+'">See it animated below</a>'; card.appendChild(jp);
+      }
+      fGrid.appendChild(card);
+    });
+  }
+
+})();
+</script>
+
+</body>
+</html>

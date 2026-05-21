@@ -1,0 +1,2273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude + C/C++ — Dynamic Programming with AI</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --surface2: #1a1d24;
+    --border: #2a2d36;
+    --accent: #e8ff6e;
+    --accent2: #7c6fff;
+    --accent3: #ff6e8e;
+    --text: #e2e4ea;
+    --text-dim: #7a7f94;
+    --code-bg: #0d0f14;
+    --claude-orange: #d97706;
+    --claude-amber: #f59e0b;
+    --green: #4ade80;
+    --cyan: #22d3ee;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* GRID BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(124,111,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,111,255,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAVIGATION */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(10,12,16,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nav-logo .dot {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 6rem 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-glow {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(124,111,255,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border: 1px solid rgba(232,255,110,0.3);
+    border-radius: 100px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent);
+    background: rgba(232,255,110,0.05);
+    margin-bottom: 2rem;
+    animation: fadeSlideUp 0.6s ease both;
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.5rem, 7vw, 5.5rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    margin-bottom: 1.5rem;
+    animation: fadeSlideUp 0.6s 0.1s ease both;
+  }
+
+  .hero h1 .highlight {
+    color: var(--accent);
+    position: relative;
+    display: inline-block;
+  }
+
+  .hero h1 .highlight2 { color: var(--accent2); }
+
+  .hero-sub {
+    font-size: 1.15rem;
+    color: var(--text-dim);
+    max-width: 560px;
+    margin-bottom: 3rem;
+    font-weight: 300;
+    animation: fadeSlideUp 0.6s 0.2s ease both;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeSlideUp 0.6s 0.3s ease both;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .meta-item .icon {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+  }
+
+  .icon-claude { background: rgba(217,119,6,0.2); }
+  .icon-cpp { background: rgba(100,116,255,0.2); }
+  .icon-vs { background: rgba(124,111,255,0.2); }
+
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* LAYOUT */
+  .container { max-width: 900px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+
+  /* SECTION HEADERS */
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  .section-desc {
+    color: var(--text-dim);
+    font-size: 1rem;
+    max-width: 600px;
+    margin-bottom: 3rem;
+  }
+
+  /* CONTENT SECTIONS */
+  section { padding: 5rem 0; }
+  section:nth-child(even) { background: transparent; }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    position: relative;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .card:hover {
+    border-color: rgba(124,111,255,0.4);
+    transform: translateY(-2px);
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .card-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+
+  .card p {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  /* CODE BLOCKS */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 1.5rem 0;
+    position: relative;
+  }
+
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .code-header .dots {
+    display: flex;
+    gap: 5px;
+  }
+
+  .code-header .dots span {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+
+  .dot-red { background: #ff5f57; }
+  .dot-yellow { background: #febc2e; }
+  .dot-green { background: #28c840; }
+
+  .code-lang {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+  }
+
+  .code-content {
+    padding: 1.25rem;
+    overflow-x: auto;
+  }
+
+  pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.75;
+    color: var(--text);
+    white-space: pre;
+  }
+
+  /* SYNTAX COLORS */
+  .kw { color: #c792ea; }
+  .fn { color: #82aaff; }
+  .str { color: #c3e88d; }
+  .num { color: #f78c6c; }
+  .cmt { color: #546e7a; font-style: italic; }
+  .type { color: #ffcb6b; }
+  .op { color: #89ddff; }
+  .inc { color: #ff5572; }
+  .claude-prompt { color: var(--accent); }
+  .claude-response { color: #4ade80; }
+  .dim { color: var(--text-dim); }
+
+  /* STEP BLOCKS */
+  .steps { display: flex; flex-direction: column; gap: 0; }
+
+  .step {
+    display: flex;
+    gap: 1.5rem;
+    position: relative;
+    padding-bottom: 2.5rem;
+  }
+
+  .step:last-child { padding-bottom: 0; }
+
+  .step:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 40px;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--border), transparent);
+  }
+
+  .step-num {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-body { flex: 1; padding-top: 8px; }
+
+  .step-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .step-desc {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+
+  /* VIBE BOX */
+  .vibe-box {
+    background: linear-gradient(135deg, rgba(232,255,110,0.06), rgba(124,111,255,0.06));
+    border: 1px solid rgba(232,255,110,0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .vibe-box::before {
+    content: '✦ VIBE';
+    position: absolute;
+    top: 0.75rem; right: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+  }
+
+  .vibe-box h4 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--accent);
+  }
+
+  .vibe-box p, .vibe-box li {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+
+  .vibe-box ul { padding-left: 1.2rem; }
+  .vibe-box li { margin-bottom: 0.3rem; }
+
+  /* CONCEPT BOXES */
+  .concept-box {
+    background: rgba(124,111,255,0.06);
+    border: 1px solid rgba(124,111,255,0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .concept-box h4 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    color: var(--accent2);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .concept-box p, .concept-box li {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+
+  .concept-box ul { padding-left: 1.2rem; }
+  .concept-box li { margin-bottom: 0.3rem; }
+
+  /* WARNING BOX */
+  .warn-box {
+    background: rgba(255,110,142,0.06);
+    border: 1px solid rgba(255,110,142,0.2);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  .warn-box strong { color: var(--accent3); }
+
+  /* TIP BOX */
+  .tip-box {
+    background: rgba(74,222,128,0.05);
+    border: 1px solid rgba(74,222,128,0.2);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  .tip-box strong { color: var(--green); }
+
+  /* DP TABLE */
+  .dp-visual {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+  }
+
+  .dp-visual h4 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  table {
+    border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+  }
+
+  th, td {
+    padding: 6px 12px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+
+  th { background: var(--surface); color: var(--text-dim); }
+  td { color: var(--text); }
+  td.filled { background: rgba(124,111,255,0.2); color: var(--accent2); font-weight: 600; }
+  td.diagonal { background: rgba(232,255,110,0.15); color: var(--accent); font-weight: 700; }
+
+  /* PROMPT ANATOMY */
+  .prompt-anatomy {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 2;
+    margin: 1.5rem 0;
+  }
+
+  .pa-role { color: var(--cyan); }
+  .pa-task { color: var(--accent); }
+  .pa-context { color: var(--accent2); }
+  .pa-format { color: var(--accent3); }
+  .pa-label {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    margin-left: 1rem;
+    vertical-align: middle;
+  }
+
+  /* FLOW DIAGRAM */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    margin: 1.5rem 0;
+  }
+
+  .flow-node {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    font-size: 0.78rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+
+  .flow-node.active {
+    border-color: var(--accent2);
+    color: var(--accent2);
+    background: rgba(124,111,255,0.08);
+  }
+
+  .flow-arrow {
+    padding: 0 0.5rem;
+    color: var(--border);
+    font-size: 0.9rem;
+  }
+
+  /* TABS */
+  .tabs { margin: 1.5rem 0; }
+
+  .tab-list {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0;
+  }
+
+  .tab-btn {
+    padding: 0.6rem 1.2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.2s;
+  }
+
+  .tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* CHECKLIST */
+  .checklist { list-style: none; padding: 0; }
+
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+    border-bottom: 1px solid rgba(42,45,54,0.5);
+  }
+
+  .checklist li:last-child { border-bottom: none; }
+
+  .check {
+    width: 18px; height: 18px;
+    border-radius: 4px;
+    background: rgba(74,222,128,0.15);
+    border: 1px solid rgba(74,222,128,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+    font-size: 0.7rem;
+    color: var(--green);
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border), transparent);
+    margin: 3rem 0;
+  }
+
+  /* CHAPTER HEADER */
+  .chapter {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .chapter-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    background: rgba(232,255,110,0.08);
+    border: 1px solid rgba(232,255,110,0.2);
+    padding: 4px 10px;
+    border-radius: 100px;
+  }
+
+  .chapter h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  /* INLINE CODE */
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82em;
+    background: var(--surface2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--cyan);
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 3rem 2rem;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  footer .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+  }
+
+  footer p {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* UTILITY */
+  .mt-1 { margin-top: 0.5rem; }
+  .mt-2 { margin-top: 1rem; }
+  .mt-3 { margin-top: 1.5rem; }
+  .mb-2 { margin-bottom: 1rem; }
+  .mb-3 { margin-bottom: 1.5rem; }
+  p { margin-bottom: 0.75rem; }
+
+  .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    padding: 2px 8px;
+    border-radius: 100px;
+    margin-right: 4px;
+  }
+
+  .tag-cpp { background: rgba(100,116,255,0.15); color: #6474ff; border: 1px solid rgba(100,116,255,0.3); }
+  .tag-claude { background: rgba(217,119,6,0.15); color: var(--claude-amber); border: 1px solid rgba(217,119,6,0.3); }
+  .tag-vs { background: rgba(124,111,255,0.15); color: var(--accent2); border: 1px solid rgba(124,111,255,0.3); }
+  .tag-dp { background: rgba(74,222,128,0.1); color: var(--green); border: 1px solid rgba(74,222,128,0.3); }
+
+  /* SCROLL PROGRESS */
+  #progress-bar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    height: 2px;
+    background: var(--accent);
+    z-index: 200;
+    transition: width 0.1s;
+  }
+
+  /* SIDEBAR TOC */
+  .toc {
+    position: fixed;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 50;
+  }
+
+  .toc-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .toc-dot:hover, .toc-dot.active {
+    background: var(--accent);
+    transform: scale(1.5);
+  }
+
+  .toc-dot::after {
+    content: attr(data-label);
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    background: var(--surface);
+    padding: 2px 8px;
+    border-radius: 4px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .toc-dot:hover::after { opacity: 1; }
+
+  @media (max-width: 768px) {
+    .toc { display: none; }
+    .nav-links { display: none; }
+    .hero h1 { font-size: 2.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<nav>
+  <div class="nav-logo">
+    <span class="dot"></span>
+    Claude × C/C++ Tutorial
+  </div>
+  <ul class="nav-links">
+    <li><a href="#setup">Setup</a></li>
+    <li><a href="#concepts">Concepts</a></li>
+    <li><a href="#vibe">Vibe Coding</a></li>
+    <li><a href="#dp">Dynamic Programming</a></li>
+    <li><a href="#agents">Agents</a></li>
+    <li><a href="#projects">Projects</a></li>
+  </ul>
+</nav>
+
+<div class="toc">
+  <div class="toc-dot active" data-label="Hero" data-section="0"></div>
+  <div class="toc-dot" data-label="Setup" data-section="1"></div>
+  <div class="toc-dot" data-label="Concepts" data-section="2"></div>
+  <div class="toc-dot" data-label="Vibe Coding" data-section="3"></div>
+  <div class="toc-dot" data-label="DP Basics" data-section="4"></div>
+  <div class="toc-dot" data-label="DP Advanced" data-section="5"></div>
+  <div class="toc-dot" data-label="Agents" data-section="6"></div>
+  <div class="toc-dot" data-label="Projects" data-section="7"></div>
+</div>
+
+<!-- HERO -->
+<div class="hero" id="sec-0">
+  <div class="hero-glow"></div>
+  <div class="hero-badge">
+    <span>📘</span> College Programming Course — Spring 2026
+  </div>
+  <h1>
+    Code with<br>
+    <span class="highlight">Claude</span> +
+    <span class="highlight2">C++</span>
+  </h1>
+  <p class="hero-sub">
+    Learn AI-assisted programming with dynamic programming algorithms. Build real software using Claude as your intelligent coding partner in Visual Studio.
+  </p>
+  <div class="hero-meta">
+    <div class="meta-item">
+      <div class="icon icon-claude">🤖</div>
+      Claude API + Skills
+    </div>
+    <div class="meta-item">
+      <div class="icon icon-cpp">⚡</div>
+      C/C++ Fundamentals
+    </div>
+    <div class="meta-item">
+      <div class="icon icon-vs">🛠️</div>
+      Visual Studio 2022
+    </div>
+  </div>
+</div>
+
+<!-- ============================
+     CHAPTER 1: SETUP
+     ============================ -->
+<section id="setup" id="sec-1">
+<div class="container">
+  <div class="chapter">
+    <span class="chapter-num">Chapter 01</span>
+    <h2>Environment Setup</h2>
+  </div>
+
+  <div class="section-label">Prerequisites</div>
+  <p class="section-desc">Let's get your machine ready for AI-assisted C/C++ development. This takes about 20–30 minutes.</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">💻</div>
+      <h3>System Requirements</h3>
+      <p>Windows 10/11 (64-bit), 8GB RAM minimum, 15GB free disk space, stable internet connection.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔑</div>
+      <h3>Claude API Account</h3>
+      <p>Free tier available at console.anthropic.com. Student accounts get extra credits. Save your API key securely.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🛠️</div>
+      <h3>Visual Studio 2022</h3>
+      <p>Community Edition is free for students. Download from visualstudio.microsoft.com.</p>
+    </div>
+  </div>
+
+  <!-- STEP 1: Visual Studio -->
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-body">
+        <div class="step-title">Install Visual Studio 2022 Community</div>
+        <div class="step-desc">
+          Go to <strong>visualstudio.microsoft.com</strong> → Download Community (free). During installation, select the <strong>"Desktop development with C++"</strong> workload. This installs MSVC compiler, CMake, and the debugger.
+        </div>
+        <div class="tip-box mt-2">
+          <strong>💡 Tip:</strong> Also check "C++ CMake tools for Windows" and "vcpkg package manager" in the optional components — you'll need these later.
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-body">
+        <div class="step-title">Get Your Claude API Key</div>
+        <div class="step-desc">
+          Visit <strong>console.anthropic.com</strong> → Sign up → Go to API Keys → Create new key. Copy and store it securely — you won't see it again.
+        </div>
+        <div class="warn-box">
+          <strong>⚠️ Never</strong> commit your API key to Git or share it publicly. Store it as an environment variable: <code>ANTHROPIC_API_KEY</code>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
+            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+            <span class="code-lang">PowerShell — Set Environment Variable</span>
+          </div>
+          <div class="code-content"><pre><span class="cmt"># Set for current session</span>
+$env:ANTHROPIC_API_KEY = <span class="str">"sk-ant-your-key-here"</span>
+
+<span class="cmt"># Set permanently (as user variable)</span>
+[System.Environment]::SetEnvironmentVariable(
+  <span class="str">"ANTHROPIC_API_KEY"</span>,
+  <span class="str">"sk-ant-your-key-here"</span>,
+  <span class="str">"User"</span>
+)</pre></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-body">
+        <div class="step-title">Install libcurl via vcpkg</div>
+        <div class="step-desc">
+          We'll use <strong>libcurl</strong> to call the Claude API and <strong>nlohmann/json</strong> for JSON parsing. Open <strong>Developer PowerShell for VS 2022</strong>:
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+            <span class="code-lang">Developer PowerShell</span>
+          </div>
+          <div class="code-content"><pre><span class="cmt"># Install vcpkg if not already installed</span>
+git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
+C:\vcpkg\bootstrap-vcpkg.bat
+
+<span class="cmt"># Install required packages (x64)</span>
+C:\vcpkg\vcpkg.exe install curl:x64-windows
+C:\vcpkg\vcpkg.exe install nlohmann-json:x64-windows
+
+<span class="cmt"># Integrate with Visual Studio</span>
+C:\vcpkg\vcpkg.exe integrate install</pre></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">04</div>
+      <div class="step-body">
+        <div class="step-title">Create Your First Visual Studio Project</div>
+        <div class="step-desc">
+          Open Visual Studio → <strong>Create new project</strong> → <strong>Console App (C++)</strong> → Name it <code>ClaudeDP</code>. Right-click the project → Properties → make sure <code>Platform Toolset</code> is set to the latest MSVC.
+        </div>
+        <div class="tip-box">
+          <strong>💡</strong> Set <strong>Configuration</strong> to <em>Release</em> and <strong>Platform</strong> to <em>x64</em> for best performance.
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">05</div>
+      <div class="step-body">
+        <div class="step-title">Test Your Claude Connection</div>
+        <div class="step-desc">
+          Let's verify everything works with a minimal Claude API call from C++:
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+            <span class="code-lang">claude_test.cpp</span>
+          </div>
+          <div class="code-content"><pre><span class="inc">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="inc">#include</span> <span class="str">&lt;string&gt;</span>
+<span class="inc">#include</span> <span class="str">&lt;curl/curl.h&gt;</span>
+<span class="inc">#include</span> <span class="str">&lt;nlohmann/json.hpp&gt;</span>
+<span class="kw">using</span> json = nlohmann::json;
+
+<span class="cmt">// Callback to capture HTTP response</span>
+<span class="type">size_t</span> <span class="fn">WriteCallback</span>(<span class="type">void</span>* contents, <span class="type">size_t</span> size,
+                    <span class="type">size_t</span> nmemb, <span class="type">std::string</span>* output) {
+    output->append((<span class="type">char</span>*)contents, size * nmemb);
+    <span class="kw">return</span> size * nmemb;
+}
+
+<span class="type">std::string</span> <span class="fn">askClaude</span>(<span class="kw">const</span> <span class="type">std::string</span>&amp; prompt) {
+    <span class="kw">const</span> <span class="type">char</span>* apiKey = getenv(<span class="str">"ANTHROPIC_API_KEY"</span>);
+    <span class="kw">if</span> (!apiKey) <span class="kw">return</span> <span class="str">"Error: API key not set"</span>;
+
+    CURL* curl = <span class="fn">curl_easy_init</span>();
+    <span class="type">std::string</span> response;
+
+    json body = {
+        {<span class="str">"model"</span>, <span class="str">"claude-sonnet-4-20250514"</span>},
+        {<span class="str">"max_tokens"</span>, <span class="num">1024</span>},
+        {<span class="str">"messages"</span>, {{
+            {<span class="str">"role"</span>, <span class="str">"user"</span>},
+            {<span class="str">"content"</span>, prompt}
+        }}}
+    };
+
+    <span class="type">std::string</span> bodyStr = body.<span class="fn">dump</span>();
+    <span class="type">std::string</span> authHeader = <span class="str">"x-api-key: "</span> + <span class="type">std::string</span>(apiKey);
+
+    <span class="kw">struct</span> curl_slist* headers = <span class="kw">nullptr</span>;
+    headers = <span class="fn">curl_slist_append</span>(headers, <span class="str">"Content-Type: application/json"</span>);
+    headers = <span class="fn">curl_slist_append</span>(headers, authHeader.<span class="fn">c_str</span>());
+    headers = <span class="fn">curl_slist_append</span>(headers, <span class="str">"anthropic-version: 2023-06-01"</span>);
+
+    <span class="fn">curl_easy_setopt</span>(curl, CURLOPT_URL,
+        <span class="str">"https://api.anthropic.com/v1/messages"</span>);
+    <span class="fn">curl_easy_setopt</span>(curl, CURLOPT_POSTFIELDS, bodyStr.<span class="fn">c_str</span>());
+    <span class="fn">curl_easy_setopt</span>(curl, CURLOPT_HTTPHEADER, headers);
+    <span class="fn">curl_easy_setopt</span>(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+    <span class="fn">curl_easy_setopt</span>(curl, CURLOPT_WRITEDATA, &amp;response);
+
+    <span class="fn">curl_easy_perform</span>(curl);
+    <span class="fn">curl_easy_cleanup</span>(curl);
+    <span class="fn">curl_slist_free_all</span>(headers);
+
+    <span class="kw">auto</span> parsed = json::<span class="fn">parse</span>(response);
+    <span class="kw">return</span> parsed[<span class="str">"content"</span>][<span class="num">0</span>][<span class="str">"text"</span>];
+}
+
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="type">std::string</span> reply = <span class="fn">askClaude</span>(
+        <span class="str">"Say 'Hello from Claude!' and nothing else."</span>);
+    std::cout &lt;&lt; reply &lt;&lt; std::endl;
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div>
+        </div>
+
+        <div class="tip-box">
+          <strong>Expected output:</strong> <code>Hello from Claude!</code> — If you see this, your setup is complete! 🎉
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="checklist mt-3">
+    <li><div class="check">✓</div> Visual Studio 2022 Community installed with C++ workload</li>
+    <li><div class="check">✓</div> vcpkg installed with curl and nlohmann-json packages</li>
+    <li><div class="check">✓</div> ANTHROPIC_API_KEY environment variable set</li>
+    <li><div class="check">✓</div> Hello World test compiles and runs successfully</li>
+  </ul>
+</div>
+</section>
+
+<!-- ============================
+     CHAPTER 2: CLAUDE CONCEPTS
+     ============================ -->
+<section id="concepts" id="sec-2" style="background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+<div class="container">
+  <div class="chapter">
+    <span class="chapter-num">Chapter 02</span>
+    <h2>Understanding Claude</h2>
+  </div>
+
+  <div class="section-label">Core Concepts</div>
+  <p class="section-desc">Before writing complex applications, understand how Claude thinks and how to communicate with it effectively.</p>
+
+  <div class="concept-box">
+    <h4>🧠 What is Claude?</h4>
+    <p>Claude is a large language model (LLM) made by Anthropic. Unlike a search engine, Claude <em>reasons</em> about your prompt and generates a contextually appropriate response. For programming, this means you can describe what you want in plain English and Claude will produce working code, explain algorithms, debug errors, and more.</p>
+  </div>
+
+  <!-- TOKENS -->
+  <h3 style="font-family: 'Syne', sans-serif; font-weight: 700; margin: 2rem 0 1rem; font-size: 1.2rem;">How Claude Processes Text: Tokens</h3>
+
+  <p>Claude doesn't see characters — it sees <strong>tokens</strong>. A token ≈ 4 characters or ¾ of a word.</p>
+
+  <div class="dp-visual">
+    <h4>Token Breakdown Example</h4>
+    <table style="width: auto;">
+      <tr>
+        <th>Word</th>
+        <th>Tokens</th>
+        <th>Cost Impact</th>
+      </tr>
+      <tr><td>"Hello"</td><td class="filled">1</td><td style="color: var(--green);">minimal</td></tr>
+      <tr><td>"programming"</td><td class="filled">1</td><td style="color: var(--green);">minimal</td></tr>
+      <tr><td>"dynamic programming"</td><td class="filled">2</td><td style="color: var(--green);">low</td></tr>
+      <tr><td>A 500-line C++ file</td><td class="filled">~1800</td><td style="color: var(--claude-amber);">medium</td></tr>
+    </table>
+  </div>
+
+  <!-- MESSAGES API -->
+  <h3 style="font-family: 'Syne', sans-serif; font-weight: 700; margin: 2rem 0 1rem; font-size: 1.2rem;">The Messages API Structure</h3>
+
+  <p>Every Claude API call has this structure:</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      <span class="code-lang">JSON Request Anatomy</span>
+    </div>
+    <div class="code-content"><pre>{
+  <span class="str">"model"</span>: <span class="str">"claude-sonnet-4-20250514"</span>,   <span class="cmt">// Which Claude to use</span>
+  <span class="str">"max_tokens"</span>: <span class="num">1024</span>,                   <span class="cmt">// Response length cap</span>
+  <span class="str">"system"</span>: <span class="str">"You are a C++ expert..."</span>,  <span class="cmt">// System prompt (role)</span>
+  <span class="str">"messages"</span>: [
+    { <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"..."</span> },
+    { <span class="str">"role"</span>: <span class="str">"assistant"</span>, <span class="str">"content"</span>: <span class="str">"..."</span> },
+    { <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"..."</span> }
+  ]
+}</pre></div>
+  </div>
+
+  <!-- PROMPT ANATOMY -->
+  <h3 style="font-family: 'Syne', sans-serif; font-weight: 700; margin: 2rem 0 1rem; font-size: 1.2rem;">Anatomy of a Great Prompt</h3>
+
+  <p>The best prompts have four components. Click each color to learn more:</p>
+
+  <div class="prompt-anatomy">
+<span class="pa-role">You are an expert C++ programmer and algorithms professor.</span> <span class="pa-label">← ROLE</span>
+<span class="pa-task">Implement the Longest Common Subsequence algorithm using dynamic programming.</span> <span class="pa-label">← TASK</span>
+<span class="pa-context">The function takes two std::string inputs. This will run on embedded hardware, so avoid heap allocations. Use a 2D array with dimensions [n+1][m+1].</span> <span class="pa-label">← CONTEXT</span>
+<span class="pa-format">Return ONLY compilable C++ code with no markdown fences. Add brief inline comments.</span> <span class="pa-label">← FORMAT</span>
+  </div>
+
+  <div class="card-grid mt-2">
+    <div class="card">
+      <div class="card-icon" style="color: var(--cyan);">🎭</div>
+      <h3>Role</h3>
+      <p>Tell Claude who to be. "Expert C++ programmer" gets you better code than a generic prompt.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="color: var(--accent);">🎯</div>
+      <h3>Task</h3>
+      <p>Be specific and action-oriented. "Implement LCS with DP" beats "write some algorithm code".</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="color: var(--accent2);">📋</div>
+      <h3>Context</h3>
+      <p>Constraints, environment, existing code. Claude can't see your screen — tell it everything relevant.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="color: var(--accent3);">📐</div>
+      <h3>Format</h3>
+      <p>Specify output format: "compilable C++ only", "JSON response", "numbered steps", etc.</p>
+    </div>
+  </div>
+
+  <!-- SYSTEM PROMPTS -->
+  <h3 style="font-family: 'Syne', sans-serif; font-weight: 700; margin: 2rem 0 1rem; font-size: 1.2rem;">System Prompts: Give Claude a Persona</h3>
+
+  <p>The system prompt runs once and shapes all subsequent responses. For a C++ tutor application:</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      <span class="code-lang">System Prompt for C++ Tutor</span>
+    </div>
+    <div class="code-content"><pre><span class="type">std::string</span> systemPrompt = <span class="str">R"(
+You are an expert C++ programming tutor helping college students.
+
+BEHAVIOR:
+- Write clean, modern C++17 code
+- Explain WHY, not just HOW — students need to understand
+- Point out potential bugs and edge cases
+- Suggest optimizations but explain the tradeoff
+- When asked about algorithms, always discuss time and space complexity
+
+CODE STYLE:
+- Use const references for parameters where appropriate
+- Prefer std::vector over raw arrays unless performance is critical
+- Include assert() statements for preconditions
+- Use meaningful variable names
+
+NEVER:
+- Write code that leaks memory
+- Skip error checking on API calls
+)"</span>;</pre></div>
+  </div>
+
+  <!-- CONVERSATION STATE -->
+  <h3 style="font-family: 'Syne', sans-serif; font-weight: 700; margin: 2rem 0 1rem; font-size: 1.2rem;">Maintaining Conversation State in C++</h3>
+
+  <p>Claude has no memory between API calls — <em>you</em> must send the full history each time. Here's how to manage this in C++:</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      <span class="code-lang">conversation.hpp</span>
+    </div>
+    <div class="code-content"><pre><span class="inc">#pragma once</span>
+<span class="inc">#include</span> <span class="str">&lt;vector&gt;</span>
+<span class="inc">#include</span> <span class="str">&lt;string&gt;</span>
+<span class="inc">#include</span> <span class="str">&lt;nlohmann/json.hpp&gt;</span>
+<span class="kw">using</span> json = nlohmann::json;
+
+<span class="kw">class</span> <span class="type">ClaudeConversation</span> {
+<span class="kw">public</span>:
+    <span class="kw">explicit</span> <span class="fn">ClaudeConversation</span>(<span class="type">std::string</span> systemPrompt)
+        : system_(std::move(systemPrompt)) {}
+
+    <span class="cmt">// Add a user turn and get Claude's response</span>
+    <span class="type">std::string</span> <span class="fn">chat</span>(<span class="kw">const</span> <span class="type">std::string</span>&amp; userMsg) {
+        history_.<span class="fn">push_back</span>({{<span class="str">"role"</span>,<span class="str">"user"</span>},{<span class="str">"content"</span>,userMsg}});
+
+        json body = {
+            {<span class="str">"model"</span>, <span class="str">"claude-sonnet-4-20250514"</span>},
+            {<span class="str">"max_tokens"</span>, <span class="num">2048</span>},
+            {<span class="str">"system"</span>, system_},
+            {<span class="str">"messages"</span>, history_}  <span class="cmt">// Send full history!</span>
+        };
+
+        <span class="type">std::string</span> response = <span class="fn">callAPI</span>(body);
+
+        <span class="cmt">// Append Claude's reply to history</span>
+        history_.<span class="fn">push_back</span>({{<span class="str">"role"</span>,<span class="str">"assistant"</span>},{<span class="str">"content"</span>,response}});
+
+        <span class="kw">return</span> response;
+    }
+
+    <span class="kw">void</span> <span class="fn">reset</span>() { history_.<span class="fn">clear</span>(); }
+
+<span class="kw">private</span>:
+    <span class="type">std::string</span> system_;
+    json history_ = json::array();
+    <span class="type">std::string</span> <span class="fn">callAPI</span>(<span class="kw">const</span> json&amp; body); <span class="cmt">// Implementation in .cpp</span>
+};</pre></div>
+  </div>
+
+</div>
+</section>
+
+<!-- ============================
+     CHAPTER 3: VIBE CODING
+     ============================ -->
+<section id="vibe" id="sec-3">
+<div class="container">
+  <div class="chapter">
+    <span class="chapter-num">Chapter 03</span>
+    <h2>Vibe Coding with Claude</h2>
+  </div>
+
+  <div class="vibe-box">
+    <h4>What is Vibe Coding?</h4>
+    <p>Vibe coding is a style of AI-assisted development where you describe <em>intent</em> and <em>feel</em> rather than implementation details. Instead of writing code line-by-line, you have a conversation with Claude, iterate rapidly, and guide the output with high-level direction. The compiler is still the final judge — but Claude does most of the heavy lifting.</p>
+  </div>
+
+  <h3 style="font-family: 'Syne', sans-serif; font-weight: 700; margin: 2rem 0 1rem; font-size: 1.2rem;">The Vibe Coding Loop</h3>
+
+  <div class="flow">
+    <div class="flow-node">💡 Idea</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node active">🗣️ Prompt Claude</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">📋 Get Code</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">🔨 Run/Test</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">🔄 Refine</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node active">✅ Ship</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <h3 style="font-family: 'Syne', sans-serif; font-weight: 700; margin: 0 0 1rem; font-size: 1.2rem;">Example Session: Building a DP Solver with Vibe Coding</h3>
+
+  <p>Watch how a real vibe coding session unfolds. The student starts vague and iterates toward something specific:</p>
+
+  <!-- VIBE CODING DIALOGUE -->
+  <div class="code-block">
+    <div class="code-header">
+      <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      <span class="code-lang">Vibe Coding Session — Iteration 1</span>
+    </div>
+    <div class="code-content"><pre><span class="claude-prompt">You: </span><span class="str">I want a C++ program that solves the coin change problem.
+     Make it feel like a calculator, clean CLI, show the steps.</span>
+
+<span class="claude-response">Claude: </span>Here's a coin change solver with step visualization...
+<span class="cmt">         [generates 80 lines of working C++ code]</span>
+
+<span class="claude-prompt">You: </span><span class="str">Nice! But make the output more visual — like show a table of
+     the DP array filling up. Add colors if possible.</span>
+
+<span class="claude-response">Claude: </span>Updated with ANSI color codes and a formatted DP table...
+<span class="cmt">         [updates code with visual output]</span>
+
+<span class="claude-prompt">You: </span><span class="str">The table is huge for large values. Cap the display at 20 cols,
+     show "..." for the rest. Also add input validation.</span>
+
+<span class="claude-response">Claude: </span>Got it — truncated display and validation added...
+<span class="cmt">         [iterates again]</span>
+
+<span class="claude-prompt">You: </span><span class="str">Perfect! Now refactor the DP logic into its own class with a
+     header/cpp split. Keep the main.cpp clean.</span></pre></div>
+  </div>
+
+  <div class="vibe-box">
+    <h4>Vibe Coding Best Practices</h4>
+    <ul>
+      <li><strong>Start broad, narrow down</strong> — don't try to spec everything upfront</li>
+      <li><strong>Paste your errors</strong> — Claude reads compiler output and fixes it</li>
+      <li><strong>Ask for explanations</strong> — say "explain what this does" after each iteration</li>
+      <li><strong>Guide the vibe</strong> — say "make it faster", "cleaner", "more readable"</li>
+      <li><strong>Always review</strong> — Claude can produce bugs; run tests and read the code</li>
+      <li><strong>Commit frequently</strong> — use git so you can revert bad iterations</li>
+    </ul>
+  </div>
+
+  <h3 style="font-family: 'Syne', sans-serif; font-weight: 700; margin: 2rem 0 1rem; font-size: 1.2rem;">Prompting Patterns for C++ Development</h3>
+
+  <div class="tabs">
+    <div class="tab-list">
+      <button class="tab-btn active" onclick="switchTab(this, 'tab-debug')">Debug Mode</button>
+      <button class="tab-btn" onclick="switchTab(this, 'tab-refactor')">Refactor Mode</button>
+      <button class="tab-btn" onclick="switchTab(this, 'tab-explain')">Explain Mode</button>
+      <button class="tab-btn" onclick="switchTab(this, 'tab-optimize')">Optimize Mode</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-debug">
+      <div class="code-block">
+        <div class="code-header">
+          <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+          <span class="code-lang">Debug Prompt Template</span>
+        </div>
+        <div class="code-content"><pre><span class="claude-prompt">You: </span><span class="str">I'm getting this error in Visual Studio C++. Help me fix it.
+
+Error:
+  error C2676: binary '[': 'std::string' does not define this operator
+
+My code:
+```cpp
+std::string s = "hello";
+char c = s[0]; // this line
+```
+
+Environment: MSVC 2022, C++17, x64 Release build
+What I was trying to do: access the first character of a string</span>
+
+<span class="cmt">// GOOD DEBUG PROMPT includes:
+// ✓ Exact error message
+// ✓ The specific code line
+// ✓ Environment details
+// ✓ What you intended to do</span></pre></div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-refactor">
+      <div class="code-block">
+        <div class="code-header">
+          <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+          <span class="code-lang">Refactor Prompt Template</span>
+        </div>
+        <div class="code-content"><pre><span class="claude-prompt">You: </span><span class="str">Refactor this C++ function to be more modern and readable.
+Constraints:
+- Keep the same function signature
+- Use C++17 features where it helps
+- Add const correctness
+- No external dependencies beyond STL
+
+Here's the original code:
+[paste your function here]</span>
+
+<span class="cmt">// After receiving refactored code, follow up:
+// "Explain each change you made and why"
+// "What are the performance implications?"
+// "Are there any edge cases you handled differently?"</span></pre></div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-explain">
+      <div class="code-block">
+        <div class="code-header">
+          <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+          <span class="code-lang">Explain Prompt Template</span>
+        </div>
+        <div class="code-content"><pre><span class="claude-prompt">You: </span><span class="str">Explain this dynamic programming code to me like I'm a
+sophomore CS student who just learned recursion. Walk through
+it with the example inputs: s1="ABCBDAB", s2="BDCAB"
+
+Show me:
+1. The intuition (why does this work?)
+2. A trace of the DP table being filled
+3. Time and space complexity with explanation
+4. One common mistake students make
+
+Code:
+[paste your LCS function here]</span></pre></div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-optimize">
+      <div class="code-block">
+        <div class="code-header">
+          <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+          <span class="code-lang">Optimize Prompt Template</span>
+        </div>
+        <div class="code-content"><pre><span class="claude-prompt">You: </span><span class="str">Profile this C++ DP function — it's too slow for n=10000.
+Suggest optimizations ranked by impact. For each optimization:
+- What it improves (CPU cache, allocations, etc.)
+- Approximate speedup
+- Code changes required
+
+Priority: minimize memory first, then speed.
+Target: sub-100ms for n=10000 on modern hardware.</span>
+
+<span class="cmt">// Claude will often suggest:
+// - Space optimization (1D rolling array instead of 2D)
+// - Loop reordering for cache efficiency
+// - SIMD hints or compiler pragmas
+// - Algorithmic improvements</span></pre></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- ============================
+     CHAPTER 4: DP BASICS
+     ============================ -->
+<section id="dp" id="sec-4" style="background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+<div class="container">
+  <div class="chapter">
+    <span class="chapter-num">Chapter 04</span>
+    <h2>Dynamic Programming Fundamentals</h2>
+  </div>
+
+  <p class="section-desc">Dynamic Programming (DP) is an algorithm technique for solving optimization problems by breaking them into overlapping subproblems. Claude excels at generating, explaining, and debugging DP code.</p>
+
+  <div class="concept-box">
+    <h4>🧩 The Two Properties of DP</h4>
+    <p><strong>1. Optimal Substructure:</strong> The optimal solution to the problem contains optimal solutions to subproblems.</p>
+    <p class="mt-1"><strong>2. Overlapping Subproblems:</strong> The same subproblems are solved multiple times. DP stores results to avoid recomputation.</p>
+  </div>
+
+  <!-- PROBLEM 1: FIBONACCI -->
+  <div class="divider"></div>
+  <h3 style="font-family: 'Syne', sans-serif; font-weight: 700; margin: 0 0 0.5rem; font-size: 1.3rem;">
+    Problem 1: Fibonacci — From Recursion to DP
+    <span class="tag tag-dp">Beginner</span>
+  </h3>
+  <p>The classic example showing why memoization matters.</p>
+
+  <div class="tabs">
+    <div class="tab-list">
+      <button class="tab-btn active" onclick="switchTab(this, 'fib-naive')">Naive O(2ⁿ)</button>
+      <button class="tab-btn" onclick="switchTab(this, 'fib-memo')">Memoized O(n)</button>
+      <button class="tab-btn" onclick="switchTab(this, 'fib-tab')">Tabulated O(n)</button>
+      <button class="tab-btn" onclick="switchTab(this, 'fib-space')">Space O(1)</button>
+    </div>
+
+    <div class="tab-panel active" id="fib-naive">
+      <div class="code-block">
+        <div class="code-header">
+          <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+          <span class="code-lang">fibonacci_naive.cpp — O(2ⁿ) time</span>
+        </div>
+        <div class="code-content"><pre><span class="cmt">// BAD: Exponential time — fib(50) takes minutes!</span>
+<span class="type">long long</span> <span class="fn">fib</span>(<span class="type">int</span> n) {
+    <span class="kw">if</span> (n &lt;= <span class="num">1</span>) <span class="kw">return</span> n;
+    <span class="kw">return</span> <span class="fn">fib</span>(n - <span class="num">1</span>) + <span class="fn">fib</span>(n - <span class="num">2</span>);
+    <span class="cmt">// fib(5) recomputes fib(3) twice, fib(2) three times...</span>
+}</pre></div>
+      </div>
+      <div class="warn-box">
+        <strong>Problem:</strong> fib(40) makes 2.7 billion recursive calls. The same subproblems are recomputed exponentially many times.
+      </div>
+    </div>
+
+    <div class="tab-panel" id="fib-memo">
+      <div class="code-block">
+        <div class="code-header">
+          <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+          <span class="code-lang">fibonacci_memo.cpp — Top-Down DP (Memoization)</span>
+        </div>
+        <div class="code-content"><pre><span class="inc">#include</span> <span class="str">&lt;unordered_map&gt;</span>
+
+<span class="cmt">// Top-Down DP: Recursion + cache (memoization)</span>
+<span class="type">long long</span> <span class="fn">fib</span>(<span class="type">int</span> n, std::unordered_map&lt;<span class="type">int</span>,<span class="type">long long</span>&gt;&amp; memo) {
+    <span class="kw">if</span> (n &lt;= <span class="num">1</span>) <span class="kw">return</span> n;
+
+    <span class="kw">auto</span> it = memo.<span class="fn">find</span>(n);
+    <span class="kw">if</span> (it != memo.<span class="fn">end</span>()) <span class="kw">return</span> it-&gt;second; <span class="cmt">// Cache hit!</span>
+
+    <span class="cmt">// Compute and store in cache</span>
+    memo[n] = <span class="fn">fib</span>(n - <span class="num">1</span>, memo) + <span class="fn">fib</span>(n - <span class="num">2</span>, memo);
+    <span class="kw">return</span> memo[n];
+}
+
+<span class="type">long long</span> <span class="fn">fibonacci</span>(<span class="type">int</span> n) {
+    std::unordered_map&lt;<span class="type">int</span>,<span class="type">long long</span>&gt; memo;
+    <span class="kw">return</span> <span class="fn">fib</span>(n, memo);
+}
+<span class="cmt">// Time: O(n), Space: O(n)</span></pre></div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="fib-tab">
+      <div class="code-block">
+        <div class="code-header">
+          <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+          <span class="code-lang">fibonacci_tab.cpp — Bottom-Up DP (Tabulation)</span>
+        </div>
+        <div class="code-content"><pre><span class="inc">#include</span> <span class="str">&lt;vector&gt;</span>
+
+<span class="cmt">// Bottom-Up DP: Fill table iteratively, no recursion</span>
+<span class="type">long long</span> <span class="fn">fibonacci</span>(<span class="type">int</span> n) {
+    <span class="kw">if</span> (n &lt;= <span class="num">1</span>) <span class="kw">return</span> n;
+
+    std::vector&lt;<span class="type">long long</span>&gt; dp(n + <span class="num">1</span>);
+    dp[<span class="num">0</span>] = <span class="num">0</span>;
+    dp[<span class="num">1</span>] = <span class="num">1</span>;
+
+    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">2</span>; i &lt;= n; ++i)
+        dp[i] = dp[i - <span class="num">1</span>] + dp[i - <span class="num">2</span>];
+
+    <span class="kw">return</span> dp[n];
+}
+<span class="cmt">// Time: O(n), Space: O(n)</span>
+<span class="cmt">// Better than memoization: no recursion overhead, cache-friendly</span></pre></div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="fib-space">
+      <div class="code-block">
+        <div class="code-header">
+          <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+          <span class="code-lang">fibonacci_optimal.cpp — O(1) Space</span>
+        </div>
+        <div class="code-content"><pre><span class="cmt">// OPTIMAL: We only need last 2 values</span>
+<span class="type">long long</span> <span class="fn">fibonacci</span>(<span class="type">int</span> n) {
+    <span class="kw">if</span> (n &lt;= <span class="num">1</span>) <span class="kw">return</span> n;
+    <span class="type">long long</span> prev2 = <span class="num">0</span>, prev1 = <span class="num">1</span>;
+
+    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">2</span>; i &lt;= n; ++i) {
+        <span class="type">long long</span> curr = prev1 + prev2;
+        prev2 = prev1;
+        prev1 = curr;
+    }
+    <span class="kw">return</span> prev1;
+}
+<span class="cmt">// Time: O(n), Space: O(1) ← Best possible!</span></pre></div>
+      </div>
+      <div class="tip-box">
+        <strong>💡 Space Optimization Pattern:</strong> Many DP problems only look back a fixed number of rows/columns. Recognize this and you can often reduce O(n²) space to O(n) or O(1).
+      </div>
+    </div>
+  </div>
+
+  <!-- PROBLEM 2: KNAPSACK -->
+  <div class="divider"></div>
+  <h3 style="font-family: 'Syne', sans-serif; font-weight: 700; margin: 0 0 0.5rem; font-size: 1.3rem;">
+    Problem 2: 0/1 Knapsack
+    <span class="tag tag-dp">Intermediate</span>
+  </h3>
+  <p>Given items with weights and values, maximize value within a weight limit. Each item can be taken or left — hence 0/1.</p>
+
+  <div class="dp-visual">
+    <h4>DP Table Visualization — Items: {(w=2,v=6), (w=3,v=10), (w=4,v=12)}, Capacity=5</h4>
+    <table>
+      <tr>
+        <th>Item ↓ / Cap →</th>
+        <th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th>
+      </tr>
+      <tr>
+        <td style="color: var(--text-dim)">No items</td>
+        <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+      </tr>
+      <tr>
+        <td style="color: var(--text-dim)">(w=2,v=6)</td>
+        <td>0</td><td>0</td><td class="filled">6</td><td class="filled">6</td><td class="filled">6</td><td class="filled">6</td>
+      </tr>
+      <tr>
+        <td style="color: var(--text-dim)">(w=3,v=10)</td>
+        <td>0</td><td>0</td><td class="filled">6</td><td class="filled">10</td><td class="filled">10</td><td class="diagonal">16</td>
+      </tr>
+      <tr>
+        <td style="color: var(--text-dim)">(w=4,v=12)</td>
+        <td>0</td><td>0</td><td class="filled">6</td><td class="filled">10</td><td class="filled">12</td><td class="diagonal">16</td>
+      </tr>
+    </table>
+    <p style="margin-top: 0.75rem; font-size: 0.78rem; color: var(--text-dim);">
+      <span style="color: var(--accent)">★</span> Answer: 16 (take items 1 and 2). Yellow = maximum value at this capacity.
+    </p>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      <span class="code-lang">knapsack.cpp — Claude-generated with explanation</span>
+    </div>
+    <div class="code-content"><pre><span class="inc">#include</span> <span class="str">&lt;vector&gt;</span>
+<span class="inc">#include</span> <span class="str">&lt;algorithm&gt;</span>
+<span class="inc">#include</span> <span class="str">&lt;cassert&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="kw">struct</span> <span class="type">Item</span> {
+    <span class="type">int</span> weight;
+    <span class="type">int</span> value;
+};
+
+<span class="cmt">// Returns maximum value achievable with given capacity
+// Time: O(n * capacity), Space: O(n * capacity)</span>
+<span class="type">int</span> <span class="fn">knapsack</span>(<span class="kw">const</span> vector&lt;<span class="type">Item</span>&gt;&amp; items, <span class="type">int</span> capacity) {
+    <span class="fn">assert</span>(capacity &gt;= <span class="num">0</span>);
+    <span class="type">int</span> n = (<span class="type">int</span>)items.<span class="fn">size</span>();
+
+    <span class="cmt">// dp[i][w] = max value using first i items with weight limit w</span>
+    vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; dp(n + <span class="num">1</span>, vector&lt;<span class="type">int</span>&gt;(capacity + <span class="num">1</span>, <span class="num">0</span>));
+
+    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">1</span>; i &lt;= n; ++i) {
+        <span class="kw">for</span> (<span class="type">int</span> w = <span class="num">0</span>; w &lt;= capacity; ++w) {
+            <span class="cmt">// Option 1: Don't take item i</span>
+            dp[i][w] = dp[i - <span class="num">1</span>][w];
+
+            <span class="cmt">// Option 2: Take item i (if it fits)</span>
+            <span class="kw">if</span> (items[i - <span class="num">1</span>].weight &lt;= w) {
+                <span class="type">int</span> valueWithItem = items[i-<span class="num">1</span>].value
+                    + dp[i-<span class="num">1</span>][w - items[i-<span class="num">1</span>].weight];
+                dp[i][w] = max(dp[i][w], valueWithItem);
+            }
+        }
+    }
+    <span class="kw">return</span> dp[n][capacity];
+}
+
+<span class="cmt">// Space-optimized version: O(capacity) space</span>
+<span class="type">int</span> <span class="fn">knapsackOptimized</span>(<span class="kw">const</span> vector&lt;<span class="type">Item</span>&gt;&amp; items, <span class="type">int</span> capacity) {
+    vector&lt;<span class="type">int</span>&gt; dp(capacity + <span class="num">1</span>, <span class="num">0</span>);
+
+    <span class="kw">for</span> (<span class="kw">const</span> <span class="kw">auto</span>&amp; item : items)
+        <span class="kw">for</span> (<span class="type">int</span> w = capacity; w &gt;= item.weight; --w)
+            dp[w] = max(dp[w], item.value + dp[w - item.weight]);
+            <span class="cmt">// Iterate right-to-left to avoid using item twice!</span>
+
+    <span class="kw">return</span> dp[capacity];
+}</pre></div>
+  </div>
+
+  <div class="vibe-box">
+    <h4>Claude Prompt That Generated This</h4>
+    <p>"Implement 0/1 Knapsack in C++ as a class. Include both the standard 2D DP table and the space-optimized 1D version. Add inline comments explaining each step. Use struct for items. Include asserts for preconditions. No output formatting — just the algorithm."</p>
+  </div>
+
+</div>
+</section>
+
+<!-- ============================
+     CHAPTER 5: ADVANCED DP
+     ============================ -->
+<section id="sec-5">
+<div class="container">
+  <div class="chapter">
+    <span class="chapter-num">Chapter 05</span>
+    <h2>Advanced DP Problems</h2>
+  </div>
+
+  <!-- LCS -->
+  <h3 style="font-family: 'Syne', sans-serif; font-weight: 700; margin: 0 0 0.5rem; font-size: 1.3rem;">
+    Problem 3: Longest Common Subsequence (LCS)
+    <span class="tag tag-dp">Intermediate</span>
+    <span class="tag tag-claude">Claude-Guided</span>
+  </h3>
+
+  <p>Find the longest subsequence present in both strings. Classic example of 2D DP. Used in diff tools and bioinformatics.</p>
+
+  <div class="dp-visual">
+    <h4>LCS Table — "ABCBDAB" vs "BDCAB"</h4>
+    <table>
+      <tr><th></th><th></th><th>B</th><th>D</th><th>C</th><th>A</th><th>B</th></tr>
+      <tr><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+      <tr><td>A</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="filled">1</td><td class="filled">1</td></tr>
+      <tr><td>B</td><td>0</td><td class="filled">1</td><td>1</td><td>1</td><td>1</td><td class="diagonal">2</td></tr>
+      <tr><td>C</td><td>0</td><td>1</td><td>1</td><td class="filled">2</td><td>2</td><td>2</td></tr>
+      <tr><td>B</td><td>0</td><td class="filled">1</td><td>1</td><td>2</td><td>2</td><td class="filled">3</td></tr>
+      <tr><td>D</td><td>0</td><td>1</td><td class="filled">2</td><td>2</td><td>2</td><td>3</td></tr>
+      <tr><td>A</td><td>0</td><td>1</td><td>2</td><td>2</td><td class="filled">3</td><td>3</td></tr>
+      <tr><td>B</td><td>0</td><td class="filled">1</td><td>2</td><td>2</td><td>3</td><td class="diagonal">4</td></tr>
+    </table>
+    <p style="margin-top: 0.75rem; font-size: 0.78rem; color: var(--text-dim);">LCS length = 4 (e.g., "BCAB" or "BDAB")</p>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      <span class="code-lang">lcs.cpp — with backtracking to reconstruct the sequence</span>
+    </div>
+    <div class="code-content"><pre><span class="inc">#include</span> <span class="str">&lt;string&gt;</span>
+<span class="inc">#include</span> <span class="str">&lt;vector&gt;</span>
+<span class="inc">#include</span> <span class="str">&lt;algorithm&gt;</span>
+
+<span class="kw">struct</span> <span class="type">LCSResult</span> {
+    <span class="type">int</span> length;
+    <span class="type">std::string</span> sequence;
+};
+
+<span class="type">LCSResult</span> <span class="fn">longestCommonSubsequence</span>(
+    <span class="kw">const</span> <span class="type">std::string</span>&amp; s1, <span class="kw">const</span> <span class="type">std::string</span>&amp; s2)
+{
+    <span class="type">int</span> m = s1.<span class="fn">size</span>(), n = s2.<span class="fn">size</span>();
+
+    <span class="cmt">// Build DP table</span>
+    std::vector&lt;std::vector&lt;<span class="type">int</span>&gt;&gt; dp(m + <span class="num">1</span>,
+        std::vector&lt;<span class="type">int</span>&gt;(n + <span class="num">1</span>, <span class="num">0</span>));
+
+    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">1</span>; i &lt;= m; ++i) {
+        <span class="kw">for</span> (<span class="type">int</span> j = <span class="num">1</span>; j &lt;= n; ++j) {
+            <span class="kw">if</span> (s1[i-<span class="num">1</span>] == s2[j-<span class="num">1</span>])         <span class="cmt">// Match!</span>
+                dp[i][j] = dp[i-<span class="num">1</span>][j-<span class="num">1</span>] + <span class="num">1</span>;
+            <span class="kw">else</span>                                  <span class="cmt">// No match</span>
+                dp[i][j] = std::<span class="fn">max</span>(dp[i-<span class="num">1</span>][j], dp[i][j-<span class="num">1</span>]);
+        }
+    }
+
+    <span class="cmt">// Backtrack to find the actual sequence</span>
+    <span class="type">std::string</span> lcs;
+    <span class="type">int</span> i = m, j = n;
+    <span class="kw">while</span> (i &gt; <span class="num">0</span> &amp;&amp; j &gt; <span class="num">0</span>) {
+        <span class="kw">if</span> (s1[i-<span class="num">1</span>] == s2[j-<span class="num">1</span>]) {
+            lcs += s1[i-<span class="num">1</span>];
+            --i; --j;
+        } <span class="kw">else if</span> (dp[i-<span class="num">1</span>][j] &gt; dp[i][j-<span class="num">1</span>]) --i;
+        <span class="kw">else</span> --j;
+    }
+    std::<span class="fn">reverse</span>(lcs.<span class="fn">begin</span>(), lcs.<span class="fn">end</span>());
+
+    <span class="kw">return</span> {dp[m][n], lcs};
+}
+
+<span class="cmt">// Usage:</span>
+<span class="cmt">// auto [len, seq] = longestCommonSubsequence("ABCBDAB", "BDCAB");</span>
+<span class="cmt">// len == 4, seq == "BCAB" (or "BDAB")</span></pre></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- EDIT DISTANCE -->
+  <h3 style="font-family: 'Syne', sans-serif; font-weight: 700; margin: 0 0 0.5rem; font-size: 1.3rem;">
+    Problem 4: Edit Distance (Levenshtein)
+    <span class="tag tag-dp">Intermediate</span>
+  </h3>
+
+  <p>How many insertions, deletions, or substitutions to transform one string into another? Powers spell-checkers and DNA sequencing.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      <span class="code-lang">edit_distance.cpp</span>
+    </div>
+    <div class="code-content"><pre><span class="type">int</span> <span class="fn">editDistance</span>(<span class="kw">const</span> <span class="type">std::string</span>&amp; s, <span class="kw">const</span> <span class="type">std::string</span>&amp; t) {
+    <span class="type">int</span> m = s.<span class="fn">size</span>(), n = t.<span class="fn">size</span>();
+
+    <span class="cmt">// Space-optimized: only keep 2 rows at a time</span>
+    std::vector&lt;<span class="type">int</span>&gt; prev(n + <span class="num">1</span>), curr(n + <span class="num">1</span>);
+
+    <span class="cmt">// Base case: transform empty string to t[0..j]</span>
+    <span class="kw">for</span> (<span class="type">int</span> j = <span class="num">0</span>; j &lt;= n; ++j) prev[j] = j;
+
+    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">1</span>; i &lt;= m; ++i) {
+        curr[<span class="num">0</span>] = i; <span class="cmt">// Transform s[0..i] to empty string</span>
+        <span class="kw">for</span> (<span class="type">int</span> j = <span class="num">1</span>; j &lt;= n; ++j) {
+            <span class="kw">if</span> (s[i-<span class="num">1</span>] == t[j-<span class="num">1</span>])
+                curr[j] = prev[j-<span class="num">1</span>];   <span class="cmt">// No operation needed</span>
+            <span class="kw">else</span>
+                curr[j] = <span class="num">1</span> + std::<span class="fn">min</span>({
+                    prev[j],    <span class="cmt">// Delete</span>
+                    curr[j-<span class="num">1</span>], <span class="cmt">// Insert</span>
+                    prev[j-<span class="num">1</span>]  <span class="cmt">// Replace</span>
+                });
+        }
+        std::<span class="fn">swap</span>(prev, curr);
+    }
+    <span class="kw">return</span> prev[n];
+}
+<span class="cmt">// editDistance("kitten", "sitting") == 3</span></pre></div>
+  </div>
+
+  <!-- COIN CHANGE -->
+  <div class="divider"></div>
+  <h3 style="font-family: 'Syne', sans-serif; font-weight: 700; margin: 0 0 0.5rem; font-size: 1.3rem;">
+    Problem 5: Coin Change — Complete Claude Session
+    <span class="tag tag-dp">Intermediate</span>
+    <span class="tag tag-claude">Full Vibe</span>
+  </h3>
+
+  <p>Given coin denominations, find the minimum coins to reach a target amount. This shows a complete vibe coding session.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      <span class="code-lang">Vibe Session — Coin Change with Claude</span>
+    </div>
+    <div class="code-content"><pre><span class="claude-prompt">Prompt 1: </span><span class="str">"Implement coin change minimum coins problem in C++17.
+           Show me the DP approach. Function signature:
+           int coinChange(vector&lt;int&gt; coins, int amount)"</span>
+
+<span class="cmt">/* Claude generates: */</span>
+<span class="type">int</span> <span class="fn">coinChange</span>(std::vector&lt;<span class="type">int</span>&gt; coins, <span class="type">int</span> amount) {
+    std::vector&lt;<span class="type">int</span>&gt; dp(amount + <span class="num">1</span>, amount + <span class="num">1</span>); <span class="cmt">// Infinity</span>
+    dp[<span class="num">0</span>] = <span class="num">0</span>;
+
+    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">1</span>; i &lt;= amount; ++i)
+        <span class="kw">for</span> (<span class="type">int</span> coin : coins)
+            <span class="kw">if</span> (coin &lt;= i)
+                dp[i] = std::<span class="fn">min</span>(dp[i], dp[i - coin] + <span class="num">1</span>);
+
+    <span class="kw">return</span> dp[amount] &gt; amount ? -<span class="num">1</span> : dp[amount];
+}
+
+<span class="claude-prompt">Prompt 2: </span><span class="str">"Good! Now also give me a version that tracks which coins
+           were actually used, not just the count."</span>
+
+<span class="cmt">/* Claude adds backtracking: */</span>
+<span class="kw">struct</span> <span class="type">CoinResult</span> { <span class="type">int</span> minCoins; std::vector&lt;<span class="type">int</span>&gt; coinsUsed; };
+
+<span class="type">CoinResult</span> <span class="fn">coinChangeTracked</span>(std::vector&lt;<span class="type">int</span>&gt; coins, <span class="type">int</span> amount) {
+    std::vector&lt;<span class="type">int</span>&gt; dp(amount + <span class="num">1</span>, amount + <span class="num">1</span>);
+    std::vector&lt;<span class="type">int</span>&gt; parent(amount + <span class="num">1</span>, -<span class="num">1</span>); <span class="cmt">// Track chosen coin</span>
+    dp[<span class="num">0</span>] = <span class="num">0</span>;
+
+    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">1</span>; i &lt;= amount; ++i)
+        <span class="kw">for</span> (<span class="type">int</span> coin : coins)
+            <span class="kw">if</span> (coin &lt;= i &amp;&amp; dp[i - coin] + <span class="num">1</span> &lt; dp[i]) {
+                dp[i] = dp[i - coin] + <span class="num">1</span>;
+                parent[i] = coin; <span class="cmt">// Remember this choice</span>
+            }
+
+    <span class="kw">if</span> (dp[amount] &gt; amount) <span class="kw">return</span> {-<span class="num">1</span>, {}};
+
+    <span class="cmt">// Reconstruct path</span>
+    std::vector&lt;<span class="type">int</span>&gt; used;
+    <span class="kw">for</span> (<span class="type">int</span> rem = amount; rem &gt; <span class="num">0</span>; rem -= parent[rem])
+        used.<span class="fn">push_back</span>(parent[rem]);
+
+    <span class="kw">return</span> {dp[amount], used};
+}
+
+<span class="claude-prompt">Prompt 3: </span><span class="str">"Add a pretty-print function that shows the DP array
+           with a visual bar chart. Use ANSI escape codes."</span>
+<span class="cmt">/* Claude generates visual output code... */</span></pre></div>
+  </div>
+
+</div>
+</section>
+
+<!-- ============================
+     CHAPTER 6: CLAUDE SKILLS & AGENTS
+     ============================ -->
+<section id="agents" id="sec-6" style="background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+<div class="container">
+  <div class="chapter">
+    <span class="chapter-num">Chapter 06</span>
+    <h2>Skills &amp; Agents</h2>
+  </div>
+
+  <p class="section-desc">Take Claude beyond Q&A. Build autonomous agents that can reason, plan, and execute multi-step tasks — all from C++.</p>
+
+  <!-- SKILLS -->
+  <h3 style="font-family: 'Syne', sans-serif; font-weight: 700; margin: 0 0 1rem; font-size: 1.3rem;">Claude Skills (Tool Use)</h3>
+
+  <p>Skills are functions you expose to Claude that it can call autonomously. Claude reasons about when to use them — like giving it hands.</p>
+
+  <div class="concept-box">
+    <h4>🔧 How Tool Use Works</h4>
+    <ul>
+      <li>You define tools (functions) with a name, description, and input schema</li>
+      <li>Claude reads the descriptions and decides when to call them</li>
+      <li>You execute the function and send results back to Claude</li>
+      <li>Claude continues reasoning with the result</li>
+    </ul>
+  </div>
+
+  <div class="flow">
+    <div class="flow-node">User Query</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node active">Claude reasons</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node active">Calls tool(s)</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">Your C++ executes</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node active">Claude gets result</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">Final answer</div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      <span class="code-lang">dp_agent.cpp — Claude with DP Skills</span>
+    </div>
+    <div class="code-content"><pre><span class="inc">#include</span> <span class="str">&lt;nlohmann/json.hpp&gt;</span>
+<span class="inc">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="kw">using</span> json = nlohmann::json;
+
+<span class="cmt">// ── Define tools Claude can use ──</span>
+json <span class="fn">getTools</span>() {
+    <span class="kw">return</span> json::array({
+        {
+            {<span class="str">"name"</span>, <span class="str">"solve_knapsack"</span>},
+            {<span class="str">"description"</span>, <span class="str">"Solve 0/1 knapsack optimization problem. "</span>
+             <span class="str">"Returns the maximum value achievable."</span>},
+            {<span class="str">"input_schema"</span>, {
+                {<span class="str">"type"</span>, <span class="str">"object"</span>},
+                {<span class="str">"properties"</span>, {
+                    {<span class="str">"weights"</span>, {{<span class="str">"type"</span>,<span class="str">"array"</span>},{<span class="str">"description"</span>,<span class="str">"Item weights"</span>}}},
+                    {<span class="str">"values"</span>,  {{<span class="str">"type"</span>,<span class="str">"array"</span>},{<span class="str">"description"</span>,<span class="str">"Item values"</span>}}},
+                    {<span class="str">"capacity"</span>,{{<span class="str">"type"</span>,<span class="str">"integer"</span>},{<span class="str">"description"</span>,<span class="str">"Max weight"</span>}}}
+                }},
+                {<span class="str">"required"</span>, {<span class="str">"weights"</span>,<span class="str">"values"</span>,<span class="str">"capacity"</span>}}
+            }}
+        },
+        {
+            {<span class="str">"name"</span>, <span class="str">"compute_lcs"</span>},
+            {<span class="str">"description"</span>, <span class="str">"Find longest common subsequence of two strings"</span>},
+            {<span class="str">"input_schema"</span>, {
+                {<span class="str">"type"</span>, <span class="str">"object"</span>},
+                {<span class="str">"properties"</span>, {
+                    {<span class="str">"s1"</span>, {{<span class="str">"type"</span>,<span class="str">"string"</span>}}},
+                    {<span class="str">"s2"</span>, {{<span class="str">"type"</span>,<span class="str">"string"</span>}}}
+                }},
+                {<span class="str">"required"</span>, {<span class="str">"s1"</span>,<span class="str">"s2"</span>}}
+            }}
+        },
+        {
+            {<span class="str">"name"</span>, <span class="str">"coin_change"</span>},
+            {<span class="str">"description"</span>, <span class="str">"Find minimum coins to make an amount"</span>},
+            {<span class="str">"input_schema"</span>, {
+                {<span class="str">"type"</span>, <span class="str">"object"</span>},
+                {<span class="str">"properties"</span>, {
+                    {<span class="str">"coins"</span>,  {{<span class="str">"type"</span>,<span class="str">"array"</span>}}},
+                    {<span class="str">"amount"</span>, {{<span class="str">"type"</span>,<span class="str">"integer"</span>}}}
+                }},
+                {<span class="str">"required"</span>, {<span class="str">"coins"</span>,<span class="str">"amount"</span>}}
+            }}
+        }
+    });
+}
+
+<span class="cmt">// ── Agent Loop ──</span>
+<span class="type">int</span> <span class="fn">main</span>() {
+    json messages = json::array();
+    messages.<span class="fn">push_back</span>({
+        {<span class="str">"role"</span>, <span class="str">"user"</span>},
+        {<span class="str">"content"</span>, <span class="str">"I need to pack a bag. I have items with weights"</span>
+         <span class="str">" [2,3,4,5] and values [3,4,5,6]. Max weight is 8."</span>
+         <span class="str">" Also, what's the LCS of AGGTAB and GXTXAYB?"</span>}
+    });
+
+    <span class="kw">while</span> (<span class="kw">true</span>) {
+        json body = {
+            {<span class="str">"model"</span>, <span class="str">"claude-sonnet-4-20250514"</span>},
+            {<span class="str">"max_tokens"</span>, <span class="num">1024</span>},
+            {<span class="str">"tools"</span>, <span class="fn">getTools</span>()},
+            {<span class="str">"messages"</span>, messages}
+        };
+
+        json response = <span class="fn">callAPI</span>(body);
+        messages.<span class="fn">push_back</span>({<span class="str">"role"</span>,<span class="str">"assistant"</span>},{<span class="str">"content"</span>, response[<span class="str">"content"</span>]});
+
+        <span class="kw">if</span> (response[<span class="str">"stop_reason"</span>] == <span class="str">"end_turn"</span>) {
+            std::cout &lt;&lt; response[<span class="str">"content"</span>][<span class="num">0</span>][<span class="str">"text"</span>] &lt;&lt; std::endl;
+            <span class="kw">break</span>;
+        }
+
+        <span class="cmt">// Handle tool calls</span>
+        json toolResults = json::array();
+        <span class="kw">for</span> (<span class="kw">auto</span>&amp; block : response[<span class="str">"content"</span>]) {
+            <span class="kw">if</span> (block[<span class="str">"type"</span>] != <span class="str">"tool_use"</span>) <span class="kw">continue</span>;
+
+            <span class="type">std::string</span> toolName = block[<span class="str">"name"</span>];
+            json input = block[<span class="str">"input"</span>];
+            json result;
+
+            <span class="kw">if</span> (toolName == <span class="str">"solve_knapsack"</span>)
+                result = <span class="fn">knapsack</span>(input[<span class="str">"weights"</span>], input[<span class="str">"values"</span>],
+                                   input[<span class="str">"capacity"</span>]);
+            <span class="kw">else if</span> (toolName == <span class="str">"compute_lcs"</span>)
+                result = <span class="fn">lcsLength</span>(input[<span class="str">"s1"</span>], input[<span class="str">"s2"</span>]);
+            <span class="kw">else if</span> (toolName == <span class="str">"coin_change"</span>)
+                result = <span class="fn">minCoins</span>(input[<span class="str">"coins"</span>], input[<span class="str">"amount"</span>]);
+
+            toolResults.<span class="fn">push_back</span>({
+                {<span class="str">"type"</span>, <span class="str">"tool_result"</span>},
+                {<span class="str">"tool_use_id"</span>, block[<span class="str">"id"</span>]},
+                {<span class="str">"content"</span>, result.<span class="fn">dump</span>()}
+            });
+        }
+
+        messages.<span class="fn">push_back</span>({{<span class="str">"role"</span>,<span class="str">"user"</span>},{<span class="str">"content"</span>,toolResults}});
+    }
+}</pre></div>
+  </div>
+
+  <div class="tip-box">
+    <strong>💡 Agent Loop Pattern:</strong> Keep looping until <code>stop_reason == "end_turn"</code>. Every time Claude calls a tool, execute it and send back a <code>tool_result</code> message. Claude may call multiple tools before giving its final answer.
+  </div>
+
+  <!-- BUILDING A DP TUTOR AGENT -->
+  <div class="divider"></div>
+  <h3 style="font-family: 'Syne', sans-serif; font-weight: 700; margin: 0 0 1rem; font-size: 1.3rem;">Project: DP Tutor Agent</h3>
+
+  <p>Build an interactive agent that teaches dynamic programming. It generates problems, checks answers, and adapts to the student's level.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      <span class="code-lang">dp_tutor_agent.cpp — System Prompt for DP Tutor</span>
+    </div>
+    <div class="code-content"><pre><span class="type">std::string</span> tutorSystem = <span class="str">R"(
+You are an adaptive DP (Dynamic Programming) tutor for CS students.
+
+AVAILABLE TOOLS:
+- generate_problem: Create a DP problem at a specified difficulty (1-5)
+- verify_solution: Check if student's solution is correct
+- give_hint: Provide a contextual hint for the current problem
+- explain_concept: Show a visual DP table trace
+
+TEACHING PHILOSOPHY:
+1. Start with the student's level — ask them to self-assess (1-5)
+2. Generate a problem slightly above their comfort zone
+3. Let them struggle productively (don't give answers immediately)
+4. After 2 failed attempts, offer a hint
+5. After correct answer, explain the pattern and bump difficulty
+
+TONE: Encouraging, Socratic. Ask guiding questions.
+NEVER give the full solution unless student explicitly asks.
+)"</span>;
+
+<span class="cmt">// Example agent dialogue:
+// User: "I want to practice DP"
+// Claude: "What's your current level? (1=beginner, 5=expert)"
+// User: "I'd say 2"
+// Claude: [calls generate_problem(difficulty=2)]
+//         "Here's a problem: Given an array of integers, find the
+//          length of the longest increasing subsequence..."
+// User: "I think it's O(n²)..."
+// Claude: [calls verify_solution] → "The time is right! What about
+//          the recurrence relation?"</span></pre></div>
+  </div>
+
+</div>
+</section>
+
+<!-- ============================
+     CHAPTER 7: CAPSTONE PROJECTS
+     ============================ -->
+<section id="projects" id="sec-7">
+<div class="container">
+  <div class="chapter">
+    <span class="chapter-num">Chapter 07</span>
+    <h2>Capstone Projects</h2>
+  </div>
+
+  <p class="section-desc">Apply everything you've learned. Each project combines C++ DP algorithms with Claude AI integration.</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">🎒</div>
+      <h3>Project A: Smart Packer</h3>
+      <span class="tag tag-dp">Knapsack</span> <span class="tag tag-claude">Agent</span>
+      <p class="mt-1">A CLI tool that reads a list of items (name, weight, value) from a CSV and uses knapsack DP to find the optimal packing. Claude explains the reasoning in plain English.</p>
+      <div class="tip-box mt-2" style="font-size: 0.8rem;">
+        <strong>Skills:</strong> File I/O, 2D DP, Claude tool use, ANSI output formatting
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon">📝</div>
+      <h3>Project B: Code Diff Visualizer</h3>
+      <span class="tag tag-dp">LCS/Edit Distance</span> <span class="tag tag-claude">Explain</span>
+      <p class="mt-1">Compare two C++ files using LCS and edit distance. Claude narrates the differences: "Line 14 was refactored to use const references for efficiency."</p>
+      <div class="tip-box mt-2" style="font-size: 0.8rem;">
+        <strong>Skills:</strong> LCS, edit distance, diff algorithm, Claude narration
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🧠</div>
+      <h3>Project C: DP Tutor Bot</h3>
+      <span class="tag tag-claude">Full Agent</span> <span class="tag tag-vs">Visual Studio</span>
+      <p class="mt-1">Interactive multi-turn agent that generates DP problems, adapts to student level, checks solutions, and tracks progress using a local SQLite database.</p>
+      <div class="tip-box mt-2" style="font-size: 0.8rem;">
+        <strong>Skills:</strong> Agent loop, tool use, conversation history, SQLite
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon">📊</div>
+      <h3>Project D: Algorithm Benchmarker</h3>
+      <span class="tag tag-cpp">Performance</span> <span class="tag tag-claude">Analysis</span>
+      <p class="mt-1">Benchmark all five DP algorithms across different input sizes. Claude analyzes the results and generates a markdown report with explanations of the complexity curves.</p>
+      <div class="tip-box mt-2" style="font-size: 0.8rem;">
+        <strong>Skills:</strong> std::chrono timing, asymptotic analysis, Claude report generation
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- FULL PROJECT: SMART PACKER -->
+  <h3 style="font-family: 'Syne', sans-serif; font-weight: 700; margin: 0 0 1rem; font-size: 1.3rem;">
+    Full Implementation: Project A — Smart Packer
+  </h3>
+
+  <p>Here's the complete structure for the Smart Packer project:</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      <span class="code-lang">Project Structure</span>
+    </div>
+    <div class="code-content"><pre>SmartPacker/
+├── CMakeLists.txt
+├── src/
+│   ├── main.cpp          <span class="cmt">← Entry point, CLI handling</span>
+│   ├── knapsack.hpp      <span class="cmt">← DP algorithm (header-only)</span>
+│   ├── claude_client.hpp <span class="cmt">← Claude API wrapper</span>
+│   ├── csv_reader.hpp    <span class="cmt">← CSV parsing</span>
+│   └── display.hpp       <span class="cmt">← ANSI formatted output</span>
+└── data/
+    └── sample_items.csv  <span class="cmt">← Test data</span></pre></div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+      <span class="code-lang">main.cpp — Smart Packer entry point</span>
+    </div>
+    <div class="code-content"><pre><span class="inc">#include</span> <span class="str">"knapsack.hpp"</span>
+<span class="inc">#include</span> <span class="str">"claude_client.hpp"</span>
+<span class="inc">#include</span> <span class="str">"csv_reader.hpp"</span>
+<span class="inc">#include</span> <span class="str">"display.hpp"</span>
+<span class="inc">#include</span> <span class="str">&lt;iostream&gt;</span>
+
+<span class="type">int</span> <span class="fn">main</span>(<span class="type">int</span> argc, <span class="type">char</span>** argv) {
+    <span class="kw">if</span> (argc &lt; <span class="num">3</span>) {
+        std::cerr &lt;&lt; <span class="str">"Usage: packer &lt;items.csv&gt; &lt;max_weight&gt;\n"</span>;
+        <span class="kw">return</span> <span class="num">1</span>;
+    }
+
+    <span class="cmt">// 1. Load items from CSV</span>
+    <span class="kw">auto</span> items = <span class="fn">readItemsCSV</span>(argv[<span class="num">1</span>]);
+    <span class="type">int</span> capacity = std::<span class="fn">stoi</span>(argv[<span class="num">2</span>]);
+
+    <span class="fn">printHeader</span>(<span class="str">"Smart Packer — Powered by Claude + DP"</span>);
+    <span class="fn">printItems</span>(items);
+
+    <span class="cmt">// 2. Run knapsack DP</span>
+    <span class="kw">auto</span> result = <span class="fn">knapsackWithTracking</span>(items, capacity);
+
+    <span class="fn">printPackingResult</span>(result);
+    <span class="fn">printDPTable</span>(items, capacity);
+
+    <span class="cmt">// 3. Ask Claude to explain the result</span>
+    ClaudeClient claude(<span class="str">"You are a helpful packing optimizer assistant."</span>);
+
+    <span class="type">std::string</span> prompt = <span class="fn">buildExplanationPrompt</span>(items, result, capacity);
+    <span class="type">std::string</span> explanation = claude.<span class="fn">chat</span>(prompt);
+
+    <span class="fn">printSection</span>(<span class="str">"Claude's Analysis"</span>);
+    std::cout &lt;&lt; explanation &lt;&lt; <span class="str">"\n"</span>;
+
+    <span class="cmt">// 4. Interactive mode: ask Claude questions</span>
+    std::cout &lt;&lt; <span class="str">"\nAsk Claude anything about this packing decision:\n"</span>;
+    <span class="type">std::string</span> userQ;
+    <span class="kw">while</span> (std::<span class="fn">getline</span>(std::cin, userQ) &amp;&amp; userQ != <span class="str">"quit"</span>) {
+        std::cout &lt;&lt; <span class="str">"\nClaude: "</span> &lt;&lt; claude.<span class="fn">chat</span>(userQ) &lt;&lt; <span class="str">"\n\n&gt; "</span>;
+    }
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- FINAL TIPS -->
+  <h3 style="font-family: 'Syne', sans-serif; font-weight: 700; margin: 0 0 1rem; font-size: 1.3rem;">Visual Studio Tips for Claude Development</h3>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">🔍</div>
+      <h3>GitHub Copilot + Claude</h3>
+      <p>Use VS GitHub Copilot for inline autocomplete (fast) and Claude API for larger reasoning tasks (deep). They complement each other perfectly.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🐛</div>
+      <h3>Paste Errors to Claude</h3>
+      <p>When you get a red squiggle or crash, copy the full error including the call stack from VS Output window and paste it to Claude. It fixes 90% of errors instantly.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">⚙️</div>
+      <h3>natvis for DP Tables</h3>
+      <p>Create a <code>.natvis</code> file in VS to visualize 2D vectors in the debugger as a table — perfect for inspecting DP arrays while debugging.</p>
+    </div>
+  </div>
+
+  <div class="vibe-box mt-2">
+    <h4>Final Vibe Coding Manifesto</h4>
+    <ul>
+      <li><strong>Your job is intent, not implementation</strong> — describe what you want clearly</li>
+      <li><strong>Iteration beats perfection</strong> — get something working, then refine</li>
+      <li><strong>Understand what Claude gives you</strong> — you own the code, not Claude</li>
+      <li><strong>Use Claude to learn</strong> — ask "why" after every answer</li>
+      <li><strong>Build your prompt library</strong> — save prompts that work well</li>
+      <li><strong>Test everything</strong> — Claude can produce plausible but wrong code</li>
+    </ul>
+  </div>
+
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo">Claude × C/C++ Tutorial</div>
+  <p style="margin-top: 0.5rem;">Built for college students learning AI-assisted programming · Spring 2026</p>
+  <p style="margin-top: 0.5rem;">Models: claude-sonnet-4-20250514 · Tools: Visual Studio 2022 + vcpkg + nlohmann/json</p>
+  <div style="margin-top: 1.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--border);">
+    anthropic.com/api · console.anthropic.com · docs.anthropic.com
+  </div>
+</footer>
+
+<script>
+// TABS
+function switchTab(btn, panelId) {
+  const tabList = btn.closest('.tab-list');
+  const tabs = btn.closest('.tabs');
+
+  tabList.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  tabs.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// SCROLL PROGRESS
+const progressBar = document.getElementById('progress-bar');
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = (scrollTop / docHeight) * 100;
+  progressBar.style.width = progress + '%';
+});
+
+// TOC DOTS
+const sections = document.querySelectorAll('[id^="sec-"]');
+const dots = document.querySelectorAll('.toc-dot');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const idx = entry.target.id.replace('sec-', '');
+      dots.forEach(d => d.classList.remove('active'));
+      const dot = document.querySelector(`[data-section="${idx}"]`);
+      if (dot) dot.classList.add('active');
+    }
+  });
+}, { threshold: 0.3 });
+
+sections.forEach(s => observer.observe(s));
+
+// DOT CLICK SCROLL
+dots.forEach(dot => {
+  dot.addEventListener('click', () => {
+    const idx = dot.dataset.section;
+    const sec = document.getElementById(`sec-${idx}`);
+    if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+</body>
+</html>

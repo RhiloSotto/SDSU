@@ -1,0 +1,2599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CS Algorithms Intensive — Murat Balci, PhD</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@300;400;600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #07090f;
+  --surface:  #0e1320;
+  --card:     #131929;
+  --border:   #1e2d4a;
+  --accent:   #f0a500;
+  --accent2:  #3b82f6;
+  --green:    #22c55e;
+  --red:      #ef4444;
+  --purple:   #a78bfa;
+  --text:     #dde3f0;
+  --muted:    #6b7ea0;
+  --code-bg:  #0b0f1c;
+  --gold-glow: 0 0 40px rgba(240,165,0,0.15);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Lora',Georgia,serif;
+  line-height:1.75;
+  font-size:16px;
+}
+
+/* ── COVER ── */
+#cover{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:4rem 2rem;
+  position:relative;
+  overflow:hidden;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%, #1a2540 0%, var(--bg) 70%);
+  border-bottom:1px solid var(--border);
+}
+#cover canvas{position:absolute;inset:0;opacity:.18}
+.cover-badge{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.75rem;
+  letter-spacing:.15em;
+  color:var(--accent);
+  border:1px solid var(--accent);
+  padding:.35em 1.1em;
+  border-radius:2px;
+  margin-bottom:2rem;
+  text-transform:uppercase;
+}
+#cover h1{
+  font-family:'DM Serif Display',serif;
+  font-size:clamp(2.6rem,6vw,5rem);
+  line-height:1.1;
+  letter-spacing:-.02em;
+  margin-bottom:1rem;
+  color:#fff;
+  text-shadow:0 0 60px rgba(240,165,0,.25);
+}
+#cover h1 em{color:var(--accent);font-style:normal}
+.cover-sub{
+  font-size:1.15rem;
+  color:var(--muted);
+  max-width:600px;
+  margin-bottom:2.5rem;
+}
+.cover-meta{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1.5rem;
+  max-width:680px;
+  width:100%;
+  margin-top:1rem;
+}
+.cover-meta-item{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:1rem;
+}
+.cover-meta-item .label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  letter-spacing:.1em;
+  color:var(--accent);
+  text-transform:uppercase;
+  display:block;
+  margin-bottom:.3rem;
+}
+.cover-meta-item .val{font-size:.95rem;color:#fff;font-weight:600}
+.instructor-block{
+  margin-top:3rem;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:.3rem;
+}
+.instructor-name{
+  font-family:'DM Serif Display',serif;
+  font-size:1.5rem;
+  color:#fff;
+}
+.instructor-title{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.78rem;
+  color:var(--muted);
+  letter-spacing:.08em;
+}
+/* line accent */
+.rule{width:60px;height:2px;background:var(--accent);margin:1.5rem auto}
+
+/* ── NAV ── */
+nav{
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:rgba(7,9,15,.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:.6rem 2rem;
+  display:flex;
+  align-items:center;
+  gap:1rem;
+  overflow-x:auto;
+}
+.nav-brand{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.75rem;
+  color:var(--accent);
+  white-space:nowrap;
+  margin-right:auto;
+  letter-spacing:.08em;
+}
+nav a{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;
+  color:var(--muted);
+  text-decoration:none;
+  white-space:nowrap;
+  padding:.3em .6em;
+  border-radius:3px;
+  transition:color .2s,background .2s;
+}
+nav a:hover{color:var(--accent);background:rgba(240,165,0,.08)}
+
+/* ── LAYOUT ── */
+main{max-width:1100px;margin:0 auto;padding:3rem 2rem}
+
+/* ── MODULE HEADER ── */
+.module{margin-bottom:6rem}
+.module-header{
+  display:flex;
+  align-items:flex-start;
+  gap:2rem;
+  margin-bottom:3rem;
+  padding-bottom:2rem;
+  border-bottom:1px solid var(--border);
+}
+.module-num{
+  font-family:'DM Serif Display',serif;
+  font-size:4rem;
+  color:var(--accent);
+  opacity:.3;
+  line-height:1;
+  flex-shrink:0;
+}
+.module-title-block h2{
+  font-family:'DM Serif Display',serif;
+  font-size:2rem;
+  color:#fff;
+  margin-bottom:.4rem;
+}
+.module-title-block .module-desc{color:var(--muted);font-size:.95rem}
+.module-meta{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;
+  color:var(--accent);
+  margin-top:.5rem;
+  letter-spacing:.05em;
+}
+
+/* ── SECTION ── */
+.section{margin-bottom:3.5rem}
+.section h3{
+  font-family:'DM Serif Display',serif;
+  font-size:1.5rem;
+  color:var(--accent);
+  margin-bottom:1rem;
+  padding-bottom:.5rem;
+  border-bottom:1px solid rgba(240,165,0,.2);
+}
+.section h4{
+  font-family:'Lora',serif;
+  font-size:1.1rem;
+  color:#c5d0e8;
+  margin:1.5rem 0 .5rem;
+  font-weight:600;
+}
+p{margin-bottom:1rem;color:var(--text)}
+
+/* ── COMPLEXITY TABLE ── */
+.complexity-table{
+  width:100%;
+  border-collapse:collapse;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.83rem;
+  margin:1.5rem 0;
+}
+.complexity-table th{
+  background:var(--surface);
+  color:var(--accent);
+  text-align:left;
+  padding:.7rem 1rem;
+  border:1px solid var(--border);
+  letter-spacing:.05em;
+  font-size:.75rem;
+}
+.complexity-table td{
+  padding:.6rem 1rem;
+  border:1px solid var(--border);
+  color:var(--text);
+}
+.complexity-table tr:nth-child(even) td{background:rgba(14,19,32,.5)}
+.complexity-table tr:hover td{background:rgba(240,165,0,.04)}
+.o-n{color:var(--green)}
+.o-n2{color:#fbbf24}
+.o-nlogn{color:var(--accent2)}
+.o-2n{color:var(--red)}
+.o-1{color:var(--purple)}
+
+/* ── CODE BLOCK ── */
+.code-block{
+  background:var(--code-bg);
+  border:1px solid var(--border);
+  border-left:3px solid var(--accent);
+  border-radius:6px;
+  margin:1.5rem 0;
+  overflow:hidden;
+}
+.code-header{
+  background:var(--surface);
+  padding:.55rem 1rem;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid var(--border);
+}
+.code-lang{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  color:var(--accent);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.code-title{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--muted)}
+pre{
+  padding:1.25rem 1.5rem;
+  overflow-x:auto;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.82rem;
+  line-height:1.7;
+  color:#cdd6f4;
+}
+/* Syntax */
+.kw{color:#89b4fa}
+.fn{color:#cba6f7}
+.str{color:#a6e3a1}
+.num{color:#fab387}
+.cm{color:#6c7086;font-style:italic}
+.tp{color:#f38ba8}
+.op{color:#89dceb}
+
+/* ── STEP BOX ── */
+.steps{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:1.5rem 1.5rem 1.5rem 1.5rem;
+  margin:1.5rem 0;
+}
+.steps-title{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;
+  color:var(--accent);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  margin-bottom:1rem;
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+}
+.steps-title::before{content:'▶';font-size:.6rem}
+.step{
+  display:flex;
+  gap:1rem;
+  margin-bottom:.8rem;
+  align-items:flex-start;
+}
+.step-num{
+  background:rgba(240,165,0,.15);
+  color:var(--accent);
+  font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;
+  padding:.2em .55em;
+  border-radius:3px;
+  flex-shrink:0;
+  margin-top:.15rem;
+}
+.step-text{color:var(--text);font-size:.95rem}
+
+/* ── ANIMATION CONTAINER ── */
+.anim-wrapper{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  overflow:hidden;
+  margin:1.5rem 0;
+}
+.anim-header{
+  padding:.7rem 1.2rem;
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.anim-title{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.75rem;
+  color:var(--accent);
+  letter-spacing:.08em;
+}
+.anim-controls{display:flex;gap:.5rem}
+.btn{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;
+  padding:.35em .9em;
+  border-radius:3px;
+  border:1px solid var(--border);
+  cursor:pointer;
+  transition:all .2s;
+  letter-spacing:.05em;
+}
+.btn-primary{background:var(--accent);color:#000;border-color:var(--accent)}
+.btn-primary:hover{background:#e09400}
+.btn-secondary{background:transparent;color:var(--muted);border-color:var(--border)}
+.btn-secondary:hover{color:var(--text);border-color:var(--muted)}
+.anim-body{padding:1.2rem}
+canvas.anim{width:100%;border-radius:4px;display:block}
+.anim-legend{
+  display:flex;gap:1.5rem;flex-wrap:wrap;
+  margin-top:.8rem;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  color:var(--muted);
+}
+.anim-legend span{display:flex;align-items:center;gap:.4rem}
+.dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.anim-info{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.75rem;
+  color:var(--accent);
+  text-align:center;
+  margin-top:.6rem;
+  min-height:1.2em;
+}
+/* speed control */
+.speed-row{display:flex;align-items:center;gap:.7rem;margin-top:.5rem}
+.speed-row label{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted)}
+input[type=range]{accent-color:var(--accent)}
+
+/* ── INFO BOX ── */
+.info-box{
+  border:1px solid var(--border);
+  border-left:3px solid var(--accent2);
+  border-radius:6px;
+  padding:1rem 1.2rem;
+  margin:1.2rem 0;
+  font-size:.93rem;
+  background:rgba(59,130,246,.05);
+}
+.info-box strong{color:var(--accent2)}
+
+.warn-box{
+  border:1px solid rgba(240,165,0,.3);
+  border-left:3px solid var(--accent);
+  border-radius:6px;
+  padding:1rem 1.2rem;
+  margin:1.2rem 0;
+  font-size:.93rem;
+  background:rgba(240,165,0,.05);
+}
+
+/* ── BIG-O TABLE ── */
+.bigo-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:1rem;
+  margin:1.5rem 0;
+}
+.bigo-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:1rem;
+  text-align:center;
+}
+.bigo-card .notation{
+  font-family:'JetBrains Mono',monospace;
+  font-size:1.1rem;
+  font-weight:600;
+  margin-bottom:.3rem;
+}
+.bigo-card .name{font-size:.8rem;color:var(--muted)}
+.bigo-card .example{font-size:.78rem;color:var(--text);margin-top:.3rem}
+.bigo-1{border-top:3px solid var(--purple)}
+.bigo-log{border-top:3px solid var(--accent2)}
+.bigo-n{border-top:3px solid var(--green)}
+.bigo-nlog{border-top:3px solid var(--accent)}
+.bigo-n2{border-top:3px solid #fbbf24}
+.bigo-2n{border-top:3px solid var(--red)}
+
+/* ── GRAPH ALGO STYLES ── */
+.graph-canvas{width:100%;height:320px;border-radius:4px;display:block;background:#07090f}
+
+/* ── DIVIDER ── */
+.module-divider{
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--border),transparent);
+  margin:4rem 0;
+}
+
+/* ── TOC ── */
+#toc{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:2rem;
+  margin-bottom:4rem;
+}
+#toc h2{
+  font-family:'DM Serif Display',serif;
+  font-size:1.5rem;
+  color:var(--accent);
+  margin-bottom:1.2rem;
+}
+.toc-list{list-style:none}
+.toc-module{
+  font-family:'Lora',serif;
+  font-weight:600;
+  color:#fff;
+  margin-bottom:.3rem;
+  font-size:1rem;
+}
+.toc-module a{color:#fff;text-decoration:none}
+.toc-module a:hover{color:var(--accent)}
+.toc-items{list-style:none;margin:.2rem 0 .8rem 1.5rem}
+.toc-items li{font-size:.88rem;color:var(--muted);margin-bottom:.15rem}
+.toc-items li a{color:var(--muted);text-decoration:none}
+.toc-items li a:hover{color:var(--accent2)}
+.toc-duration{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.68rem;
+  color:var(--accent);
+  float:right;
+}
+
+/* ── PRINT STYLES ── */
+@media print{
+  nav{display:none}
+  #cover canvas{display:none}
+  .anim-wrapper canvas{display:none}
+  .anim-wrapper::after{content:'[Animation available in browser version]';display:block;padding:1rem;color:var(--muted);font-family:monospace;font-size:.85rem}
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .cover-meta{grid-template-columns:1fr}
+  .module-header{flex-direction:column;gap:.5rem}
+  .module-num{font-size:2.5rem;opacity:.5}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ COVER ══════════ -->
+<section id="cover">
+  <canvas id="cover-canvas"></canvas>
+  <div class="cover-badge">Computer Science · Algorithm Design &amp; Analysis</div>
+  <h1>Algorithms<br><em>Intensive</em></h1>
+  <p class="cover-sub">A comprehensive six-hour deep dive into classical and modern algorithm design, complexity analysis, and implementation in C++.</p>
+  <div class="rule"></div>
+  <div class="cover-meta">
+    <div class="cover-meta-item"><span class="label">Duration</span><span class="val">6 Hours</span></div>
+    <div class="cover-meta-item"><span class="label">Modules</span><span class="val">6 Modules</span></div>
+    <div class="cover-meta-item"><span class="label">Language</span><span class="val">C++ 17</span></div>
+  </div>
+  <div class="instructor-block">
+    <div class="rule" style="margin:1.5rem auto .8rem"></div>
+    <div class="instructor-name">Murat Balci, PhD</div>
+    <div class="instructor-title">Instructor · Computer Science</div>
+  </div>
+</section>
+
+<!-- ══════════ NAV ══════════ -->
+<nav>
+  <span class="nav-brand">ALGO·INTENSIVE</span>
+  <a href="#m1">01 · Foundations</a>
+  <a href="#m2">02 · Sorting</a>
+  <a href="#m3">03 · Searching</a>
+  <a href="#m4">04 · Graphs</a>
+  <a href="#m5">05 · Dynamic Programming</a>
+  <a href="#m6">06 · Greedy &amp; Backtracking</a>
+</nav>
+
+<!-- ══════════ MAIN ══════════ -->
+<main>
+
+<!-- ── TOC ── -->
+<div id="toc">
+  <h2>Table of Contents</h2>
+  <ul class="toc-list">
+    <li class="toc-module"><a href="#m1">Module 1 — Foundations &amp; Complexity Analysis</a> <span class="toc-duration">60 min</span>
+      <ul class="toc-items">
+        <li><a href="#m1-bigo">Big-O, Omega, Theta Notation</a></li>
+        <li><a href="#m1-classes">Algorithm Classification Taxonomy</a></li>
+        <li><a href="#m1-recurrence">Recurrence Relations &amp; Master Theorem</a></li>
+      </ul>
+    </li>
+    <li class="toc-module"><a href="#m2">Module 2 — Sorting Algorithms</a> <span class="toc-duration">60 min</span>
+      <ul class="toc-items">
+        <li><a href="#m2-bubble">Bubble Sort</a></li>
+        <li><a href="#m2-selection">Selection Sort</a></li>
+        <li><a href="#m2-insertion">Insertion Sort</a></li>
+        <li><a href="#m2-merge">Merge Sort</a></li>
+        <li><a href="#m2-quick">Quick Sort</a></li>
+        <li><a href="#m2-heap">Heap Sort</a></li>
+      </ul>
+    </li>
+    <li class="toc-module"><a href="#m3">Module 3 — Searching &amp; Graph Traversal</a> <span class="toc-duration">60 min</span>
+      <ul class="toc-items">
+        <li><a href="#m3-linear">Linear Search</a></li>
+        <li><a href="#m3-binary">Binary Search</a></li>
+        <li><a href="#m3-bfs">Breadth-First Search (BFS)</a></li>
+        <li><a href="#m3-dfs">Depth-First Search (DFS)</a></li>
+      </ul>
+    </li>
+    <li class="toc-module"><a href="#m4">Module 4 — Graph Algorithms</a> <span class="toc-duration">60 min</span>
+      <ul class="toc-items">
+        <li><a href="#m4-dijkstra">Dijkstra's Shortest Path</a></li>
+        <li><a href="#m4-bellman">Bellman-Ford</a></li>
+        <li><a href="#m4-floyd">Floyd-Warshall</a></li>
+        <li><a href="#m4-kruskal">Kruskal's MST</a></li>
+        <li><a href="#m4-prim">Prim's MST</a></li>
+      </ul>
+    </li>
+    <li class="toc-module"><a href="#m5">Module 5 — Dynamic Programming</a> <span class="toc-duration">60 min</span>
+      <ul class="toc-items">
+        <li><a href="#m5-fib">Fibonacci Sequence</a></li>
+        <li><a href="#m5-knapsack">0/1 Knapsack Problem</a></li>
+        <li><a href="#m5-lcs">Longest Common Subsequence</a></li>
+        <li><a href="#m5-edit">Edit Distance</a></li>
+      </ul>
+    </li>
+    <li class="toc-module"><a href="#m6">Module 6 — Greedy Algorithms &amp; Backtracking</a> <span class="toc-duration">60 min</span>
+      <ul class="toc-items">
+        <li><a href="#m6-activity">Activity Selection</a></li>
+        <li><a href="#m6-huffman">Huffman Coding</a></li>
+        <li><a href="#m6-nqueens">N-Queens Backtracking</a></li>
+        <li><a href="#m6-summary">Algorithm Selection Guide</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<!-- ══════════════════════════════════════
+     MODULE 1 — FOUNDATIONS
+═══════════════════════════════════════ -->
+<div class="module" id="m1">
+  <div class="module-header">
+    <div class="module-num">01</div>
+    <div class="module-title-block">
+      <h2>Foundations &amp; Complexity Analysis</h2>
+      <p class="module-desc">Before writing a single algorithm, we need the mathematical vocabulary to reason about efficiency. This module covers asymptotic notation, algorithm classification, and the Master Theorem.</p>
+      <div class="module-meta">⏱ 60 MINUTES · LECTURE + DISCUSSION</div>
+    </div>
+  </div>
+
+  <!-- BIG-O -->
+  <div class="section" id="m1-bigo">
+    <h3>1.1 Asymptotic Notation</h3>
+    <p>Asymptotic notation lets us express how an algorithm's resource usage (time or memory) grows relative to the size of its input <strong>n</strong>. We ignore constant factors and low-order terms—we care about the <em>shape</em> of growth.</p>
+
+    <h4>Big-O (Upper Bound)</h4>
+    <p><strong>O(g(n))</strong> means the algorithm's running time grows <em>no faster than</em> g(n). It is a worst-case promise. If we say Bubble Sort is O(n²), we guarantee it won't take longer than some constant multiple of n² for any input.</p>
+
+    <h4>Big-Omega (Lower Bound)</h4>
+    <p><strong>Ω(g(n))</strong> means the algorithm takes <em>at least</em> g(n) time. It describes best-case behavior. Any comparison-based sorting algorithm requires Ω(n log n) comparisons—this is provably optimal.</p>
+
+    <h4>Big-Theta (Tight Bound)</h4>
+    <p><strong>Θ(g(n))</strong> means both upper and lower bounds are the same. Merge Sort is Θ(n log n)—it always takes that long, best, worst, and average case.</p>
+
+    <div class="bigo-grid">
+      <div class="bigo-card bigo-1"><div class="notation o-1">O(1)</div><div class="name">Constant</div><div class="example">Array access, hash lookup</div></div>
+      <div class="bigo-card bigo-log"><div class="notation o-nlogn" style="color:var(--accent2)">O(log n)</div><div class="name">Logarithmic</div><div class="example">Binary search, balanced BST</div></div>
+      <div class="bigo-card bigo-n"><div class="notation o-n">O(n)</div><div class="name">Linear</div><div class="example">Linear search, single traversal</div></div>
+      <div class="bigo-card bigo-nlog"><div class="notation o-nlogn">O(n log n)</div><div class="name">Linearithmic</div><div class="example">Merge sort, heap sort</div></div>
+      <div class="bigo-card bigo-n2"><div class="notation o-n2">O(n²)</div><div class="name">Quadratic</div><div class="example">Bubble, insertion, selection sort</div></div>
+      <div class="bigo-card bigo-2n"><div class="notation o-2n">O(2ⁿ)</div><div class="name">Exponential</div><div class="example">Naive recursion, subsets</div></div>
+    </div>
+
+    <!-- Animation: Growth Curves -->
+    <div class="anim-wrapper">
+      <div class="anim-header">
+        <span class="anim-title">INTERACTIVE — Growth Rate Comparison</span>
+      </div>
+      <div class="anim-body">
+        <canvas id="growth-canvas" class="anim" height="260"></canvas>
+        <div class="anim-legend">
+          <span><span class="dot" style="background:#a78bfa"></span>O(1)</span>
+          <span><span class="dot" style="background:#3b82f6"></span>O(log n)</span>
+          <span><span class="dot" style="background:#22c55e"></span>O(n)</span>
+          <span><span class="dot" style="background:#f0a500"></span>O(n log n)</span>
+          <span><span class="dot" style="background:#fbbf24"></span>O(n²)</span>
+          <span><span class="dot" style="background:#ef4444"></span>O(2ⁿ)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C++ 17</span><span class="code-title">Complexity Demonstrations</span></div>
+      <pre><span class="cm">// O(1) — constant time: no loops, direct access</span>
+<span class="kw">int</span> <span class="fn">getFirst</span>(<span class="kw">const</span> std::vector&lt;<span class="kw">int</span>&gt;&amp; v) { <span class="kw">return</span> v[<span class="num">0</span>]; }
+
+<span class="cm">// O(log n) — halves the search space each iteration</span>
+<span class="kw">int</span> <span class="fn">logN</span>(<span class="kw">int</span> n) {
+    <span class="kw">int</span> count = <span class="num">0</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">1</span>; i &lt; n; i *= <span class="num">2</span>) count++;
+    <span class="kw">return</span> count;
+}
+
+<span class="cm">// O(n) — visits every element once</span>
+<span class="kw">int</span> <span class="fn">sum</span>(<span class="kw">const</span> std::vector&lt;<span class="kw">int</span>&gt;&amp; v) {
+    <span class="kw">int</span> s = <span class="num">0</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> x : v) s += x;
+    <span class="kw">return</span> s;
+}
+
+<span class="cm">// O(n²) — nested loops, each up to n</span>
+<span class="kw">void</span> <span class="fn">printPairs</span>(<span class="kw">const</span> std::vector&lt;<span class="kw">int</span>&gt;&amp; v) {
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; v.size(); i++)
+        <span class="kw">for</span> (<span class="kw">int</span> j = <span class="num">0</span>; j &lt; v.size(); j++)
+            std::cout &lt;&lt; v[i] &lt;&lt; <span class="str">","</span> &lt;&lt; v[j] &lt;&lt; <span class="str">"\n"</span>;
+}</pre>
+    </div>
+  </div>
+
+  <!-- ALGORITHM CLASSES -->
+  <div class="section" id="m1-classes">
+    <h3>1.2 Algorithm Classification Taxonomy</h3>
+    <p>Algorithms are grouped by the <em>strategy</em> they use to solve problems. Understanding the strategy tells you when to reach for each class.</p>
+
+    <table class="complexity-table">
+      <tr><th>Class</th><th>Core Idea</th><th>Typical Complexity</th><th>Examples</th></tr>
+      <tr><td><strong>Brute Force</strong></td><td>Try all possibilities</td><td class="o-2n">O(2ⁿ) / O(n!)</td><td>Naive string match, TSP</td></tr>
+      <tr><td><strong>Divide &amp; Conquer</strong></td><td>Split → Solve sub-problems → Combine</td><td class="o-nlogn">O(n log n)</td><td>Merge Sort, Quick Sort, FFT</td></tr>
+      <tr><td><strong>Dynamic Programming</strong></td><td>Memoize overlapping sub-problems</td><td class="o-n2">O(n²) – O(n³)</td><td>Knapsack, LCS, Edit Distance</td></tr>
+      <tr><td><strong>Greedy</strong></td><td>Always pick locally optimal choice</td><td class="o-nlogn">O(n log n)</td><td>Dijkstra, Huffman, Kruskal</td></tr>
+      <tr><td><strong>Backtracking</strong></td><td>Build candidate incrementally, abandon failures</td><td class="o-2n">O(bᵈ)</td><td>N-Queens, Sudoku, Subset Sum</td></tr>
+      <tr><td><strong>Randomized</strong></td><td>Use randomness to simplify or speed up</td><td class="o-nlogn">Expected O(n log n)</td><td>Randomized Quick Sort, Skip List</td></tr>
+      <tr><td><strong>Graph</strong></td><td>Model as nodes &amp; edges, traverse/optimize</td><td class="o-nlogn">O((V+E) log V)</td><td>BFS, DFS, Dijkstra, MST</td></tr>
+    </table>
+
+    <div class="info-box"><strong>Key Insight:</strong> Most real-world algorithm design is about recognizing which class applies—not inventing new algorithms from scratch. Master the patterns, and you can solve novel problems.</div>
+  </div>
+
+  <!-- MASTER THEOREM -->
+  <div class="section" id="m1-recurrence">
+    <h3>1.3 Recurrence Relations &amp; Master Theorem</h3>
+    <p>Divide-and-conquer algorithms naturally produce recurrences. The Master Theorem solves them in three cases for the form <strong>T(n) = aT(n/b) + f(n)</strong>:</p>
+    <ul style="margin-left:1.5rem;margin-bottom:1rem;color:var(--text)">
+      <li style="margin-bottom:.5rem"><strong>Case 1:</strong> f(n) = O(n^(log_b a − ε)) → <span class="o-n2">T(n) = Θ(n^(log_b a))</span></li>
+      <li style="margin-bottom:.5rem"><strong>Case 2:</strong> f(n) = Θ(n^(log_b a)) → <span class="o-nlogn">T(n) = Θ(n^(log_b a) · log n)</span></li>
+      <li style="margin-bottom:.5rem"><strong>Case 3:</strong> f(n) = Ω(n^(log_b a + ε)) → <span class="o-n">T(n) = Θ(f(n))</span></li>
+    </ul>
+    <p><strong>Merge Sort Example:</strong> T(n) = 2T(n/2) + O(n). Here a=2, b=2, log₂2=1. f(n)=O(n)=Θ(n¹) → Case 2 → <span class="o-nlogn">T(n) = Θ(n log n)</span>.</p>
+  </div>
+</div>
+
+<div class="module-divider"></div>
+
+<!-- ══════════════════════════════════════
+     MODULE 2 — SORTING
+═══════════════════════════════════════ -->
+<div class="module" id="m2">
+  <div class="module-header">
+    <div class="module-num">02</div>
+    <div class="module-title-block">
+      <h2>Sorting Algorithms</h2>
+      <p class="module-desc">Sorting is the most studied problem in CS. We cover six algorithms—from naive O(n²) to optimal O(n log n)—analyzing trade-offs in speed, memory, and stability.</p>
+      <div class="module-meta">⏱ 60 MINUTES · SIX ALGORITHMS</div>
+    </div>
+  </div>
+
+  <!-- Sorting Summary Table -->
+  <table class="complexity-table">
+    <tr><th>Algorithm</th><th>Best</th><th>Average</th><th>Worst</th><th>Space</th><th>Stable?</th></tr>
+    <tr><td>Bubble Sort</td><td class="o-n">O(n)</td><td class="o-n2">O(n²)</td><td class="o-n2">O(n²)</td><td class="o-1">O(1)</td><td>✅ Yes</td></tr>
+    <tr><td>Selection Sort</td><td class="o-n2">O(n²)</td><td class="o-n2">O(n²)</td><td class="o-n2">O(n²)</td><td class="o-1">O(1)</td><td>❌ No</td></tr>
+    <tr><td>Insertion Sort</td><td class="o-n">O(n)</td><td class="o-n2">O(n²)</td><td class="o-n2">O(n²)</td><td class="o-1">O(1)</td><td>✅ Yes</td></tr>
+    <tr><td>Merge Sort</td><td class="o-nlogn">O(n log n)</td><td class="o-nlogn">O(n log n)</td><td class="o-nlogn">O(n log n)</td><td class="o-n">O(n)</td><td>✅ Yes</td></tr>
+    <tr><td>Quick Sort</td><td class="o-nlogn">O(n log n)</td><td class="o-nlogn">O(n log n)</td><td class="o-n2">O(n²)</td><td class="o-nlogn">O(log n)</td><td>❌ No</td></tr>
+    <tr><td>Heap Sort</td><td class="o-nlogn">O(n log n)</td><td class="o-nlogn">O(n log n)</td><td class="o-nlogn">O(n log n)</td><td class="o-1">O(1)</td><td>❌ No</td></tr>
+  </table>
+
+  <!-- BUBBLE SORT -->
+  <div class="section" id="m2-bubble">
+    <h3>2.1 Bubble Sort</h3>
+    <p>Bubble Sort repeatedly walks through the array, comparing adjacent elements and swapping them if out of order. The largest unsorted element "bubbles up" to its correct position on each pass. Simple to understand but inefficient—used mainly for teaching purposes.</p>
+
+    <div class="steps">
+      <div class="steps-title">Algorithm Steps</div>
+      <div class="step"><span class="step-num">01</span><span class="step-text">Set a flag <code>swapped = true</code> to enter the outer loop.</span></div>
+      <div class="step"><span class="step-num">02</span><span class="step-text">For each pass through the array (from index 0 to n−1−pass), compare arr[j] and arr[j+1].</span></div>
+      <div class="step"><span class="step-num">03</span><span class="step-text">If arr[j] &gt; arr[j+1], swap them and set swapped = true.</span></div>
+      <div class="step"><span class="step-num">04</span><span class="step-text">If no swap occurred in a full pass, the array is already sorted — exit early (optimization).</span></div>
+      <div class="step"><span class="step-num">05</span><span class="step-text">Repeat until all passes complete. The last i elements are always in their final position.</span></div>
+    </div>
+
+    <div class="anim-wrapper">
+      <div class="anim-header">
+        <span class="anim-title">ANIMATION — Bubble Sort</span>
+        <div class="anim-controls">
+          <button class="btn btn-primary" onclick="bubbleAnim.start()">▶ Run</button>
+          <button class="btn btn-secondary" onclick="bubbleAnim.reset()">↺ Reset</button>
+        </div>
+      </div>
+      <div class="anim-body">
+        <canvas id="bubble-canvas" class="anim" height="200"></canvas>
+        <div class="anim-info" id="bubble-info">Press Run to start the animation</div>
+        <div class="anim-legend">
+          <span><span class="dot" style="background:#3b82f6"></span>Unsorted</span>
+          <span><span class="dot" style="background:#f0a500"></span>Comparing</span>
+          <span><span class="dot" style="background:#ef4444"></span>Swapping</span>
+          <span><span class="dot" style="background:#22c55e"></span>Sorted</span>
+        </div>
+        <div class="speed-row">
+          <label>Speed:</label>
+          <input type="range" id="bubble-speed" min="50" max="900" value="500">
+          <label id="bubble-speed-lbl">Medium</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C++ 17</span><span class="code-title">Bubble Sort — Optimized</span></div>
+      <pre><span class="kw">void</span> <span class="fn">bubbleSort</span>(std::vector&lt;<span class="kw">int</span>&gt;&amp; arr) {
+    <span class="kw">int</span> n = arr.size();
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; n - <span class="num">1</span>; i++) {
+        <span class="kw">bool</span> swapped = <span class="kw">false</span>;
+        <span class="cm">// Last i elements are already in place</span>
+        <span class="kw">for</span> (<span class="kw">int</span> j = <span class="num">0</span>; j &lt; n - i - <span class="num">1</span>; j++) {
+            <span class="kw">if</span> (arr[j] > arr[j + <span class="num">1</span>]) {
+                std::swap(arr[j], arr[j + <span class="num">1</span>]);
+                swapped = <span class="kw">true</span>;
+            }
+        }
+        <span class="cm">// Early exit: array already sorted</span>
+        <span class="kw">if</span> (!swapped) <span class="kw">break</span>;
+    }
+}</pre>
+    </div>
+  </div>
+
+  <!-- SELECTION SORT -->
+  <div class="section" id="m2-selection">
+    <h3>2.2 Selection Sort</h3>
+    <p>Selection Sort divides the array into a sorted left portion and an unsorted right portion. On each pass, it finds the minimum element in the unsorted portion and swaps it into its correct position. It always performs exactly n(n−1)/2 comparisons regardless of input—no early exit possible.</p>
+
+    <div class="steps">
+      <div class="steps-title">Algorithm Steps</div>
+      <div class="step"><span class="step-num">01</span><span class="step-text">Begin with the entire array unsorted. Set the boundary at index i = 0.</span></div>
+      <div class="step"><span class="step-num">02</span><span class="step-text">Scan the unsorted portion (i to n−1) to find the index of the minimum element.</span></div>
+      <div class="step"><span class="step-num">03</span><span class="step-text">Swap the minimum element with arr[i], extending the sorted portion by one.</span></div>
+      <div class="step"><span class="step-num">04</span><span class="step-text">Advance i by 1 and repeat until i = n−1. The array is now fully sorted.</span></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C++ 17</span><span class="code-title">Selection Sort</span></div>
+      <pre><span class="kw">void</span> <span class="fn">selectionSort</span>(std::vector&lt;<span class="kw">int</span>&gt;&amp; arr) {
+    <span class="kw">int</span> n = arr.size();
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; n - <span class="num">1</span>; i++) {
+        <span class="kw">int</span> minIdx = i;
+        <span class="cm">// Find minimum in unsorted portion</span>
+        <span class="kw">for</span> (<span class="kw">int</span> j = i + <span class="num">1</span>; j &lt; n; j++)
+            <span class="kw">if</span> (arr[j] &lt; arr[minIdx]) minIdx = j;
+        <span class="cm">// Move minimum to its final position</span>
+        <span class="kw">if</span> (minIdx != i)
+            std::swap(arr[i], arr[minIdx]);
+    }
+}</pre>
+    </div>
+  </div>
+
+  <!-- INSERTION SORT -->
+  <div class="section" id="m2-insertion">
+    <h3>2.3 Insertion Sort</h3>
+    <p>Insertion Sort builds a sorted array one element at a time—much like sorting a hand of playing cards. It's efficient for small data sets and nearly-sorted arrays (O(n) best case). It's also <strong>online</strong>: it can sort as it receives data.</p>
+
+    <div class="steps">
+      <div class="steps-title">Algorithm Steps</div>
+      <div class="step"><span class="step-num">01</span><span class="step-text">Start from index i = 1. The subarray arr[0..0] is trivially sorted.</span></div>
+      <div class="step"><span class="step-num">02</span><span class="step-text">Store arr[i] as the "key". This is the card you are about to insert.</span></div>
+      <div class="step"><span class="step-num">03</span><span class="step-text">Shift all sorted elements greater than the key one position to the right.</span></div>
+      <div class="step"><span class="step-num">04</span><span class="step-text">Insert the key into the gap. Now arr[0..i] is sorted.</span></div>
+      <div class="step"><span class="step-num">05</span><span class="step-text">Increment i and repeat until i = n−1.</span></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C++ 17</span><span class="code-title">Insertion Sort</span></div>
+      <pre><span class="kw">void</span> <span class="fn">insertionSort</span>(std::vector&lt;<span class="kw">int</span>&gt;&amp; arr) {
+    <span class="kw">int</span> n = arr.size();
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">1</span>; i &lt; n; i++) {
+        <span class="kw">int</span> key = arr[i];
+        <span class="kw">int</span> j = i - <span class="num">1</span>;
+        <span class="cm">// Shift elements greater than key to the right</span>
+        <span class="kw">while</span> (j >= <span class="num">0</span> && arr[j] > key) {
+            arr[j + <span class="num">1</span>] = arr[j];
+            j--;
+        }
+        arr[j + <span class="num">1</span>] = key; <span class="cm">// Insert key at correct position</span>
+    }
+}</pre>
+    </div>
+  </div>
+
+  <!-- MERGE SORT -->
+  <div class="section" id="m2-merge">
+    <h3>2.4 Merge Sort</h3>
+    <p>Merge Sort is a classic Divide and Conquer algorithm with guaranteed O(n log n) in all cases. It recursively splits the array in half, sorts each half, then merges them. The merge step is linear—combining two sorted arrays requires one pass. It requires O(n) auxiliary space for the merge operation.</p>
+
+    <div class="steps">
+      <div class="steps-title">Algorithm Steps</div>
+      <div class="step"><span class="step-num">01</span><span class="step-text"><strong>Divide:</strong> Find the midpoint mid = (left + right) / 2. Split into left half [left..mid] and right half [mid+1..right].</span></div>
+      <div class="step"><span class="step-num">02</span><span class="step-text"><strong>Conquer:</strong> Recursively call mergeSort on both halves. The base case is a single element (left ≥ right), which is trivially sorted.</span></div>
+      <div class="step"><span class="step-num">03</span><span class="step-text"><strong>Merge:</strong> Use two pointers i and j into the left and right halves. Compare arr[i] and arr[j], copy the smaller into a temporary buffer, advance that pointer.</span></div>
+      <div class="step"><span class="step-num">04</span><span class="step-text">Copy any remaining elements from either half into the buffer.</span></div>
+      <div class="step"><span class="step-num">05</span><span class="step-text">Copy the buffer back into arr[left..right]. This subarray is now fully sorted.</span></div>
+    </div>
+
+    <div class="anim-wrapper">
+      <div class="anim-header">
+        <span class="anim-title">ANIMATION — Merge Sort</span>
+        <div class="anim-controls">
+          <button class="btn btn-primary" onclick="mergeAnim.start()">▶ Run</button>
+          <button class="btn btn-secondary" onclick="mergeAnim.reset()">↺ Reset</button>
+        </div>
+      </div>
+      <div class="anim-body">
+        <canvas id="merge-canvas" class="anim" height="220"></canvas>
+        <div class="anim-info" id="merge-info">Press Run to start the animation</div>
+        <div class="anim-legend">
+          <span><span class="dot" style="background:#3b82f6"></span>Unsorted</span>
+          <span><span class="dot" style="background:#f0a500"></span>Active subarray</span>
+          <span><span class="dot" style="background:#a78bfa"></span>Merging</span>
+          <span><span class="dot" style="background:#22c55e"></span>Sorted</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C++ 17</span><span class="code-title">Merge Sort — Recursive</span></div>
+      <pre><span class="kw">void</span> <span class="fn">merge</span>(std::vector&lt;<span class="kw">int</span>&gt;&amp; arr, <span class="kw">int</span> l, <span class="kw">int</span> m, <span class="kw">int</span> r) {
+    std::vector&lt;<span class="kw">int</span>&gt; left(arr.begin() + l, arr.begin() + m + <span class="num">1</span>);
+    std::vector&lt;<span class="kw">int</span>&gt; right(arr.begin() + m + <span class="num">1</span>, arr.begin() + r + <span class="num">1</span>);
+    <span class="kw">int</span> i = <span class="num">0</span>, j = <span class="num">0</span>, k = l;
+    <span class="kw">while</span> (i &lt; left.size() && j &lt; right.size())
+        arr[k++] = (left[i] &lt;= right[j]) ? left[i++] : right[j++];
+    <span class="kw">while</span> (i &lt; left.size())  arr[k++] = left[i++];
+    <span class="kw">while</span> (j &lt; right.size()) arr[k++] = right[j++];
+}
+
+<span class="kw">void</span> <span class="fn">mergeSort</span>(std::vector&lt;<span class="kw">int</span>&gt;&amp; arr, <span class="kw">int</span> l, <span class="kw">int</span> r) {
+    <span class="kw">if</span> (l >= r) <span class="kw">return</span>; <span class="cm">// Base case: single element</span>
+    <span class="kw">int</span> m = l + (r - l) / <span class="num">2</span>; <span class="cm">// Avoids integer overflow vs (l+r)/2</span>
+    <span class="fn">mergeSort</span>(arr, l, m);
+    <span class="fn">mergeSort</span>(arr, m + <span class="num">1</span>, r);
+    <span class="fn">merge</span>(arr, l, m, r);
+}</pre>
+    </div>
+  </div>
+
+  <!-- QUICK SORT -->
+  <div class="section" id="m2-quick">
+    <h3>2.5 Quick Sort</h3>
+    <p>Quick Sort is the most widely used sorting algorithm in practice. It works by selecting a <strong>pivot</strong> element and partitioning the array so all elements smaller than the pivot are to its left, and all larger elements are to its right. The pivot is then in its final sorted position. Recursively apply to both partitions.</p>
+
+    <div class="steps">
+      <div class="steps-title">Algorithm Steps</div>
+      <div class="step"><span class="step-num">01</span><span class="step-text"><strong>Choose pivot:</strong> Common strategies include last element, first element, median-of-three, or random. Pivot selection dramatically affects performance.</span></div>
+      <div class="step"><span class="step-num">02</span><span class="step-text"><strong>Partition (Lomuto scheme):</strong> Use pointer i = low−1. Walk j from low to high−1. Whenever arr[j] ≤ pivot, increment i and swap arr[i] with arr[j].</span></div>
+      <div class="step"><span class="step-num">03</span><span class="step-text">After the loop, place the pivot at position i+1 by swapping arr[i+1] with arr[high]. Return i+1 as the pivot index.</span></div>
+      <div class="step"><span class="step-num">04</span><span class="step-text"><strong>Recurse:</strong> Apply quickSort to the sub-array left of pivot [low..pivotIdx−1] and right of pivot [pivotIdx+1..high].</span></div>
+      <div class="step"><span class="step-num">05</span><span class="step-text"><strong>Base case:</strong> When low ≥ high, the sub-array has 0 or 1 elements and is trivially sorted.</span></div>
+    </div>
+
+    <div class="warn-box"><strong>⚠ Worst Case:</strong> Quick Sort degrades to O(n²) when the pivot is always the minimum or maximum (e.g., a sorted array with last-element pivot). Always use randomized pivot or median-of-three in production.</div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C++ 17</span><span class="code-title">Quick Sort — Lomuto Partition</span></div>
+      <pre><span class="kw">int</span> <span class="fn">partition</span>(std::vector&lt;<span class="kw">int</span>&gt;&amp; arr, <span class="kw">int</span> low, <span class="kw">int</span> high) {
+    <span class="cm">// Randomized pivot to avoid worst-case O(n²)</span>
+    <span class="kw">int</span> randIdx = low + rand() % (high - low + <span class="num">1</span>);
+    std::swap(arr[randIdx], arr[high]);
+    <span class="kw">int</span> pivot = arr[high];
+    <span class="kw">int</span> i = low - <span class="num">1</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> j = low; j &lt; high; j++) {
+        <span class="kw">if</span> (arr[j] &lt;= pivot)
+            std::swap(arr[++i], arr[j]);
+    }
+    std::swap(arr[i + <span class="num">1</span>], arr[high]);
+    <span class="kw">return</span> i + <span class="num">1</span>;
+}
+
+<span class="kw">void</span> <span class="fn">quickSort</span>(std::vector&lt;<span class="kw">int</span>&gt;&amp; arr, <span class="kw">int</span> low, <span class="kw">int</span> high) {
+    <span class="kw">if</span> (low &lt; high) {
+        <span class="kw">int</span> pi = <span class="fn">partition</span>(arr, low, high);
+        <span class="fn">quickSort</span>(arr, low, pi - <span class="num">1</span>);
+        <span class="fn">quickSort</span>(arr, pi + <span class="num">1</span>, high);
+    }
+}</pre>
+    </div>
+  </div>
+
+  <!-- HEAP SORT -->
+  <div class="section" id="m2-heap">
+    <h3>2.6 Heap Sort</h3>
+    <p>Heap Sort exploits the binary heap data structure. It first builds a <strong>max-heap</strong> from the input array, then repeatedly extracts the maximum element (the root) and places it at the end. It combines the best traits of Merge Sort (O(n log n) worst case) and Selection Sort (O(1) space).</p>
+
+    <div class="steps">
+      <div class="steps-title">Algorithm Steps</div>
+      <div class="step"><span class="step-num">01</span><span class="step-text"><strong>Build Max-Heap:</strong> Call heapify on all non-leaf nodes from index n/2−1 down to 0. After this, arr[0] is the maximum element.</span></div>
+      <div class="step"><span class="step-num">02</span><span class="step-text">Swap the root (maximum) with the last element arr[n−1]. The maximum is now at its final sorted position.</span></div>
+      <div class="step"><span class="step-num">03</span><span class="step-text">Reduce the heap size by 1, and heapify down from the root to restore the max-heap property.</span></div>
+      <div class="step"><span class="step-num">04</span><span class="step-text">Repeat steps 2−3 for all remaining elements. Each iteration places one more element in sorted order.</span></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C++ 17</span><span class="code-title">Heap Sort</span></div>
+      <pre><span class="kw">void</span> <span class="fn">heapify</span>(std::vector&lt;<span class="kw">int</span>&gt;&amp; arr, <span class="kw">int</span> n, <span class="kw">int</span> i) {
+    <span class="kw">int</span> largest = i;
+    <span class="kw">int</span> left  = <span class="num">2</span> * i + <span class="num">1</span>;
+    <span class="kw">int</span> right = <span class="num">2</span> * i + <span class="num">2</span>;
+    <span class="kw">if</span> (left  &lt; n && arr[left]  > arr[largest]) largest = left;
+    <span class="kw">if</span> (right &lt; n && arr[right] > arr[largest]) largest = right;
+    <span class="kw">if</span> (largest != i) {
+        std::swap(arr[i], arr[largest]);
+        <span class="fn">heapify</span>(arr, n, largest); <span class="cm">// Recursively fix the sub-tree</span>
+    }
+}
+
+<span class="kw">void</span> <span class="fn">heapSort</span>(std::vector&lt;<span class="kw">int</span>&gt;&amp; arr) {
+    <span class="kw">int</span> n = arr.size();
+    <span class="cm">// Phase 1: Build max-heap (start from last non-leaf)</span>
+    <span class="kw">for</span> (<span class="kw">int</span> i = n / <span class="num">2</span> - <span class="num">1</span>; i >= <span class="num">0</span>; i--)
+        <span class="fn">heapify</span>(arr, n, i);
+    <span class="cm">// Phase 2: Extract elements from heap one by one</span>
+    <span class="kw">for</span> (<span class="kw">int</span> i = n - <span class="num">1</span>; i > <span class="num">0</span>; i--) {
+        std::swap(arr[<span class="num">0</span>], arr[i]); <span class="cm">// Move current max to end</span>
+        <span class="fn">heapify</span>(arr, i, <span class="num">0</span>);         <span class="cm">// Heapify reduced heap</span>
+    }
+}</pre>
+    </div>
+  </div>
+</div>
+
+<div class="module-divider"></div>
+
+<!-- ══════════════════════════════════════
+     MODULE 3 — SEARCHING & TRAVERSAL
+═══════════════════════════════════════ -->
+<div class="module" id="m3">
+  <div class="module-header">
+    <div class="module-num">03</div>
+    <div class="module-title-block">
+      <h2>Searching &amp; Graph Traversal</h2>
+      <p class="module-desc">Searching is about finding structure in data. We cover array searching, then BFS and DFS—the two foundational graph traversal patterns that underpin dozens of other algorithms.</p>
+      <div class="module-meta">⏱ 60 MINUTES · FOUR ALGORITHMS</div>
+    </div>
+  </div>
+
+  <!-- LINEAR SEARCH -->
+  <div class="section" id="m3-linear">
+    <h3>3.1 Linear Search</h3>
+    <p>Linear Search inspects each element sequentially until the target is found or the array is exhausted. It works on unsorted and sorted arrays alike, requires no pre-processing, but is slow on large data.</p>
+
+    <div class="steps">
+      <div class="steps-title">Algorithm Steps</div>
+      <div class="step"><span class="step-num">01</span><span class="step-text">Start at index i = 0.</span></div>
+      <div class="step"><span class="step-num">02</span><span class="step-text">Compare arr[i] with target. If equal, return i (found).</span></div>
+      <div class="step"><span class="step-num">03</span><span class="step-text">Increment i. If i &lt; n, go to step 2.</span></div>
+      <div class="step"><span class="step-num">04</span><span class="step-text">If the loop ends without a match, return −1 (not found).</span></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C++ 17</span><span class="code-title">Linear Search</span></div>
+      <pre><span class="kw">int</span> <span class="fn">linearSearch</span>(<span class="kw">const</span> std::vector&lt;<span class="kw">int</span>&gt;&amp; arr, <span class="kw">int</span> target) {
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; arr.size(); i++)
+        <span class="kw">if</span> (arr[i] == target) <span class="kw">return</span> i;
+    <span class="kw">return</span> -<span class="num">1</span>; <span class="cm">// Not found</span>
+}
+<span class="cm">// Time: O(n) | Space: O(1)</span></pre>
+    </div>
+  </div>
+
+  <!-- BINARY SEARCH -->
+  <div class="section" id="m3-binary">
+    <h3>3.2 Binary Search</h3>
+    <p>Binary Search requires a <strong>sorted</strong> array and achieves O(log n) by halving the search space on each step. For 1 billion elements, Binary Search takes at most 30 comparisons. Linear Search would take up to 1 billion.</p>
+
+    <div class="steps">
+      <div class="steps-title">Algorithm Steps</div>
+      <div class="step"><span class="step-num">01</span><span class="step-text">Set low = 0, high = n−1. These define the active search interval.</span></div>
+      <div class="step"><span class="step-num">02</span><span class="step-text">Compute mid = low + (high−low)/2 (avoids integer overflow).</span></div>
+      <div class="step"><span class="step-num">03</span><span class="step-text">If arr[mid] == target, return mid.</span></div>
+      <div class="step"><span class="step-num">04</span><span class="step-text">If arr[mid] &lt; target, the target must be in the right half. Set low = mid + 1.</span></div>
+      <div class="step"><span class="step-num">05</span><span class="step-text">If arr[mid] &gt; target, the target must be in the left half. Set high = mid − 1.</span></div>
+      <div class="step"><span class="step-num">06</span><span class="step-text">Repeat from step 2. If low &gt; high, the target is not in the array; return −1.</span></div>
+    </div>
+
+    <div class="anim-wrapper">
+      <div class="anim-header">
+        <span class="anim-title">ANIMATION — Binary Search</span>
+        <div class="anim-controls">
+          <button class="btn btn-primary" onclick="binaryAnim.start()">▶ Run</button>
+          <button class="btn btn-secondary" onclick="binaryAnim.reset()">↺ Reset</button>
+        </div>
+      </div>
+      <div class="anim-body">
+        <canvas id="binary-canvas" class="anim" height="160"></canvas>
+        <div class="anim-info" id="binary-info">Press Run — searching for target value</div>
+        <div class="anim-legend">
+          <span><span class="dot" style="background:#1e2d4a"></span>Out of range</span>
+          <span><span class="dot" style="background:#3b82f6"></span>Search range</span>
+          <span><span class="dot" style="background:#f0a500"></span>Mid pointer</span>
+          <span><span class="dot" style="background:#22c55e"></span>Found!</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C++ 17</span><span class="code-title">Binary Search — Iterative &amp; Recursive</span></div>
+      <pre><span class="cm">// Iterative version — preferred (no stack overhead)</span>
+<span class="kw">int</span> <span class="fn">binarySearch</span>(<span class="kw">const</span> std::vector&lt;<span class="kw">int</span>&gt;&amp; arr, <span class="kw">int</span> target) {
+    <span class="kw">int</span> low = <span class="num">0</span>, high = arr.size() - <span class="num">1</span>;
+    <span class="kw">while</span> (low &lt;= high) {
+        <span class="kw">int</span> mid = low + (high - low) / <span class="num">2</span>;
+        <span class="kw">if</span>      (arr[mid] == target) <span class="kw">return</span> mid;
+        <span class="kw">else if</span> (arr[mid] &lt; target)  low = mid + <span class="num">1</span>;
+        <span class="kw">else</span>                          high = mid - <span class="num">1</span>;
+    }
+    <span class="kw">return</span> -<span class="num">1</span>;
+}
+
+<span class="cm">// Recursive version</span>
+<span class="kw">int</span> <span class="fn">binarySearchR</span>(<span class="kw">const</span> std::vector&lt;<span class="kw">int</span>&gt;&amp; arr, <span class="kw">int</span> target, <span class="kw">int</span> low, <span class="kw">int</span> high) {
+    <span class="kw">if</span> (low > high) <span class="kw">return</span> -<span class="num">1</span>;
+    <span class="kw">int</span> mid = low + (high - low) / <span class="num">2</span>;
+    <span class="kw">if</span> (arr[mid] == target) <span class="kw">return</span> mid;
+    <span class="kw">if</span> (arr[mid] &lt; target)  <span class="kw">return</span> <span class="fn">binarySearchR</span>(arr, target, mid + <span class="num">1</span>, high);
+    <span class="kw">return</span> <span class="fn">binarySearchR</span>(arr, target, low, mid - <span class="num">1</span>);
+}
+<span class="cm">// Time: O(log n) | Space: O(1) iterative, O(log n) recursive</span></pre>
+    </div>
+  </div>
+
+  <!-- BFS -->
+  <div class="section" id="m3-bfs">
+    <h3>3.3 Breadth-First Search (BFS)</h3>
+    <p>BFS explores a graph level by level using a <strong>queue</strong>. It discovers all nodes at distance k before any node at distance k+1. This property makes BFS the right choice for <em>shortest path</em> in unweighted graphs, and for level-order tree traversal.</p>
+
+    <div class="steps">
+      <div class="steps-title">Algorithm Steps</div>
+      <div class="step"><span class="step-num">01</span><span class="step-text">Enqueue the start node. Mark it as visited in a boolean array to avoid re-processing cycles.</span></div>
+      <div class="step"><span class="step-num">02</span><span class="step-text">While the queue is not empty: dequeue the front node, process it (print, check for target, etc.).</span></div>
+      <div class="step"><span class="step-num">03</span><span class="step-text">For each unvisited neighbor of the current node: mark as visited and enqueue it.</span></div>
+      <div class="step"><span class="step-num">04</span><span class="step-text">Repeat until the queue empties. Every reachable node has been visited exactly once.</span></div>
+    </div>
+
+    <div class="anim-wrapper">
+      <div class="anim-header">
+        <span class="anim-title">ANIMATION — BFS Graph Traversal</span>
+        <div class="anim-controls">
+          <button class="btn btn-primary" onclick="bfsAnim.start()">▶ Run</button>
+          <button class="btn btn-secondary" onclick="bfsAnim.reset()">↺ Reset</button>
+        </div>
+      </div>
+      <div class="anim-body">
+        <canvas id="bfs-canvas" class="anim graph-canvas"></canvas>
+        <div class="anim-info" id="bfs-info">Press Run to see BFS traversal from node 0</div>
+        <div class="anim-legend">
+          <span><span class="dot" style="background:#3b82f6"></span>Queued</span>
+          <span><span class="dot" style="background:#f0a500"></span>Processing</span>
+          <span><span class="dot" style="background:#22c55e"></span>Visited</span>
+          <span><span class="dot" style="background:#374151"></span>Unvisited</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C++ 17</span><span class="code-title">BFS — Adjacency List Representation</span></div>
+      <pre><span class="kw">#include</span> &lt;<span class="str">queue</span>&gt;
+<span class="kw">#include</span> &lt;<span class="str">vector</span>&gt;
+
+<span class="kw">void</span> <span class="fn">bfs</span>(<span class="kw">const</span> std::vector&lt;std::vector&lt;<span class="kw">int</span>&gt;&gt;&amp; adj, <span class="kw">int</span> start) {
+    <span class="kw">int</span> n = adj.size();
+    std::vector&lt;<span class="kw">bool</span>&gt; visited(n, <span class="kw">false</span>);
+    std::queue&lt;<span class="kw">int</span>&gt; q;
+
+    visited[start] = <span class="kw">true</span>;
+    q.push(start);
+
+    <span class="kw">while</span> (!q.empty()) {
+        <span class="kw">int</span> node = q.front(); q.pop();
+        std::cout &lt;&lt; node &lt;&lt; <span class="str">" "</span>;
+
+        <span class="kw">for</span> (<span class="kw">int</span> neighbor : adj[node]) {
+            <span class="kw">if</span> (!visited[neighbor]) {
+                visited[neighbor] = <span class="kw">true</span>;
+                q.push(neighbor);
+            }
+        }
+    }
+}
+<span class="cm">// Time: O(V + E) | Space: O(V)</span></pre>
+    </div>
+  </div>
+
+  <!-- DFS -->
+  <div class="section" id="m3-dfs">
+    <h3>3.4 Depth-First Search (DFS)</h3>
+    <p>DFS explores as far as possible along each branch before backtracking. It uses a <strong>stack</strong> (either explicit or the call stack via recursion). DFS is the foundation of topological sort, cycle detection, connected components, and maze solving.</p>
+
+    <div class="steps">
+      <div class="steps-title">Algorithm Steps (Recursive)</div>
+      <div class="step"><span class="step-num">01</span><span class="step-text">Mark the current node as visited and process it.</span></div>
+      <div class="step"><span class="step-num">02</span><span class="step-text">For each unvisited neighbor of the current node: recursively call DFS on that neighbor.</span></div>
+      <div class="step"><span class="step-num">03</span><span class="step-text">When no unvisited neighbors remain, return (backtrack to the previous call).</span></div>
+      <div class="step"><span class="step-num">04</span><span class="step-text">After all recursive calls from the start node return, all reachable nodes have been visited.</span></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C++ 17</span><span class="code-title">DFS — Recursive &amp; Iterative</span></div>
+      <pre><span class="cm">// Recursive DFS (elegant, uses call stack)</span>
+<span class="kw">void</span> <span class="fn">dfsRecursive</span>(<span class="kw">const</span> std::vector&lt;std::vector&lt;<span class="kw">int</span>&gt;&gt;&amp; adj,
+                   std::vector&lt;<span class="kw">bool</span>&gt;&amp; visited, <span class="kw">int</span> node) {
+    visited[node] = <span class="kw">true</span>;
+    std::cout &lt;&lt; node &lt;&lt; <span class="str">" "</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> neighbor : adj[node])
+        <span class="kw">if</span> (!visited[neighbor])
+            <span class="fn">dfsRecursive</span>(adj, visited, neighbor);
+}
+
+<span class="cm">// Iterative DFS (explicit stack, avoids stack overflow)</span>
+<span class="kw">void</span> <span class="fn">dfsIterative</span>(<span class="kw">const</span> std::vector&lt;std::vector&lt;<span class="kw">int</span>&gt;&gt;&amp; adj, <span class="kw">int</span> start) {
+    <span class="kw">int</span> n = adj.size();
+    std::vector&lt;<span class="kw">bool</span>&gt; visited(n, <span class="kw">false</span>);
+    std::stack&lt;<span class="kw">int</span>&gt; stk;
+    stk.push(start);
+    <span class="kw">while</span> (!stk.empty()) {
+        <span class="kw">int</span> node = stk.top(); stk.pop();
+        <span class="kw">if</span> (visited[node]) <span class="kw">continue</span>;
+        visited[node] = <span class="kw">true</span>;
+        std::cout &lt;&lt; node &lt;&lt; <span class="str">" "</span>;
+        <span class="kw">for</span> (<span class="kw">int</span> neighbor : adj[node])
+            <span class="kw">if</span> (!visited[neighbor]) stk.push(neighbor);
+    }
+}
+<span class="cm">// Time: O(V + E) | Space: O(V)</span></pre>
+    </div>
+
+    <div class="info-box"><strong>BFS vs DFS:</strong> Use BFS for shortest path (unweighted) and level-order. Use DFS for topological sort, connected components, cycle detection, and pathfinding in mazes. BFS uses more memory (queue can hold O(V) nodes); DFS uses O(depth) space.</div>
+  </div>
+</div>
+
+<div class="module-divider"></div>
+
+<!-- ══════════════════════════════════════
+     MODULE 4 — GRAPH ALGORITHMS
+═══════════════════════════════════════ -->
+<div class="module" id="m4">
+  <div class="module-header">
+    <div class="module-num">04</div>
+    <div class="module-title-block">
+      <h2>Graph Algorithms</h2>
+      <p class="module-desc">Real-world problems—navigation, networking, scheduling—map naturally to graphs. We cover shortest path and minimum spanning tree algorithms that power GPS, routing protocols, and network design.</p>
+      <div class="module-meta">⏱ 60 MINUTES · FIVE ALGORITHMS</div>
+    </div>
+  </div>
+
+  <!-- DIJKSTRA -->
+  <div class="section" id="m4-dijkstra">
+    <h3>4.1 Dijkstra's Shortest Path Algorithm</h3>
+    <p>Dijkstra's algorithm finds the shortest path from a source to all other nodes in a weighted graph with <strong>non-negative</strong> edge weights. It is a greedy algorithm—at each step it picks the unvisited node with the minimum known distance.</p>
+
+    <div class="steps">
+      <div class="steps-title">Algorithm Steps</div>
+      <div class="step"><span class="step-num">01</span><span class="step-text">Initialize dist[source] = 0 and dist[all others] = ∞. Add source to a min-priority queue.</span></div>
+      <div class="step"><span class="step-num">02</span><span class="step-text">Extract the node u with the smallest tentative distance from the queue.</span></div>
+      <div class="step"><span class="step-num">03</span><span class="step-text">For each neighbor v of u with edge weight w: if dist[u] + w &lt; dist[v], update dist[v] = dist[u] + w and enqueue v with its new distance.</span></div>
+      <div class="step"><span class="step-num">04</span><span class="step-text">Mark u as processed — we have the definitive shortest path to u.</span></div>
+      <div class="step"><span class="step-num">05</span><span class="step-text">Repeat until the priority queue is empty. All reachable nodes have optimal distances.</span></div>
+    </div>
+
+    <div class="anim-wrapper">
+      <div class="anim-header">
+        <span class="anim-title">ANIMATION — Dijkstra's Algorithm</span>
+        <div class="anim-controls">
+          <button class="btn btn-primary" onclick="dijkstraAnim.start()">▶ Run</button>
+          <button class="btn btn-secondary" onclick="dijkstraAnim.reset()">↺ Reset</button>
+        </div>
+      </div>
+      <div class="anim-body">
+        <canvas id="dijkstra-canvas" class="anim graph-canvas"></canvas>
+        <div class="anim-info" id="dijkstra-info">Press Run to find shortest paths from node S</div>
+        <div class="anim-legend">
+          <span><span class="dot" style="background:#22c55e"></span>Settled (final)</span>
+          <span><span class="dot" style="background:#f0a500"></span>Current node</span>
+          <span><span class="dot" style="background:#3b82f6"></span>In queue</span>
+          <span><span class="dot" style="background:#374151"></span>Unvisited</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C++ 17</span><span class="code-title">Dijkstra's Algorithm — Min-Heap Priority Queue</span></div>
+      <pre><span class="kw">#include</span> &lt;<span class="str">queue</span>&gt;
+<span class="kw">#include</span> &lt;<span class="str">climits</span>&gt;
+
+<span class="kw">using</span> pii = std::pair&lt;<span class="kw">int</span>,<span class="kw">int</span>&gt;; <span class="cm">// {distance, node}</span>
+
+std::vector&lt;<span class="kw">int</span>&gt; <span class="fn">dijkstra</span>(
+    <span class="kw">const</span> std::vector&lt;std::vector&lt;pii&gt;&gt;&amp; adj, <span class="cm">// adj[u] = {weight, v}</span>
+    <span class="kw">int</span> src)
+{
+    <span class="kw">int</span> n = adj.size();
+    std::vector&lt;<span class="kw">int</span>&gt; dist(n, INT_MAX);
+    std::priority_queue&lt;pii, std::vector&lt;pii&gt;, std::greater&lt;pii&gt;&gt; pq;
+
+    dist[src] = <span class="num">0</span>;
+    pq.push({<span class="num">0</span>, src});
+
+    <span class="kw">while</span> (!pq.empty()) {
+        <span class="kw">auto</span> [d, u] = pq.top(); pq.pop();
+        <span class="kw">if</span> (d > dist[u]) <span class="kw">continue</span>; <span class="cm">// Stale entry</span>
+
+        <span class="kw">for</span> (<span class="kw">auto</span> [w, v] : adj[u]) {
+            <span class="kw">if</span> (dist[u] + w &lt; dist[v]) {
+                dist[v] = dist[u] + w;
+                pq.push({dist[v], v});
+            }
+        }
+    }
+    <span class="kw">return</span> dist;
+}
+<span class="cm">// Time: O((V + E) log V) | Space: O(V + E)</span></pre>
+    </div>
+  </div>
+
+  <!-- BELLMAN-FORD -->
+  <div class="section" id="m4-bellman">
+    <h3>4.2 Bellman-Ford Algorithm</h3>
+    <p>Bellman-Ford handles <strong>negative edge weights</strong>—something Dijkstra cannot do. It also detects negative-weight cycles (useful in finance for arbitrage detection). It is slower than Dijkstra but more general.</p>
+
+    <div class="steps">
+      <div class="steps-title">Algorithm Steps</div>
+      <div class="step"><span class="step-num">01</span><span class="step-text">Initialize dist[source] = 0, dist[all others] = ∞.</span></div>
+      <div class="step"><span class="step-num">02</span><span class="step-text">Repeat V−1 times (V = number of vertices): for every edge (u, v, w), if dist[u] + w &lt; dist[v], relax: dist[v] = dist[u] + w.</span></div>
+      <div class="step"><span class="step-num">03</span><span class="step-text">After V−1 relaxations, all shortest paths are found (shortest path can have at most V−1 edges).</span></div>
+      <div class="step"><span class="step-num">04</span><span class="step-text"><strong>Negative cycle check:</strong> Do one more pass. If any distance can still be reduced, a negative cycle is present — report it.</span></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C++ 17</span><span class="code-title">Bellman-Ford Algorithm</span></div>
+      <pre><span class="kw">struct</span> <span class="tp">Edge</span> { <span class="kw">int</span> u, v, w; };
+
+std::vector&lt;<span class="kw">int</span>&gt; <span class="fn">bellmanFord</span>(<span class="kw">int</span> V, <span class="kw">const</span> std::vector&lt;<span class="tp">Edge</span>&gt;&amp; edges, <span class="kw">int</span> src) {
+    std::vector&lt;<span class="kw">int</span>&gt; dist(V, INT_MAX);
+    dist[src] = <span class="num">0</span>;
+
+    <span class="cm">// Relax all edges V-1 times</span>
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; V - <span class="num">1</span>; i++)
+        <span class="kw">for</span> (<span class="kw">const</span> <span class="kw">auto</span>&amp; e : edges)
+            <span class="kw">if</span> (dist[e.u] != INT_MAX && dist[e.u] + e.w &lt; dist[e.v])
+                dist[e.v] = dist[e.u] + e.w;
+
+    <span class="cm">// Detect negative weight cycle</span>
+    <span class="kw">for</span> (<span class="kw">const</span> <span class="kw">auto</span>&amp; e : edges)
+        <span class="kw">if</span> (dist[e.u] != INT_MAX && dist[e.u] + e.w &lt; dist[e.v])
+            <span class="kw">throw</span> std::runtime_error(<span class="str">"Negative cycle detected"</span>);
+
+    <span class="kw">return</span> dist;
+}
+<span class="cm">// Time: O(V·E) | Space: O(V)</span></pre>
+    </div>
+  </div>
+
+  <!-- FLOYD-WARSHALL -->
+  <div class="section" id="m4-floyd">
+    <h3>4.3 Floyd-Warshall (All-Pairs Shortest Path)</h3>
+    <p>Floyd-Warshall finds shortest paths between <em>all pairs</em> of vertices in a single O(V³) run. It uses dynamic programming—for each intermediate node k, it asks: "Is the path from i to j shorter by going through k?"</p>
+
+    <div class="steps">
+      <div class="steps-title">Algorithm Steps</div>
+      <div class="step"><span class="step-num">01</span><span class="step-text">Initialize a V×V distance matrix: dist[i][i] = 0; dist[i][j] = edge weight if (i,j) is an edge; else ∞.</span></div>
+      <div class="step"><span class="step-num">02</span><span class="step-text">For each intermediate node k from 0 to V−1:</span></div>
+      <div class="step"><span class="step-num">03</span><span class="step-text">&nbsp;&nbsp;&nbsp;For each pair (i, j): if dist[i][k] + dist[k][j] &lt; dist[i][j], update dist[i][j].</span></div>
+      <div class="step"><span class="step-num">04</span><span class="step-text">After all V iterations, dist[i][j] holds the shortest path between every pair (i, j).</span></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C++ 17</span><span class="code-title">Floyd-Warshall Algorithm</span></div>
+      <pre><span class="kw">void</span> <span class="fn">floydWarshall</span>(std::vector&lt;std::vector&lt;<span class="kw">int</span>&gt;&gt;&amp; dist) {
+    <span class="kw">int</span> V = dist.size();
+    <span class="kw">for</span> (<span class="kw">int</span> k = <span class="num">0</span>; k &lt; V; k++)
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; V; i++)
+            <span class="kw">for</span> (<span class="kw">int</span> j = <span class="num">0</span>; j &lt; V; j++)
+                <span class="kw">if</span> (dist[i][k] != INT_MAX && dist[k][j] != INT_MAX)
+                    dist[i][j] = std::min(dist[i][j], dist[i][k] + dist[k][j]);
+    <span class="cm">// Negative cycle: dist[i][i] < 0 for some i</span>
+}
+<span class="cm">// Time: O(V³) | Space: O(V²)</span></pre>
+    </div>
+  </div>
+
+  <!-- KRUSKAL & PRIM -->
+  <div class="section" id="m4-kruskal">
+    <h3>4.4 Minimum Spanning Tree — Kruskal's Algorithm</h3>
+    <p>A Minimum Spanning Tree (MST) connects all vertices with the minimum total edge weight, using no cycles. Kruskal's is greedy: sort all edges by weight, then greedily add edges as long as they don't form a cycle (checked using a Union-Find / Disjoint Set Union data structure).</p>
+
+    <div class="steps">
+      <div class="steps-title">Algorithm Steps</div>
+      <div class="step"><span class="step-num">01</span><span class="step-text">Sort all edges in non-decreasing order of weight.</span></div>
+      <div class="step"><span class="step-num">02</span><span class="step-text">Initialize a Union-Find (DSU) structure where every node is its own component.</span></div>
+      <div class="step"><span class="step-num">03</span><span class="step-text">For each edge (u, v, w) in sorted order: if u and v are in different components (find(u) ≠ find(v)), add the edge to the MST and union their components.</span></div>
+      <div class="step"><span class="step-num">04</span><span class="step-text">Stop when the MST has V−1 edges (a spanning tree of V nodes always has exactly V−1 edges).</span></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C++ 17</span><span class="code-title">Kruskal's MST — With Union-Find</span></div>
+      <pre><span class="kw">struct</span> <span class="tp">DSU</span> {
+    std::vector&lt;<span class="kw">int</span>&gt; parent, rank;
+    <span class="fn">DSU</span>(<span class="kw">int</span> n) : parent(n), rank(n, <span class="num">0</span>) { std::iota(parent.begin(), parent.end(), <span class="num">0</span>); }
+    <span class="kw">int</span> <span class="fn">find</span>(<span class="kw">int</span> x) { <span class="kw">return</span> parent[x] == x ? x : parent[x] = <span class="fn">find</span>(parent[x]); }
+    <span class="kw">bool</span> <span class="fn">unite</span>(<span class="kw">int</span> x, <span class="kw">int</span> y) {
+        x = <span class="fn">find</span>(x); y = <span class="fn">find</span>(y);
+        <span class="kw">if</span> (x == y) <span class="kw">return false</span>;
+        <span class="kw">if</span> (rank[x] &lt; rank[y]) std::swap(x, y);
+        parent[y] = x;
+        <span class="kw">if</span> (rank[x] == rank[y]) rank[x]++;
+        <span class="kw">return true</span>;
+    }
+};
+
+<span class="kw">int</span> <span class="fn">kruskal</span>(<span class="kw">int</span> V, std::vector&lt;std::tuple&lt;<span class="kw">int</span>,<span class="kw">int</span>,<span class="kw">int</span>&gt;&gt; edges) {
+    std::sort(edges.begin(), edges.end()); <span class="cm">// Sort by weight (first element)</span>
+    <span class="tp">DSU</span> dsu(V);
+    <span class="kw">int</span> mstWeight = <span class="num">0</span>, edgesUsed = <span class="num">0</span>;
+    <span class="kw">for</span> (<span class="kw">auto</span> [w, u, v] : edges) {
+        <span class="kw">if</span> (dsu.<span class="fn">unite</span>(u, v)) {
+            mstWeight += w;
+            <span class="kw">if</span> (++edgesUsed == V - <span class="num">1</span>) <span class="kw">break</span>;
+        }
+    }
+    <span class="kw">return</span> mstWeight;
+}
+<span class="cm">// Time: O(E log E) | Space: O(V)</span></pre>
+    </div>
+  </div>
+
+  <div class="section" id="m4-prim">
+    <h3>4.5 Prim's MST Algorithm</h3>
+    <p>Prim's grows the MST from a starting vertex, at each step adding the minimum-weight edge that connects the MST to a vertex outside it. It is more efficient on dense graphs (O(E log V) with a priority queue) compared to Kruskal's.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C++ 17</span><span class="code-title">Prim's Algorithm — Priority Queue</span></div>
+      <pre><span class="kw">int</span> <span class="fn">prim</span>(<span class="kw">const</span> std::vector&lt;std::vector&lt;pii&gt;&gt;&amp; adj, <span class="kw">int</span> src) {
+    <span class="kw">int</span> n = adj.size();
+    std::vector&lt;<span class="kw">bool</span>&gt; inMST(n, <span class="kw">false</span>);
+    std::vector&lt;<span class="kw">int</span>&gt; key(n, INT_MAX);
+    std::priority_queue&lt;pii, std::vector&lt;pii&gt;, std::greater&lt;pii&gt;&gt; pq;
+
+    key[src] = <span class="num">0</span>;
+    pq.push({<span class="num">0</span>, src});
+    <span class="kw">int</span> mstWeight = <span class="num">0</span>;
+
+    <span class="kw">while</span> (!pq.empty()) {
+        <span class="kw">auto</span> [w, u] = pq.top(); pq.pop();
+        <span class="kw">if</span> (inMST[u]) <span class="kw">continue</span>;
+        inMST[u] = <span class="kw">true</span>;
+        mstWeight += w;
+        <span class="kw">for</span> (<span class="kw">auto</span> [ew, v] : adj[u])
+            <span class="kw">if</span> (!inMST[v] && ew &lt; key[v]) {
+                key[v] = ew;
+                pq.push({ew, v});
+            }
+    }
+    <span class="kw">return</span> mstWeight;
+}
+<span class="cm">// Time: O((V + E) log V) | Space: O(V)</span></pre>
+    </div>
+
+    <table class="complexity-table">
+      <tr><th>Algorithm</th><th>Handles Neg. Weights</th><th>All-Pairs</th><th>Time</th><th>Best For</th></tr>
+      <tr><td>Dijkstra</td><td>❌ No</td><td>❌ No</td><td class="o-nlogn">O((V+E) log V)</td><td>Single-source, non-negative weights</td></tr>
+      <tr><td>Bellman-Ford</td><td>✅ Yes</td><td>❌ No</td><td class="o-n2">O(V·E)</td><td>Negative weights, cycle detection</td></tr>
+      <tr><td>Floyd-Warshall</td><td>✅ Yes</td><td>✅ Yes</td><td class="o-2n">O(V³)</td><td>Dense graphs, all-pairs</td></tr>
+      <tr><td>Kruskal's</td><td>N/A</td><td>N/A (MST)</td><td class="o-nlogn">O(E log E)</td><td>Sparse graphs, MST</td></tr>
+      <tr><td>Prim's</td><td>N/A</td><td>N/A (MST)</td><td class="o-nlogn">O((V+E) log V)</td><td>Dense graphs, MST</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="module-divider"></div>
+
+<!-- ══════════════════════════════════════
+     MODULE 5 — DYNAMIC PROGRAMMING
+═══════════════════════════════════════ -->
+<div class="module" id="m5">
+  <div class="module-header">
+    <div class="module-num">05</div>
+    <div class="module-title-block">
+      <h2>Dynamic Programming</h2>
+      <p class="module-desc">Dynamic programming solves complex problems by breaking them into simpler overlapping sub-problems and storing results to avoid redundant computation. It is arguably the most powerful technique in competitive programming.</p>
+      <div class="module-meta">⏱ 60 MINUTES · FOUR PROBLEMS</div>
+    </div>
+  </div>
+
+  <div class="info-box"><strong>Two conditions for DP:</strong> (1) <strong>Optimal Substructure</strong>—the optimal solution contains optimal solutions to sub-problems. (2) <strong>Overlapping Sub-problems</strong>—the same sub-problems are solved repeatedly.</div>
+  <div class="info-box" style="border-left-color:var(--purple)"><strong>Top-Down (Memoization)</strong> = recursion + cache. Write it naturally with recursion, add a memo table. <strong>Bottom-Up (Tabulation)</strong> = build from smallest sub-problems up. Avoids recursion overhead and stack overflow.</div>
+
+  <!-- FIBONACCI -->
+  <div class="section" id="m5-fib">
+    <h3>5.1 Fibonacci — DP Introduction</h3>
+    <p>The Fibonacci sequence perfectly illustrates why DP matters. Naive recursion recomputes fib(2), fib(3), fib(4)... exponentially many times. Memoization or tabulation reduces this to O(n).</p>
+
+    <div class="steps">
+      <div class="steps-title">Naive Recursion → DP Transformation</div>
+      <div class="step"><span class="step-num">NAIVE</span><span class="step-text">fib(n) = fib(n−1) + fib(n−2). Time: O(2ⁿ). Computes fib(30) with over 1 billion calls.</span></div>
+      <div class="step"><span class="step-num">MEMO</span><span class="step-text">Add a cache map. Before computing, check if result already known. Time: O(n), Space: O(n).</span></div>
+      <div class="step"><span class="step-num">TABLE</span><span class="step-text">Build table bottom-up: dp[0]=0, dp[1]=1, dp[i]=dp[i-1]+dp[i-2]. Time: O(n), Space: O(1) with two variables.</span></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C++ 17</span><span class="code-title">Fibonacci — Three Implementations</span></div>
+      <pre><span class="cm">// O(2ⁿ) — Naive recursion (DO NOT USE for large n)</span>
+<span class="kw">long long</span> <span class="fn">fibNaive</span>(<span class="kw">int</span> n) {
+    <span class="kw">return</span> n &lt;= <span class="num">1</span> ? n : <span class="fn">fibNaive</span>(n-<span class="num">1</span>) + <span class="fn">fibNaive</span>(n-<span class="num">2</span>);
+}
+
+<span class="cm">// O(n) — Top-Down Memoization</span>
+std::unordered_map&lt;<span class="kw">int</span>, <span class="kw">long long</span>&gt; memo;
+<span class="kw">long long</span> <span class="fn">fibMemo</span>(<span class="kw">int</span> n) {
+    <span class="kw">if</span> (n &lt;= <span class="num">1</span>) <span class="kw">return</span> n;
+    <span class="kw">if</span> (memo.count(n)) <span class="kw">return</span> memo[n];
+    <span class="kw">return</span> memo[n] = <span class="fn">fibMemo</span>(n-<span class="num">1</span>) + <span class="fn">fibMemo</span>(n-<span class="num">2</span>);
+}
+
+<span class="cm">// O(n) time, O(1) space — Bottom-Up Tabulation</span>
+<span class="kw">long long</span> <span class="fn">fibDP</span>(<span class="kw">int</span> n) {
+    <span class="kw">if</span> (n &lt;= <span class="num">1</span>) <span class="kw">return</span> n;
+    <span class="kw">long long</span> prev2 = <span class="num">0</span>, prev1 = <span class="num">1</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">2</span>; i &lt;= n; i++) {
+        <span class="kw">long long</span> curr = prev1 + prev2;
+        prev2 = prev1;
+        prev1 = curr;
+    }
+    <span class="kw">return</span> prev1;
+}</pre>
+    </div>
+  </div>
+
+  <!-- 0/1 KNAPSACK -->
+  <div class="section" id="m5-knapsack">
+    <h3>5.2 The 0/1 Knapsack Problem</h3>
+    <p>Given n items each with a weight and value, and a knapsack of capacity W: maximize the total value while keeping total weight ≤ W. Each item can be taken (1) or left (0)—no fractions. This is a fundamental NP-hard problem solved in pseudo-polynomial time with DP.</p>
+
+    <div class="steps">
+      <div class="steps-title">DP Formulation</div>
+      <div class="step"><span class="step-num">STATE</span><span class="step-text">dp[i][w] = maximum value using the first i items with weight capacity w.</span></div>
+      <div class="step"><span class="step-num">BASE</span><span class="step-text">dp[0][w] = 0 for all w (no items → no value). dp[i][0] = 0 for all i (zero capacity → no items).</span></div>
+      <div class="step"><span class="step-num">CHOICE</span><span class="step-text">For each item i, either skip it: dp[i][w] = dp[i−1][w], or take it (if weight[i] ≤ w): dp[i][w] = dp[i−1][w−weight[i]] + value[i].</span></div>
+      <div class="step"><span class="step-num">RECUR.</span><span class="step-text">dp[i][w] = max(dp[i−1][w], dp[i−1][w−wt[i]] + val[i]) if wt[i] ≤ w.</span></div>
+      <div class="step"><span class="step-num">ANSWER</span><span class="step-text">dp[n][W] is the optimal value. Trace back through the table to find which items were selected.</span></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C++ 17</span><span class="code-title">0/1 Knapsack — Bottom-Up DP</span></div>
+      <pre><span class="kw">int</span> <span class="fn">knapsack</span>(<span class="kw">int</span> W,
+             <span class="kw">const</span> std::vector&lt;<span class="kw">int</span>&gt;&amp; wt,
+             <span class="kw">const</span> std::vector&lt;<span class="kw">int</span>&gt;&amp; val) {
+    <span class="kw">int</span> n = wt.size();
+    <span class="cm">// dp[w] = max value with capacity w (1D space-optimized)</span>
+    std::vector&lt;<span class="kw">int</span>&gt; dp(W + <span class="num">1</span>, <span class="num">0</span>);
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; n; i++)
+        <span class="cm">// Traverse right-to-left to avoid using item i twice</span>
+        <span class="kw">for</span> (<span class="kw">int</span> w = W; w >= wt[i]; w--)
+            dp[w] = std::max(dp[w], dp[w - wt[i]] + val[i]);
+
+    <span class="kw">return</span> dp[W];
+}
+<span class="cm">// Time: O(n·W) | Space: O(W) — space-optimized</span>
+
+<span class="cm">// Usage example:</span>
+<span class="cm">// wt = {2, 3, 4, 5}, val = {3, 4, 5, 6}, W = 8</span>
+<span class="cm">// knapsack(8, wt, val) → 10  (items 0+3: wt=7, val=9... or items 1+2: wt=7, val=9)</span></pre>
+    </div>
+  </div>
+
+  <!-- LCS -->
+  <div class="section" id="m5-lcs">
+    <h3>5.3 Longest Common Subsequence (LCS)</h3>
+    <p>LCS finds the longest sequence of characters common to two strings (not necessarily contiguous). It underlies diff tools (git diff), bioinformatics (DNA alignment), and plagiarism detection.</p>
+
+    <div class="steps">
+      <div class="steps-title">DP Formulation</div>
+      <div class="step"><span class="step-num">STATE</span><span class="step-text">dp[i][j] = length of LCS of X[0..i−1] and Y[0..j−1].</span></div>
+      <div class="step"><span class="step-num">MATCH</span><span class="step-text">If X[i−1] == Y[j−1]: dp[i][j] = dp[i−1][j−1] + 1. Characters match — extend the LCS by one.</span></div>
+      <div class="step"><span class="step-num">SKIP</span><span class="step-text">Else: dp[i][j] = max(dp[i−1][j], dp[i][j−1]). Take the best by skipping one character from either string.</span></div>
+      <div class="step"><span class="step-num">ANSWER</span><span class="step-text">dp[m][n] gives the LCS length. Traceback reconstructs the actual subsequence.</span></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C++ 17</span><span class="code-title">LCS — With Traceback</span></div>
+      <pre><span class="kw">std::string</span> <span class="fn">lcs</span>(<span class="kw">const</span> std::string&amp; X, <span class="kw">const</span> std::string&amp; Y) {
+    <span class="kw">int</span> m = X.size(), n = Y.size();
+    std::vector&lt;std::vector&lt;<span class="kw">int</span>&gt;&gt; dp(m+<span class="num">1</span>, std::vector&lt;<span class="kw">int</span>&gt;(n+<span class="num">1</span>, <span class="num">0</span>));
+
+    <span class="cm">// Fill DP table</span>
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">1</span>; i &lt;= m; i++)
+        <span class="kw">for</span> (<span class="kw">int</span> j = <span class="num">1</span>; j &lt;= n; j++)
+            dp[i][j] = (X[i-<span class="num">1</span>] == Y[j-<span class="num">1</span>])
+                       ? dp[i-<span class="num">1</span>][j-<span class="num">1</span>] + <span class="num">1</span>
+                       : std::max(dp[i-<span class="num">1</span>][j], dp[i][j-<span class="num">1</span>]);
+
+    <span class="cm">// Traceback to reconstruct LCS string</span>
+    std::string result;
+    <span class="kw">int</span> i = m, j = n;
+    <span class="kw">while</span> (i > <span class="num">0</span> && j > <span class="num">0</span>) {
+        <span class="kw">if</span> (X[i-<span class="num">1</span>] == Y[j-<span class="num">1</span>]) { result += X[i-<span class="num">1</span>]; i--; j--; }
+        <span class="kw">else if</span> (dp[i-<span class="num">1</span>][j] > dp[i][j-<span class="num">1</span>]) i--;
+        <span class="kw">else</span> j--;
+    }
+    std::reverse(result.begin(), result.end());
+    <span class="kw">return</span> result;
+}
+<span class="cm">// Time: O(m·n) | Space: O(m·n)</span></pre>
+    </div>
+  </div>
+
+  <!-- EDIT DISTANCE -->
+  <div class="section" id="m5-edit">
+    <h3>5.4 Edit Distance (Levenshtein Distance)</h3>
+    <p>Edit Distance is the minimum number of single-character operations (insert, delete, replace) to transform one string into another. It powers spell checkers, DNA alignment, and fuzzy string matching.</p>
+
+    <div class="steps">
+      <div class="steps-title">DP Formulation</div>
+      <div class="step"><span class="step-num">STATE</span><span class="step-text">dp[i][j] = minimum operations to convert X[0..i−1] to Y[0..j−1].</span></div>
+      <div class="step"><span class="step-num">BASE</span><span class="step-text">dp[i][0] = i (delete all i chars). dp[0][j] = j (insert all j chars).</span></div>
+      <div class="step"><span class="step-num">MATCH</span><span class="step-text">If X[i−1] == Y[j−1]: dp[i][j] = dp[i−1][j−1]. No operation needed.</span></div>
+      <div class="step"><span class="step-num">ELSE</span><span class="step-text">dp[i][j] = 1 + min(dp[i−1][j], dp[i][j−1], dp[i−1][j−1]) for delete, insert, replace respectively.</span></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C++ 17</span><span class="code-title">Levenshtein Edit Distance</span></div>
+      <pre><span class="kw">int</span> <span class="fn">editDistance</span>(<span class="kw">const</span> std::string&amp; X, <span class="kw">const</span> std::string&amp; Y) {
+    <span class="kw">int</span> m = X.size(), n = Y.size();
+    std::vector&lt;std::vector&lt;<span class="kw">int</span>&gt;&gt; dp(m+<span class="num">1</span>, std::vector&lt;<span class="kw">int</span>&gt;(n+<span class="num">1</span>));
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt;= m; i++) dp[i][<span class="num">0</span>] = i;
+    <span class="kw">for</span> (<span class="kw">int</span> j = <span class="num">0</span>; j &lt;= n; j++) dp[<span class="num">0</span>][j] = j;
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">1</span>; i &lt;= m; i++) {
+        <span class="kw">for</span> (<span class="kw">int</span> j = <span class="num">1</span>; j &lt;= n; j++) {
+            <span class="kw">if</span> (X[i-<span class="num">1</span>] == Y[j-<span class="num">1</span>])
+                dp[i][j] = dp[i-<span class="num">1</span>][j-<span class="num">1</span>]; <span class="cm">// No operation</span>
+            <span class="kw">else</span>
+                dp[i][j] = <span class="num">1</span> + std::min({dp[i-<span class="num">1</span>][j],    <span class="cm">// Delete</span>
+                                          dp[i][j-<span class="num">1</span>],    <span class="cm">// Insert</span>
+                                          dp[i-<span class="num">1</span>][j-<span class="num">1</span>]}); <span class="cm">// Replace</span>
+        }
+    }
+    <span class="kw">return</span> dp[m][n];
+}
+<span class="cm">// editDistance("kitten", "sitting") = 3</span>
+<span class="cm">// Time: O(m·n) | Space: O(m·n)</span></pre>
+    </div>
+  </div>
+</div>
+
+<div class="module-divider"></div>
+
+<!-- ══════════════════════════════════════
+     MODULE 6 — GREEDY & BACKTRACKING
+═══════════════════════════════════════ -->
+<div class="module" id="m6">
+  <div class="module-header">
+    <div class="module-num">06</div>
+    <div class="module-title-block">
+      <h2>Greedy Algorithms &amp; Backtracking</h2>
+      <p class="module-desc">Greedy algorithms make the locally optimal choice at each step, while backtracking systematically explores all candidates. Together they solve problems where DP would be over-engineering or impossible.</p>
+      <div class="module-meta">⏱ 60 MINUTES · THREE ALGORITHMS + SUMMARY</div>
+    </div>
+  </div>
+
+  <!-- ACTIVITY SELECTION -->
+  <div class="section" id="m6-activity">
+    <h3>6.1 Activity Selection Problem</h3>
+    <p>Given n activities with start and finish times, select the maximum number of non-overlapping activities. The greedy insight: always pick the activity that <strong>finishes earliest</strong>—this leaves the most room for future activities.</p>
+
+    <div class="steps">
+      <div class="steps-title">Algorithm Steps</div>
+      <div class="step"><span class="step-num">01</span><span class="step-text">Sort all activities by finish time (ascending).</span></div>
+      <div class="step"><span class="step-num">02</span><span class="step-text">Select the first activity. Set lastFinish = finish time of first activity.</span></div>
+      <div class="step"><span class="step-num">03</span><span class="step-text">For each subsequent activity: if its start time ≥ lastFinish, select it and update lastFinish.</span></div>
+      <div class="step"><span class="step-num">04</span><span class="step-text">Continue through all activities. The selected set is the maximum non-overlapping schedule.</span></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C++ 17</span><span class="code-title">Activity Selection — Greedy</span></div>
+      <pre><span class="kw">struct</span> <span class="tp">Activity</span> { <span class="kw">int</span> start, finish; };
+
+std::vector&lt;<span class="tp">Activity</span>&gt; <span class="fn">activitySelection</span>(std::vector&lt;<span class="tp">Activity</span>&gt; acts) {
+    <span class="cm">// Sort by finish time (greedy choice property)</span>
+    std::sort(acts.begin(), acts.end(),
+              [](<span class="kw">const</span> <span class="tp">Activity</span>&amp; a, <span class="kw">const</span> <span class="tp">Activity</span>&amp; b) {
+                  <span class="kw">return</span> a.finish &lt; b.finish;
+              });
+
+    std::vector&lt;<span class="tp">Activity</span>&gt; selected = {acts[<span class="num">0</span>]};
+    <span class="kw">int</span> lastFinish = acts[<span class="num">0</span>].finish;
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">1</span>; i &lt; acts.size(); i++)
+        <span class="kw">if</span> (acts[i].start >= lastFinish) {
+            selected.push_back(acts[i]);
+            lastFinish = acts[i].finish;
+        }
+    <span class="kw">return</span> selected;
+}
+<span class="cm">// Time: O(n log n) for sort + O(n) scan | Space: O(n)</span></pre>
+    </div>
+  </div>
+
+  <!-- HUFFMAN -->
+  <div class="section" id="m6-huffman">
+    <h3>6.2 Huffman Coding</h3>
+    <p>Huffman coding builds an optimal prefix-free binary code for a set of symbols based on their frequencies. More frequent symbols get shorter codes. It achieves the minimum total bits for lossless compression—used in ZIP, JPEG, MP3, and HTTP/2.</p>
+
+    <div class="steps">
+      <div class="steps-title">Algorithm Steps</div>
+      <div class="step"><span class="step-num">01</span><span class="step-text">Create a leaf node for each symbol and add to a min-priority queue ordered by frequency.</span></div>
+      <div class="step"><span class="step-num">02</span><span class="step-text">While the queue has more than one node: extract the two nodes with minimum frequency.</span></div>
+      <div class="step"><span class="step-num">03</span><span class="step-text">Create a new internal node with frequency = sum of the two extracted. Set them as left and right children.</span></div>
+      <div class="step"><span class="step-num">04</span><span class="step-text">Insert the new node back into the priority queue.</span></div>
+      <div class="step"><span class="step-num">05</span><span class="step-text">The remaining node is the root of the Huffman tree. Assign codes by traversal: left branch = '0', right branch = '1'.</span></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C++ 17</span><span class="code-title">Huffman Coding Tree</span></div>
+      <pre><span class="kw">struct</span> <span class="tp">HuffNode</span> {
+    <span class="kw">char</span> ch; <span class="kw">int</span> freq;
+    <span class="tp">HuffNode</span>* left; <span class="tp">HuffNode</span>* right;
+    <span class="fn">HuffNode</span>(<span class="kw">char</span> c, <span class="kw">int</span> f) : ch(c), freq(f), left(<span class="kw">nullptr</span>), right(<span class="kw">nullptr</span>) {}
+    <span class="fn">HuffNode</span>(<span class="kw">int</span> f, <span class="tp">HuffNode</span>* l, <span class="tp">HuffNode</span>* r) : ch(<span class="str">'\0'</span>), freq(f), left(l), right(r) {}
+};
+
+<span class="kw">struct</span> <span class="tp">Compare</span> {
+    <span class="kw">bool</span> <span class="kw">operator</span>()(<span class="tp">HuffNode</span>* a, <span class="tp">HuffNode</span>* b) { <span class="kw">return</span> a->freq > b->freq; }
+};
+
+<span class="tp">HuffNode</span>* <span class="fn">buildHuffman</span>(<span class="kw">const</span> std::unordered_map&lt;<span class="kw">char</span>,<span class="kw">int</span>&gt;&amp; freq) {
+    std::priority_queue&lt;<span class="tp">HuffNode</span>*, std::vector&lt;<span class="tp">HuffNode</span>*&gt;, <span class="tp">Compare</span>&gt; pq;
+    <span class="kw">for</span> (<span class="kw">auto</span>&amp; [ch, f] : freq) pq.push(<span class="kw">new</span> <span class="tp">HuffNode</span>(ch, f));
+
+    <span class="kw">while</span> (pq.size() > <span class="num">1</span>) {
+        <span class="kw">auto</span>* l = pq.top(); pq.pop();
+        <span class="kw">auto</span>* r = pq.top(); pq.pop();
+        pq.push(<span class="kw">new</span> <span class="tp">HuffNode</span>(l->freq + r->freq, l, r));
+    }
+    <span class="kw">return</span> pq.top();
+}
+
+<span class="kw">void</span> <span class="fn">getCodes</span>(<span class="tp">HuffNode</span>* root, std::string code,
+              std::unordered_map&lt;<span class="kw">char</span>,std::string&gt;&amp; codes) {
+    <span class="kw">if</span> (!root) <span class="kw">return</span>;
+    <span class="kw">if</span> (!root->left && !root->right) { codes[root->ch] = code; <span class="kw">return</span>; }
+    <span class="fn">getCodes</span>(root->left,  code + <span class="str">"0"</span>, codes);
+    <span class="fn">getCodes</span>(root->right, code + <span class="str">"1"</span>, codes);
+}
+<span class="cm">// Time: O(n log n) | Space: O(n)</span></pre>
+    </div>
+  </div>
+
+  <!-- N-QUEENS -->
+  <div class="section" id="m6-nqueens">
+    <h3>6.3 N-Queens — Backtracking</h3>
+    <p>Place N queens on an N×N chessboard so that no two queens attack each other (no shared row, column, or diagonal). This is the canonical backtracking problem: build a solution incrementally, abandoning ("backtrack") as soon as a placement is invalid.</p>
+
+    <div class="steps">
+      <div class="steps-title">Algorithm Steps</div>
+      <div class="step"><span class="step-num">01</span><span class="step-text">Place queens row by row, starting at row 0.</span></div>
+      <div class="step"><span class="step-num">02</span><span class="step-text">For each column in the current row: check if placing a queen here is safe (no conflict with any previously placed queen).</span></div>
+      <div class="step"><span class="step-num">03</span><span class="step-text">A placement at (row, col) is safe if no queen exists in: the same column, the diagonal (row−col == constant), or the anti-diagonal (row+col == constant).</span></div>
+      <div class="step"><span class="step-num">04</span><span class="step-text">If safe, place the queen and recurse to the next row.</span></div>
+      <div class="step"><span class="step-num">05</span><span class="step-text">If recursion returns (failed), remove the queen (backtrack) and try the next column.</span></div>
+      <div class="step"><span class="step-num">06</span><span class="step-text">If all N queens are placed (row == N), record the solution.</span></div>
+    </div>
+
+    <div class="anim-wrapper">
+      <div class="anim-header">
+        <span class="anim-title">ANIMATION — 8-Queens Backtracking</span>
+        <div class="anim-controls">
+          <button class="btn btn-primary" onclick="queensAnim.start()">▶ Run</button>
+          <button class="btn btn-secondary" onclick="queensAnim.reset()">↺ Reset</button>
+        </div>
+      </div>
+      <div class="anim-body">
+        <canvas id="queens-canvas" class="anim" height="320"></canvas>
+        <div class="anim-info" id="queens-info">Press Run to watch 8-Queens backtracking solve</div>
+        <div class="anim-legend">
+          <span><span class="dot" style="background:#22c55e"></span>Placed Queen</span>
+          <span><span class="dot" style="background:#ef4444"></span>Conflict / Backtrack</span>
+          <span><span class="dot" style="background:#3b82f6"></span>Trying</span>
+        </div>
+        <div class="speed-row">
+          <label>Speed:</label>
+          <input type="range" id="queens-speed" min="30" max="500" value="200">
+          <label id="queens-speed-lbl">Medium</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C++ 17</span><span class="code-title">N-Queens — Backtracking with Bitmask Optimization</span></div>
+      <pre><span class="kw">class</span> <span class="tp">NQueens</span> {
+    <span class="kw">int</span> N, solutions = <span class="num">0</span>;
+    std::vector&lt;<span class="kw">int</span>&gt; board;
+    std::set&lt;<span class="kw">int</span>&gt; cols, diag1, diag2; <span class="cm">// Attack sets</span>
+
+<span class="kw">public</span>:
+    <span class="fn">NQueens</span>(<span class="kw">int</span> n) : N(n), board(n, -<span class="num">1</span>) {}
+
+    <span class="kw">void</span> <span class="fn">solve</span>(<span class="kw">int</span> row = <span class="num">0</span>) {
+        <span class="kw">if</span> (row == N) { solutions++; <span class="kw">return</span>; }
+        <span class="kw">for</span> (<span class="kw">int</span> col = <span class="num">0</span>; col &lt; N; col++) {
+            <span class="kw">if</span> (cols.count(col) || diag1.count(row - col) ||
+                diag2.count(row + col)) <span class="kw">continue</span>;
+
+            <span class="cm">// Place queen</span>
+            board[row] = col;
+            cols.insert(col); diag1.insert(row-col); diag2.insert(row+col);
+
+            <span class="fn">solve</span>(row + <span class="num">1</span>);
+
+            <span class="cm">// Backtrack: remove queen</span>
+            cols.erase(col); diag1.erase(row-col); diag2.erase(row+col);
+        }
+    }
+
+    <span class="kw">int</span> <span class="fn">getSolutions</span>() <span class="kw">const</span> { <span class="kw">return</span> solutions; }
+};
+<span class="cm">// NQueens(8).solve() → 92 solutions</span>
+<span class="cm">// Time: O(N!) worst case | Space: O(N)</span></pre>
+    </div>
+  </div>
+
+  <!-- ALGORITHM SELECTION GUIDE -->
+  <div class="section" id="m6-summary">
+    <h3>6.4 Algorithm Selection Guide</h3>
+    <p>The key skill in algorithm design is recognizing which class of technique fits your problem. Use this guide as a starting decision tree:</p>
+
+    <table class="complexity-table">
+      <tr><th>Problem Signal</th><th>Technique</th><th>Why</th></tr>
+      <tr><td>"Find minimum / maximum of a set"</td><td>Greedy / Priority Queue</td><td>Locally optimal choices lead to global optimum</td></tr>
+      <tr><td>"Count or find all solutions"</td><td>Backtracking / DP</td><td>Need to enumerate with pruning</td></tr>
+      <tr><td>"Overlapping sub-problems" / "Optimal value"</td><td>Dynamic Programming</td><td>Memoize repeated computation</td></tr>
+      <tr><td>"Split in half recursively"</td><td>Divide &amp; Conquer</td><td>Independent sub-problems + merge</td></tr>
+      <tr><td>"Shortest path / minimum cost path"</td><td>Dijkstra / BFS / Bellman-Ford</td><td>Graph structure, edge weights matter</td></tr>
+      <tr><td>"Connect all nodes cheaply"</td><td>Kruskal's / Prim's</td><td>Minimum spanning tree</td></tr>
+      <tr><td>"Find element in sorted data"</td><td>Binary Search</td><td>Halve search space each step</td></tr>
+      <tr><td>"Explore all neighbors"</td><td>BFS (levels) / DFS (depth)</td><td>Graph / tree traversal pattern</td></tr>
+      <tr><td>Small input (&lt; 20) with complex structure</td><td>Brute Force / Backtracking</td><td>Exponential acceptable for small n</td></tr>
+    </table>
+
+    <div class="warn-box">
+      <strong>Golden Rules of Algorithm Design:</strong><br>
+      1. Understand the problem constraints (n, time limit, memory limit) before choosing an algorithm.<br>
+      2. Prove correctness before optimizing. A fast wrong answer is useless.<br>
+      3. Prefer the simplest algorithm that meets your constraints. Don't over-engineer.<br>
+      4. Recognize that most competitive programming problems are combinations of the patterns in this course.
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div style="text-align:center;padding:3rem 0;border-top:1px solid var(--border);margin-top:2rem">
+  <div style="font-family:'DM Serif Display',serif;font-size:1.2rem;color:#fff;margin-bottom:.4rem">Murat Balci, PhD</div>
+  <div style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);letter-spacing:.08em">ALGORITHMS INTENSIVE · 6-HOUR COURSE · C++ 17</div>
+  <div style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--border);margin-top:.5rem">All animations are live in-browser. Print version includes code only.</div>
+</div>
+
+</main>
+
+<!-- ══════════════════════════════════════
+     JAVASCRIPT — ALL ANIMATIONS
+═══════════════════════════════════════ -->
+<script>
+/* ─── UTILITY ─── */
+function resizeCanvas(canvas) {
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width - 40;
+}
+
+/* ─── COVER PARTICLE CANVAS ─── */
+(function() {
+  const canvas = document.getElementById('cover-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const particles = [];
+  for (let i = 0; i < 60; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: (Math.random() - 0.5) * 0.5,
+      r: Math.random() * 2 + 1
+    });
+  }
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Draw connections
+    ctx.strokeStyle = 'rgba(240,165,0,0.3)';
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 120) {
+          ctx.globalAlpha = (1 - dist/120) * 0.4;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+    // Draw particles
+    ctx.globalAlpha = 0.6;
+    ctx.fillStyle = '#f0a500';
+    for (const p of particles) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ─── GROWTH CURVES ─── */
+(function() {
+  const canvas = document.getElementById('growth-canvas');
+  resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const pad = {t:20,b:30,l:50,r:20};
+  const maxN = 20, maxY = 200;
+
+  function fn(name, n) {
+    switch(name) {
+      case 'O(1)':       return 1;
+      case 'O(log n)':   return Math.log2(n+1);
+      case 'O(n)':       return n;
+      case 'O(n log n)': return n * Math.log2(n+1);
+      case 'O(n²)':      return n * n / 4;
+      case 'O(2ⁿ)':      return Math.pow(2, n) / 1000;
+    }
+  }
+
+  const curves = [
+    {name:'O(1)',       color:'#a78bfa'},
+    {name:'O(log n)',   color:'#3b82f6'},
+    {name:'O(n)',       color:'#22c55e'},
+    {name:'O(n log n)', color:'#f0a500'},
+    {name:'O(n²)',      color:'#fbbf24'},
+    {name:'O(2ⁿ)',      color:'#ef4444'},
+  ];
+
+  ctx.fillStyle = '#07090f';
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = '#1e2d4a';
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i <= 5; i++) {
+    const y = pad.t + (H - pad.t - pad.b) * i / 5;
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke();
+  }
+
+  // Axes labels
+  ctx.fillStyle = '#6b7ea0';
+  ctx.font = '11px JetBrains Mono, monospace';
+  ctx.fillText('n →', W - pad.r - 25, H - 5);
+  ctx.fillText('ops', 2, pad.t + 5);
+
+  curves.forEach(curve => {
+    ctx.strokeStyle = curve.color;
+    ctx.lineWidth = 2;
+    ctx.shadowColor = curve.color;
+    ctx.shadowBlur = 4;
+    ctx.beginPath();
+    for (let n = 1; n <= maxN; n++) {
+      const val = Math.min(fn(curve.name, n), maxY);
+      const x = pad.l + (n - 1) / (maxN - 1) * (W - pad.l - pad.r);
+      const y = H - pad.b - (val / maxY) * (H - pad.t - pad.b);
+      n === 1 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  });
+})();
+
+/* ─── BUBBLE SORT ANIMATION ─── */
+const bubbleAnim = (function() {
+  const canvas = document.getElementById('bubble-canvas');
+  resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  const info = document.getElementById('bubble-info');
+  const speedInput = document.getElementById('bubble-speed');
+  const speedLbl = document.getElementById('bubble-speed-lbl');
+  speedInput.addEventListener('input', () => {
+    const v = parseInt(speedInput.value);
+    speedLbl.textContent = v < 300 ? 'Fast' : v < 650 ? 'Medium' : 'Slow';
+  });
+
+  let arr, colors, animSteps, stepIdx, timer, running;
+
+  function generateArr() {
+    const n = 16;
+    arr = Array.from({length:n}, () => Math.floor(Math.random() * 90) + 10);
+    colors = Array(n).fill('#3b82f6');
+  }
+
+  function buildSteps(a) {
+    const steps = [];
+    const arr = [...a];
+    const n = arr.length;
+    for (let i = 0; i < n - 1; i++) {
+      let swapped = false;
+      for (let j = 0; j < n - i - 1; j++) {
+        steps.push({arr:[...arr], colors: arr.map((_,k)=> k >= n-i ? '#22c55e' : k===j||k===j+1 ? '#f0a500' : '#3b82f6'), msg:`Comparing arr[${j}]=${arr[j]} and arr[${j+1}]=${arr[j+1]}`});
+        if (arr[j] > arr[j+1]) {
+          [arr[j], arr[j+1]] = [arr[j+1], arr[j]];
+          swapped = true;
+          steps.push({arr:[...arr], colors: arr.map((_,k)=> k >= n-i ? '#22c55e' : k===j||k===j+1 ? '#ef4444' : '#3b82f6'), msg:`Swapped → arr[${j}]=${arr[j]}, arr[${j+1}]=${arr[j+1]}`});
+        }
+      }
+      if (!swapped) break;
+    }
+    steps.push({arr:[...arr], colors: Array(n).fill('#22c55e'), msg:'✓ Sorted!'});
+    return steps;
+  }
+
+  function draw(step) {
+    const W = canvas.width, H = canvas.height;
+    ctx.fillStyle = '#07090f';
+    ctx.fillRect(0, 0, W, H);
+    const n = step.arr.length;
+    const barW = (W - 40) / n;
+    const maxVal = Math.max(...step.arr);
+    step.arr.forEach((val, i) => {
+      const h = (val / maxVal) * (H - 40);
+      const x = 20 + i * barW;
+      const y = H - h - 10;
+      ctx.fillStyle = step.colors[i];
+      ctx.fillRect(x + 2, y, barW - 4, h);
+      if (barW > 20) {
+        ctx.fillStyle = '#0e1320';
+        ctx.font = '10px JetBrains Mono, monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(val, x + barW/2, H - 2);
+      }
+    });
+    info.textContent = step.msg;
+  }
+
+  function reset() {
+    clearInterval(timer);
+    running = false;
+    generateArr();
+    stepIdx = 0;
+    animSteps = null;
+    ctx.fillStyle = '#07090f';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    const W = canvas.width, H = canvas.height;
+    const n = arr.length;
+    const barW = (W - 40) / n;
+    const maxVal = Math.max(...arr);
+    arr.forEach((val, i) => {
+      const h = (val / maxVal) * (H - 40);
+      ctx.fillStyle = '#3b82f6';
+      ctx.fillRect(20 + i * barW + 2, H - h - 10, barW - 4, h);
+    });
+    info.textContent = 'Press Run to start the animation';
+  }
+
+  function start() {
+    if (running) return;
+    if (!animSteps) { animSteps = buildSteps(arr); stepIdx = 0; }
+    running = true;
+    function tick() {
+      if (stepIdx >= animSteps.length) { running = false; return; }
+      draw(animSteps[stepIdx++]);
+      const delay = 1000 - parseInt(speedInput.value);
+      timer = setTimeout(tick, Math.max(50, delay));
+    }
+    tick();
+  }
+
+  reset();
+  return { start, reset };
+})();
+
+/* ─── MERGE SORT ANIMATION ─── */
+const mergeAnim = (function() {
+  const canvas = document.getElementById('merge-canvas');
+  resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  const info = document.getElementById('merge-info');
+  let arr, steps, stepIdx, timer, running;
+
+  function generateArr() {
+    arr = [38, 27, 43, 3, 9, 82, 10, 55, 18, 63, 42, 71];
+  }
+
+  function buildSteps(input) {
+    const steps = [];
+    const arr = [...input];
+
+    function mergeSort(a, l, r) {
+      if (l >= r) return;
+      const m = Math.floor((l + r) / 2);
+      steps.push({arr:[...a], highlight:[l,r], mid:m, phase:'divide', msg:`Divide [${l}..${r}] at mid=${m}`});
+      mergeSort(a, l, m);
+      mergeSort(a, m+1, r);
+      // merge
+      const left = a.slice(l, m+1), right = a.slice(m+1, r+1);
+      let i=0, j=0, k=l;
+      while (i<left.length && j<right.length) {
+        steps.push({arr:[...a], highlight:[l,r], mid:m, phase:'merge', msg:`Merging: compare ${left[i]} and ${right[j]}`});
+        if (left[i] <= right[j]) a[k++] = left[i++];
+        else a[k++] = right[j++];
+      }
+      while (i<left.length) a[k++] = left[i++];
+      while (j<right.length) a[k++] = right[j++];
+      steps.push({arr:[...a], highlight:[l,r], mid:m, phase:'done', msg:`Merged [${l}..${r}] → sorted`});
+    }
+    mergeSort(arr, 0, arr.length - 1);
+    steps.push({arr:[...arr], highlight:[-1,-1], mid:-1, phase:'sorted', msg:'✓ Fully Sorted!'});
+    return steps;
+  }
+
+  function draw(step) {
+    const W = canvas.width, H = canvas.height;
+    ctx.fillStyle = '#07090f';
+    ctx.fillRect(0, 0, W, H);
+    const n = step.arr.length;
+    const barW = (W - 40) / n;
+    const maxVal = Math.max(...step.arr);
+    step.arr.forEach((val, i) => {
+      const h = (val / maxVal) * (H - 50);
+      const x = 20 + i * barW;
+      const y = H - h - 20;
+      let color = '#3b82f6';
+      if (step.phase === 'sorted') color = '#22c55e';
+      else if (i >= step.highlight[0] && i <= step.highlight[1]) {
+        color = step.phase === 'done' ? '#22c55e' : step.phase === 'merge' ? '#a78bfa' : '#f0a500';
+      }
+      ctx.fillStyle = color;
+      ctx.fillRect(x + 2, y, barW - 4, h);
+      if (barW > 18) {
+        ctx.fillStyle = '#6b7ea0';
+        ctx.font = '10px JetBrains Mono, monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(val, x + barW/2, H - 5);
+      }
+    });
+    info.textContent = step.msg;
+  }
+
+  function reset() {
+    clearInterval(timer); running = false;
+    generateArr(); stepIdx = 0; steps = null;
+    ctx.fillStyle = '#07090f';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    info.textContent = 'Press Run to start the animation';
+  }
+
+  function start() {
+    if (running) return;
+    if (!steps) { steps = buildSteps(arr); stepIdx = 0; }
+    running = true;
+    function tick() {
+      if (stepIdx >= steps.length) { running = false; return; }
+      draw(steps[stepIdx++]);
+      timer = setTimeout(tick, 500);
+    }
+    tick();
+  }
+
+  reset();
+  return { start, reset };
+})();
+
+/* ─── BINARY SEARCH ANIMATION ─── */
+const binaryAnim = (function() {
+  const canvas = document.getElementById('binary-canvas');
+  resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  const info = document.getElementById('binary-info');
+  let arr, target, steps, stepIdx, timer, running;
+
+  function init() {
+    arr = [3, 7, 12, 18, 24, 31, 38, 45, 52, 61, 67, 74, 81, 88, 95];
+    target = arr[Math.floor(Math.random() * arr.length)];
+    steps = buildSteps();
+    stepIdx = 0;
+  }
+
+  function buildSteps() {
+    const steps = [];
+    let lo = 0, hi = arr.length - 1;
+    steps.push({lo, hi, mid:-1, found:-1, msg:`Searching for target = ${target} in ${arr.length} elements`});
+    while (lo <= hi) {
+      const mid = Math.floor((lo + hi) / 2);
+      steps.push({lo, hi, mid, found:-1, msg:`lo=${lo}, hi=${hi}, mid=${mid} → arr[${mid}]=${arr[mid]}`});
+      if (arr[mid] === target) {
+        steps.push({lo, hi, mid, found:mid, msg:`✓ Found ${target} at index ${mid}!`});
+        break;
+      } else if (arr[mid] < target) {
+        steps.push({lo, hi, mid, found:-1, msg:`${arr[mid]} < ${target} → search right half`});
+        lo = mid + 1;
+      } else {
+        steps.push({lo, hi, mid, found:-1, msg:`${arr[mid]} > ${target} → search left half`});
+        hi = mid - 1;
+      }
+    }
+    return steps;
+  }
+
+  function draw(step) {
+    const W = canvas.width, H = canvas.height;
+    ctx.fillStyle = '#07090f';
+    ctx.fillRect(0, 0, W, H);
+    const n = arr.length;
+    const cellW = (W - 40) / n;
+    const cellH = 60;
+    const top = (H - cellH) / 2;
+
+    arr.forEach((val, i) => {
+      const x = 20 + i * cellW;
+      let bg = '#1e2d4a';
+      if (step.found === i) bg = '#22c55e';
+      else if (step.mid === i) bg = '#f0a500';
+      else if (i >= step.lo && i <= step.hi) bg = '#1e3a5f';
+      ctx.fillStyle = bg;
+      ctx.strokeStyle = '#2d3f5e';
+      ctx.lineWidth = 1;
+      ctx.fillRect(x + 1, top, cellW - 2, cellH);
+      ctx.strokeRect(x + 1, top, cellW - 2, cellH);
+      ctx.fillStyle = bg === '#f0a500' ? '#000' : '#e2e8f0';
+      ctx.font = 'bold 11px JetBrains Mono, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(val, x + cellW/2, top + cellH/2 + 4);
+    });
+
+    // Labels
+    ctx.fillStyle = '#6b7ea0';
+    ctx.font = '10px JetBrains Mono, monospace';
+    arr.forEach((_, i) => {
+      const x = 20 + i * cellW;
+      ctx.fillText(i, x + cellW/2, top + cellH + 15);
+    });
+
+    // Pointer for mid
+    if (step.mid >= 0 && step.found < 0) {
+      const mx = 20 + step.mid * cellW + cellW/2;
+      ctx.fillStyle = '#f0a500';
+      ctx.beginPath();
+      ctx.moveTo(mx, top - 12);
+      ctx.lineTo(mx - 6, top - 22);
+      ctx.lineTo(mx + 6, top - 22);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#f0a500';
+      ctx.font = '10px JetBrains Mono, monospace';
+      ctx.fillText('mid', mx, top - 24);
+    }
+    info.textContent = step.msg;
+  }
+
+  function reset() {
+    clearTimeout(timer); running = false;
+    init();
+    ctx.fillStyle = '#07090f';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    info.textContent = `Press Run — searching for target = ${target}`;
+  }
+
+  function start() {
+    if (running) return;
+    running = true;
+    function tick() {
+      if (stepIdx >= steps.length) { running = false; return; }
+      draw(steps[stepIdx++]);
+      timer = setTimeout(tick, 800);
+    }
+    tick();
+  }
+
+  init();
+  reset();
+  return { start, reset };
+})();
+
+/* ─── BFS ANIMATION ─── */
+const bfsAnim = (function() {
+  const canvas = document.getElementById('bfs-canvas');
+  resizeCanvas(canvas);
+  canvas.height = 320;
+  const ctx = canvas.getContext('2d');
+  const info = document.getElementById('bfs-info');
+  let steps, stepIdx, timer, running;
+
+  const W = canvas.width, H = 320;
+  const nodes = [
+    {id:0, x:W*0.5, y:50,  label:'0'},
+    {id:1, x:W*0.25,y:140, label:'1'},
+    {id:2, x:W*0.75,y:140, label:'2'},
+    {id:3, x:W*0.12,y:240, label:'3'},
+    {id:4, x:W*0.38,y:240, label:'4'},
+    {id:5, x:W*0.62,y:240, label:'5'},
+    {id:6, x:W*0.88,y:240, label:'6'},
+  ];
+  const edges = [[0,1],[0,2],[1,3],[1,4],[2,5],[2,6]];
+  const adj = [  [1,2],[0,3,4],[0,5,6],[1],[1],[2],[2]  ];
+
+  function buildSteps() {
+    const steps = [];
+    const visited = Array(7).fill(false);
+    const nodeColors = Array(7).fill('#374151');
+    const queue = [0];
+    visited[0] = true;
+    nodeColors[0] = '#3b82f6';
+    steps.push({colors:[...nodeColors], msg:'Start: enqueue node 0', queue:[...queue]});
+
+    while (queue.length) {
+      const node = queue.shift();
+      const prev = nodeColors[node];
+      nodeColors[node] = '#f0a500';
+      steps.push({colors:[...nodeColors], msg:`Processing node ${node}`, queue:[...queue]});
+      for (const nb of adj[node]) {
+        if (!visited[nb]) {
+          visited[nb] = true;
+          nodeColors[nb] = '#3b82f6';
+          queue.push(nb);
+          steps.push({colors:[...nodeColors], msg:`Enqueue neighbor ${nb} of node ${node}`, queue:[...queue]});
+        }
+      }
+      nodeColors[node] = '#22c55e';
+      steps.push({colors:[...nodeColors], msg:`Node ${node} fully visited`, queue:[...queue]});
+    }
+    steps.push({colors:[...nodeColors], msg:'✓ BFS complete — all nodes visited', queue:[]});
+    return steps;
+  }
+
+  function draw(step) {
+    ctx.fillStyle = '#07090f';
+    ctx.fillRect(0, 0, W, H);
+    // Edges
+    ctx.strokeStyle = '#2d3f5e';
+    ctx.lineWidth = 2;
+    edges.forEach(([a,b]) => {
+      ctx.beginPath();
+      ctx.moveTo(nodes[a].x, nodes[a].y);
+      ctx.lineTo(nodes[b].x, nodes[b].y);
+      ctx.stroke();
+    });
+    // Nodes
+    nodes.forEach((node, i) => {
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, 22, 0, Math.PI*2);
+      ctx.fillStyle = step.colors[i];
+      ctx.fill();
+      ctx.strokeStyle = '#1e2d4a';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 14px JetBrains Mono, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(node.label, node.x, node.y + 5);
+    });
+    // Queue display
+    ctx.fillStyle = '#6b7ea0';
+    ctx.font = '11px JetBrains Mono, monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText('Queue: [' + step.queue.join(', ') + ']', 10, H - 10);
+    info.textContent = step.msg;
+  }
+
+  function reset() {
+    clearTimeout(timer); running = false;
+    steps = buildSteps(); stepIdx = 0;
+    draw({colors:Array(7).fill('#374151'), msg:'Press Run to see BFS traversal from node 0', queue:[]});
+  }
+
+  function start() {
+    if (running) return;
+    running = true;
+    function tick() {
+      if (stepIdx >= steps.length) { running = false; return; }
+      draw(steps[stepIdx++]);
+      timer = setTimeout(tick, 900);
+    }
+    tick();
+  }
+
+  reset();
+  return { start, reset };
+})();
+
+/* ─── DIJKSTRA ANIMATION ─── */
+const dijkstraAnim = (function() {
+  const canvas = document.getElementById('dijkstra-canvas');
+  resizeCanvas(canvas);
+  canvas.height = 320;
+  const ctx = canvas.getContext('2d');
+  const info = document.getElementById('dijkstra-info');
+  let steps, stepIdx, timer, running;
+
+  const W = canvas.width, H = 320;
+  const nodes = [
+    {id:0, x:W*0.1,  y:160, label:'S'},
+    {id:1, x:W*0.3,  y:60,  label:'A'},
+    {id:2, x:W*0.3,  y:260, label:'B'},
+    {id:3, x:W*0.55, y:160, label:'C'},
+    {id:4, x:W*0.75, y:60,  label:'D'},
+    {id:5, x:W*0.9,  y:160, label:'T'},
+  ];
+  const edges = [
+    [0,1,4],[0,2,2],[1,2,5],[1,3,10],[2,3,3],
+    [3,4,4],[3,5,11],[4,5,2]
+  ];
+
+  function buildSteps() {
+    const steps = [];
+    const INF = 99999;
+    const dist = Array(6).fill(INF);
+    const settled = Array(6).fill(false);
+    const nodeColors = Array(6).fill('#374151');
+    dist[0] = 0;
+    const pq = [[0,0]];
+
+    steps.push({colors:[...nodeColors], dist:[...dist], settled:[...settled], msg:'Initialize: dist[S]=0, all others=∞'});
+
+    while (pq.length) {
+      pq.sort((a,b)=>a[0]-b[0]);
+      const [d, u] = pq.shift();
+      if (settled[u]) continue;
+      settled[u] = true;
+      nodeColors[u] = '#f0a500';
+      steps.push({colors:[...nodeColors], dist:[...dist], settled:[...settled], msg:`Processing node ${nodes[u].label} (dist=${d})`});
+
+      for (const [a,b,w] of edges) {
+        let nb = -1;
+        if (a === u) nb = b;
+        else if (b === u) nb = a;
+        if (nb >= 0 && !settled[nb] && dist[u] + w < dist[nb]) {
+          dist[nb] = dist[u] + w;
+          if (nodeColors[nb] !== '#22c55e') nodeColors[nb] = '#3b82f6';
+          pq.push([dist[nb], nb]);
+          steps.push({colors:[...nodeColors], dist:[...dist], settled:[...settled], msg:`Relax edge ${nodes[u].label}→${nodes[nb].label}: dist=${dist[nb]}`});
+        }
+      }
+      nodeColors[u] = '#22c55e';
+      steps.push({colors:[...nodeColors], dist:[...dist], settled:[...settled], msg:`Node ${nodes[u].label} settled with dist=${d}`});
+    }
+    steps.push({colors:[...nodeColors], dist:[...dist], settled:[...settled], msg:'✓ All shortest paths found!'});
+    return steps;
+  }
+
+  function draw(step) {
+    ctx.fillStyle = '#07090f';
+    ctx.fillRect(0, 0, W, H);
+
+    edges.forEach(([a,b,w]) => {
+      ctx.strokeStyle = '#2d3f5e';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(nodes[a].x, nodes[a].y);
+      ctx.lineTo(nodes[b].x, nodes[b].y);
+      ctx.stroke();
+      const mx = (nodes[a].x + nodes[b].x)/2;
+      const my = (nodes[a].y + nodes[b].y)/2;
+      ctx.fillStyle = '#f0a500';
+      ctx.font = 'bold 11px JetBrains Mono, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(w, mx, my - 5);
+    });
+
+    nodes.forEach((node, i) => {
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, 24, 0, Math.PI*2);
+      ctx.fillStyle = step.colors[i];
+      ctx.fill();
+      ctx.strokeStyle = '#1e2d4a';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 13px JetBrains Mono, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(node.label, node.x, node.y + 5);
+      // Distance label
+      const dStr = step.dist[i] === 99999 ? '∞' : step.dist[i];
+      ctx.fillStyle = '#f0a500';
+      ctx.font = '10px JetBrains Mono, monospace';
+      ctx.fillText(dStr, node.x, node.y + 38);
+    });
+
+    info.textContent = step.msg;
+  }
+
+  function reset() {
+    clearTimeout(timer); running = false;
+    steps = buildSteps(); stepIdx = 0;
+    draw({colors:Array(6).fill('#374151'), dist:Array(6).fill(99999), settled:Array(6).fill(false), msg:'Press Run to find shortest paths from node S'});
+  }
+
+  function start() {
+    if (running) return;
+    running = true;
+    function tick() {
+      if (stepIdx >= steps.length) { running = false; return; }
+      draw(steps[stepIdx++]);
+      timer = setTimeout(tick, 1000);
+    }
+    tick();
+  }
+
+  reset();
+  return { start, reset };
+})();
+
+/* ─── N-QUEENS ANIMATION ─── */
+const queensAnim = (function() {
+  const canvas = document.getElementById('queens-canvas');
+  resizeCanvas(canvas);
+  canvas.height = 320;
+  const ctx = canvas.getContext('2d');
+  const info = document.getElementById('queens-info');
+  const speedInput = document.getElementById('queens-speed');
+  const speedLbl = document.getElementById('queens-speed-lbl');
+  speedInput.addEventListener('input', () => {
+    const v = parseInt(speedInput.value);
+    speedLbl.textContent = v < 150 ? 'Fast' : v < 350 ? 'Medium' : 'Slow';
+  });
+
+  const N = 8;
+  let steps, stepIdx, timer, running;
+
+  function buildSteps() {
+    const steps = [];
+    const board = Array(N).fill(-1);
+    const cols = new Set(), d1 = new Set(), d2 = new Set();
+
+    function isSafe(row, col) { return !cols.has(col) && !d1.has(row-col) && !d2.has(row+col); }
+
+    function solve(row) {
+      if (row === N) {
+        steps.push({board:[...board], phase:'solution', msg:`✓ Solution found! (92 solutions for 8-queens)`});
+        return true;
+      }
+      for (let col = 0; col < N; col++) {
+        steps.push({board:[...board], tryRow:row, tryCol:col, phase:'try', msg:`Trying queen at row=${row}, col=${col}`});
+        if (isSafe(row, col)) {
+          board[row] = col;
+          cols.add(col); d1.add(row-col); d2.add(row+col);
+          steps.push({board:[...board], phase:'place', msg:`Placed queen at (${row}, ${col})`});
+          if (solve(row + 1)) return true;
+          board[row] = -1;
+          cols.delete(col); d1.delete(row-col); d2.delete(row+col);
+          steps.push({board:[...board], phase:'backtrack', msg:`Backtrack: remove queen at (${row}, ${col})`});
+        } else {
+          steps.push({board:[...board], tryRow:row, tryCol:col, phase:'conflict', msg:`Conflict at (${row}, ${col}) — skipping`});
+        }
+      }
+      return false;
+    }
+    solve(0);
+    return steps;
+  }
+
+  function draw(step) {
+    const W = canvas.width, H = 320;
+    ctx.fillStyle = '#07090f';
+    ctx.fillRect(0, 0, W, H);
+    const cellSize = Math.min((W - 40) / N, (H - 40) / N);
+    const boardW = cellSize * N;
+    const ox = (W - boardW) / 2;
+    const oy = (H - boardW) / 2;
+
+    for (let r = 0; r < N; r++) {
+      for (let c = 0; c < N; c++) {
+        const x = ox + c * cellSize, y = oy + r * cellSize;
+        const light = (r + c) % 2 === 0;
+        ctx.fillStyle = light ? '#1a2640' : '#0e1320';
+        ctx.fillRect(x, y, cellSize, cellSize);
+        ctx.strokeStyle = '#2d3f5e';
+        ctx.lineWidth = 0.5;
+        ctx.strokeRect(x, y, cellSize, cellSize);
+      }
+    }
+
+    // Highlight try position
+    if (step.tryRow !== undefined) {
+      const x = ox + step.tryCol * cellSize, y = oy + step.tryRow * cellSize;
+      ctx.fillStyle = step.phase === 'conflict' ? 'rgba(239,68,68,0.3)' : 'rgba(59,130,246,0.3)';
+      ctx.fillRect(x, y, cellSize, cellSize);
+    }
+
+    // Draw queens
+    for (let r = 0; r < N; r++) {
+      if (step.board[r] >= 0) {
+        const c = step.board[r];
+        const x = ox + c * cellSize + cellSize/2, y = oy + r * cellSize + cellSize/2;
+        const color = step.phase === 'solution' ? '#22c55e' : step.phase === 'backtrack' ? '#ef4444' : '#f0a500';
+        ctx.fillStyle = color;
+        ctx.font = `${cellSize * 0.7}px serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('♛', x, y);
+      }
+    }
+    ctx.textBaseline = 'alphabetic';
+
+    info.textContent = step.msg;
+  }
+
+  function reset() {
+    clearTimeout(timer); running = false;
+    steps = buildSteps(); stepIdx = 0;
+    ctx.fillStyle = '#07090f';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    draw({board:Array(N).fill(-1), phase:'idle', msg:'Press Run to watch 8-Queens backtracking solve'});
+  }
+
+  function start() {
+    if (running) return;
+    running = true;
+    function tick() {
+      if (stepIdx >= steps.length) { running = false; return; }
+      draw(steps[stepIdx++]);
+      const delay = 550 - parseInt(speedInput.value);
+      timer = setTimeout(tick, Math.max(40, delay));
+    }
+    tick();
+  }
+
+  reset();
+  return { start, reset };
+})();
+</script>
+</body>
+</html>

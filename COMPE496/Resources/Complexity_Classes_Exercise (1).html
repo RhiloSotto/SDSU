@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complexity Classes Interactive Exercise</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #f5f0e8;
+            --fg: #1a2744;
+            --accent: #d94f30;
+            --border: rgba(26, 39, 68, 0.2);
+            --border-light: rgba(26, 39, 68, 0.1);
+            --white-overlay: rgba(255,255,255,0.5);
+            --font-mono: 'Space Mono', monospace;
+            --font-serif: 'Crimson Text', Georgia, serif;
+            --font-code: 'Fira Code', monospace;
+        }
+
+        body {
+            font-family: var(--font-serif);
+            background-color: var(--bg);
+            color: var(--fg);
+            line-height: 1.6;
+            background-image:
+                linear-gradient(rgba(26,39,68,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(26,39,68,0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        @media (min-width: 640px) { .container { padding: 0 1.5rem; } }
+        @media (min-width: 1024px) { .container { padding: 0 2rem; } }
+
+        /* Header */
+        header {
+            border-bottom: 1px solid var(--border);
+            background: rgba(245,240,232,0.85);
+            backdrop-filter: blur(8px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .logo-box {
+            width: 32px; height: 32px;
+            border: 2px solid var(--fg);
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 14px; font-weight: 700;
+        }
+        .header-title {
+            font-family: var(--font-mono);
+            font-size: 1.1rem; font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .header-right {
+            display: flex; align-items: center; gap: 1.5rem;
+            font-family: var(--font-mono); font-size: 0.875rem;
+        }
+        .header-section { color: rgba(26,39,68,0.6); }
+        .header-score { color: var(--accent); font-weight: 700; }
+
+        /* Progress bar */
+        .progress-track { height: 2px; background: var(--border-light); }
+        .progress-fill { height: 100%; background: var(--accent); transition: width 0.5s ease; }
+
+        /* Blueprint card */
+        .bp-card {
+            border: 1px solid rgba(26,39,68,0.3);
+            background: var(--bg);
+            position: relative;
+        }
+        .bp-card::before,
+        .bp-card::after,
+        .bp-card .corner-br,
+        .bp-card .corner-bl {
+            content: '';
+            position: absolute;
+            width: 12px; height: 12px;
+        }
+        .bp-card::before { top: 0; left: 0; border-top: 2px solid var(--accent); border-left: 2px solid var(--accent); }
+        .bp-card::after { top: 0; right: 0; border-top: 2px solid var(--accent); border-right: 2px solid var(--accent); }
+        .bp-card .corner-bl { bottom: 0; left: 0; border-bottom: 2px solid var(--accent); border-left: 2px solid var(--accent); }
+        .bp-card .corner-br { bottom: 0; right: 0; border-bottom: 2px solid var(--accent); border-right: 2px solid var(--accent); }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            font-family: var(--font-mono); font-size: 1rem; font-weight: 700;
+            padding: 0.875rem 2.5rem;
+            border: none; cursor: pointer;
+            background: var(--fg); color: var(--bg);
+            transition: background 0.2s;
+        }
+        .btn:hover { background: rgba(26,39,68,0.85); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn svg { width: 20px; height: 20px; }
+
+        /* Stats grid */
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem; margin-bottom: 2.5rem;
+        }
+        .stat-box {
+            border: 1px solid var(--border);
+            padding: 1.25rem; text-align: center;
+        }
+        .stat-value {
+            font-family: var(--font-mono);
+            font-size: 2rem; font-weight: 700;
+        }
+        .stat-value.accent { color: var(--accent); }
+        .stat-label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem; color: rgba(26,39,68,0.6);
+            text-transform: uppercase; letter-spacing: 0.15em;
+            margin-top: 0.25rem;
+        }
+
+        /* Section list */
+        .section-item {
+            display: flex; align-items: center; gap: 1rem;
+            border: 1px solid var(--border-light);
+            padding: 0.75rem 1.25rem;
+            background: rgba(255,255,255,0.4);
+            margin-bottom: 0.5rem;
+        }
+        .section-num {
+            font-family: var(--font-mono);
+            font-size: 0.875rem; color: var(--accent);
+            width: 2rem; flex-shrink: 0;
+        }
+        .section-name { font-size: 1.125rem; flex: 1; }
+        .section-count {
+            font-family: var(--font-mono);
+            font-size: 0.875rem; color: rgba(26,39,68,0.5);
+        }
+
+        /* Section header in exercise */
+        .section-header {
+            display: flex; align-items: center; gap: 1rem;
+            padding: 2rem;
+        }
+        .section-header .section-num {
+            font-size: 2.5rem; font-weight: 700; width: auto;
+        }
+        .section-header h2 {
+            font-family: var(--font-mono);
+            font-size: 1.5rem; font-weight: 700;
+        }
+        .section-header p {
+            color: rgba(26,39,68,0.6);
+            font-size: 1.125rem;
+        }
+
+        /* Question card */
+        .q-card {
+            border: 1px solid var(--border);
+            background: var(--bg);
+            margin-bottom: 1.5rem;
+        }
+        .q-header {
+            border-bottom: 1px solid var(--border-light);
+            padding: 1rem 1.5rem;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .q-header-left { display: flex; align-items: center; gap: 0.75rem; }
+        .q-id {
+            font-family: var(--font-mono);
+            font-size: 0.875rem; font-weight: 700;
+            color: var(--accent);
+        }
+        .q-diff {
+            font-family: var(--font-mono);
+            font-size: 0.7rem; padding: 0.125rem 0.5rem;
+            border: 1px solid;
+        }
+        .q-diff.easy { color: #15803d; background: #f0fdf4; border-color: #bbf7d0; }
+        .q-diff.medium { color: #b45309; background: #fffbeb; border-color: #fde68a; }
+        .q-diff.hard { color: #b91c1c; background: #fef2f2; border-color: #fecaca; }
+        .q-pts {
+            font-family: var(--font-mono);
+            font-size: 0.875rem; color: rgba(26,39,68,0.5);
+        }
+        .q-body { padding: 1.25rem 1.5rem; }
+        .q-text { font-size: 1.125rem; line-height: 1.6; margin-bottom: 0.25rem; }
+        .q-code {
+            background: var(--fg); color: #a8c4d8;
+            font-family: var(--font-code); font-size: 1rem;
+            padding: 1rem; margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        /* Options */
+        .option-btn {
+            width: 100%; text-align: left;
+            border: 1px solid rgba(26,39,68,0.15);
+            background: rgba(255,255,255,0.5);
+            padding: 0.75rem 1.25rem;
+            display: flex; align-items: center; gap: 1rem;
+            cursor: pointer; transition: all 0.15s;
+            margin-bottom: 0.5rem;
+            font-family: var(--font-serif);
+            font-size: 1rem; line-height: 1.5;
+        }
+        .option-btn:hover:not(:disabled) {
+            background: rgba(255,255,255,0.8);
+            border-color: rgba(26,39,68,0.3);
+        }
+        .option-btn:disabled { cursor: default; }
+        .option-btn .opt-letter {
+            font-family: var(--font-mono);
+            font-size: 0.875rem; color: rgba(26,39,68,0.5);
+            width: 1.5rem; flex-shrink: 0;
+        }
+        .option-btn .opt-text { flex: 1; color: var(--fg); }
+        .option-btn .opt-icon { flex-shrink: 0; width: 20px; height: 20px; }
+
+        .option-btn.correct {
+            border-color: #22c55e; background: #f0fdf4;
+        }
+        .option-btn.incorrect {
+            border-color: #ef4444; background: #fef2f2;
+        }
+        .option-btn.dimmed {
+            border-color: var(--border-light);
+            background: rgba(255,255,255,0.3);
+            opacity: 0.6;
+        }
+
+        /* Explanation */
+        .explanation {
+            margin-top: 1.25rem;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,0.6);
+            padding: 1.25rem;
+            display: flex; gap: 0.75rem;
+        }
+        .explanation .exp-icon {
+            flex-shrink: 0; width: 20px; height: 20px;
+            color: rgba(26,39,68,0.6); margin-top: 2px;
+        }
+        .explanation .exp-label {
+            font-family: var(--font-mono);
+            font-size: 0.875rem; font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .explanation .exp-text {
+            color: rgba(26,39,68,0.8);
+            line-height: 1.6; white-space: pre-line;
+        }
+
+        /* Results */
+        .results-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 1rem; margin-bottom: 2.5rem;
+        }
+        @media (max-width: 640px) {
+            .results-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed; bottom: 2rem; right: 2rem;
+            padding: 0.875rem 1.5rem;
+            font-family: var(--font-mono); font-size: 0.875rem;
+            z-index: 1000;
+            opacity: 0; transform: translateY(10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { background: #166534; color: #f0fdf4; }
+        .toast.error { background: #991b1b; color: #fef2f2; }
+
+        /* Navigation button area */
+        .nav-area { text-align: center; margin-top: 2rem; padding-bottom: 3rem; }
+
+        /* Landing hero */
+        .hero-content { padding: 3rem; }
+        .hero-label {
+            font-family: var(--font-mono);
+            font-size: 0.875rem; color: var(--accent);
+            text-transform: uppercase; letter-spacing: 0.2em;
+            text-align: center; margin-bottom: 1rem;
+        }
+        .hero-title {
+            font-family: var(--font-mono);
+            font-size: 2.5rem; font-weight: 700;
+            text-align: center; line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+        .hero-desc {
+            font-size: 1.25rem; color: rgba(26,39,68,0.7);
+            text-align: center; max-width: 600px;
+            margin: 0 auto 2.5rem; line-height: 1.6;
+        }
+
+        /* SVG Icons inline */
+        .icon-check { color: #16a34a; }
+        .icon-x { color: #dc2626; }
+        .icon-book { color: rgba(26,39,68,0.6); }
+
+        /* Hidden */
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<!-- Toast notification -->
+<div id="toast" class="toast"></div>
+
+<!-- ==================== LANDING PAGE ==================== -->
+<div id="page-landing">
+    <header>
+        <div class="container">
+            <div class="header-inner">
+                <div class="header-left">
+                    <div class="logo-box">C</div>
+                    <div class="header-title">COMPLEXITY CLASSES EXERCISE</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main style="display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 60px);">
+        <div class="container" style="padding-top:2rem;padding-bottom:2rem;">
+            <div class="bp-card">
+                <span class="corner-bl"></span><span class="corner-br"></span>
+                <div class="hero-content">
+                    <div class="hero-label">Interactive Assessment</div>
+                    <div class="hero-title">P, NP, NP-Hard &amp;<br>NP-Complete</div>
+                    <div class="hero-desc">
+                        Test your understanding of computational complexity classes through
+                        32 carefully crafted questions with detailed explanations.
+                    </div>
+
+                    <div class="stats-grid" id="landing-stats"></div>
+                    <div id="landing-sections"></div>
+
+                    <div style="text-align:center;margin-top:2.5rem;">
+                        <button class="btn" onclick="startExercise()">
+                            BEGIN EXERCISE
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- ==================== EXERCISE PAGE ==================== -->
+<div id="page-exercise" class="hidden">
+    <header>
+        <div class="container">
+            <div class="header-inner">
+                <div class="header-left">
+                    <div class="logo-box">C</div>
+                    <div class="header-title">COMPLEXITY CLASSES EXERCISE</div>
+                </div>
+                <div class="header-right">
+                    <span class="header-section" id="ex-section-label"></span>
+                    <span class="header-score" id="ex-score-label"></span>
+                </div>
+            </div>
+        </div>
+        <div class="progress-track">
+            <div class="progress-fill" id="ex-progress" style="width:0%"></div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container" style="padding-top:2rem;padding-bottom:1rem;">
+            <div class="bp-card" style="margin-bottom:2rem;">
+                <div class="section-header" id="ex-section-header"></div>
+            </div>
+            <div id="ex-questions"></div>
+            <div class="nav-area hidden" id="ex-nav">
+                <button class="btn" id="ex-nav-btn" onclick="nextSection()"></button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- ==================== RESULTS PAGE ==================== -->
+<div id="page-results" class="hidden">
+    <header>
+        <div class="container">
+            <div class="header-inner">
+                <div class="header-left">
+                    <div class="logo-box">C</div>
+                    <div class="header-title">COMPLEXITY CLASSES EXERCISE</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container" style="padding-top:3rem;padding-bottom:3rem;">
+            <div class="bp-card">
+                <span class="corner-bl"></span><span class="corner-br"></span>
+                <div style="padding:3rem;">
+                    <div style="text-align:center;margin-bottom:2.5rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent);margin:0 auto 1rem;display:block;"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                        <h2 style="font-family:var(--font-mono);font-size:1.875rem;font-weight:700;margin-bottom:0.5rem;">EXERCISE COMPLETE</h2>
+                        <p style="font-family:var(--font-mono);font-size:0.875rem;color:rgba(26,39,68,0.6);">Here are your results</p>
+                    </div>
+
+                    <div class="results-grid" id="results-scores"></div>
+
+                    <h3 style="font-family:var(--font-mono);font-size:1.125rem;font-weight:700;border-bottom:1px solid var(--border);padding-bottom:0.5rem;margin-bottom:1rem;">SECTION BREAKDOWN</h3>
+                    <div id="results-sections" style="margin-bottom:2.5rem;"></div>
+
+                    <div style="text-align:center;">
+                        <button class="btn" onclick="resetExercise()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+                            RETAKE EXERCISE
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+// ==================== DATA ====================
+const sections = [
+    { name: "Foundations", icon: "\u{1F4D0}", description: "Time complexity and decision problems" },
+    { name: "Class P", icon: "\u26A1", description: "Efficiently solvable problems" },
+    { name: "Class NP", icon: "\u{1F50D}", description: "Efficiently verifiable problems" },
+    { name: "NP-Complete & NP-Hard", icon: "\u{1F525}", description: "The hardest problems" },
+    { name: "P vs NP & Implications", icon: "\u{1F48E}", description: "The million-dollar question" },
+    { name: "Synthesis", icon: "\u{1F9E9}", description: "Putting it all together" }
+];
+
+const questions = [
+    {id:1,section:"Foundations",type:"multiple-choice",difficulty:"easy",points:2,question:"Which of the following growth rates is considered polynomial?",options:["O(2\u207F)","O(n\u00B3)","O(n!)","O(3\u207F)"],correctAnswer:1,explanation:"O(n\u00B3) is polynomial because the variable n is the base raised to a constant power (3). In contrast, O(2\u207F), O(n!), and O(3\u207F) are all super-polynomial (exponential or worse), where the exponent grows with n."},
+    {id:2,section:"Foundations",type:"true-false",difficulty:"easy",points:2,question:"An algorithm with time complexity O(n\u00B9\u2070\u2070) is considered to run in polynomial time.",options:["True","False"],correctAnswer:0,explanation:"True. While O(n\u00B9\u2070\u2070) is impractically slow for large inputs, it is technically polynomial because the exponent (100) is a constant. The polynomial/exponential boundary is a theoretical distinction: n^k for any constant k is polynomial, while k^n for k > 1 is exponential."},
+    {id:3,section:"Foundations",type:"multiple-choice",difficulty:"easy",points:2,question:"What is a decision problem?",options:["A problem that finds the optimal solution","A problem whose answer is either YES or NO","A problem that can only be solved by a computer","A problem that requires exponential time to solve"],correctAnswer:1,explanation:"A decision problem is any computational problem where the output is a binary YES or NO answer. Complexity classes like P and NP are formally defined for decision problems. Optimization problems can often be converted to decision versions (e.g., 'Is there a path shorter than k?' instead of 'What is the shortest path?')."},
+    {id:4,section:"Foundations",type:"multiple-choice",difficulty:"medium",points:3,question:"For an input of size n = 40, approximately how many operations does an O(2\u207F) algorithm perform?",options:["About 1,600","About 64,000","About 1 trillion (10\u00B9\u00B2)","About 1 million"],correctAnswer:2,explanation:"2\u2074\u2070 = 1,099,511,627,776, which is approximately 1.1 trillion. This illustrates why exponential algorithms become impractical even for modest input sizes. In contrast, an O(n\u00B2) algorithm would only perform 1,600 operations for n = 40."},
+    {id:5,section:"Foundations",type:"true-false",difficulty:"easy",points:2,question:"Every optimization problem has a corresponding decision version.",options:["True","False"],correctAnswer:0,explanation:"True. Any optimization problem ('Find the minimum/maximum...') can be rephrased as a decision problem ('Is there a solution with value \u2264 k / \u2265 k?'). For example, 'What is the shortest route visiting all cities?' becomes 'Is there a route visiting all cities with total distance \u2264 k?'"},
+    {id:6,section:"Class P",type:"multiple-choice",difficulty:"easy",points:2,question:"Which of the following problems is in class P?",options:["Traveling Salesman Problem (decision version)","Finding the shortest path between two nodes in a graph","Boolean Satisfiability (SAT)","Graph 3-Coloring"],correctAnswer:1,explanation:"The shortest path problem can be solved in polynomial time using Dijkstra's algorithm (O(V\u00B2 or E + V log V)). The other three problems are all NP-Complete \u2014 no polynomial-time algorithm is known for any of them."},
+    {id:7,section:"Class P",type:"true-false",difficulty:"medium",points:3,question:"Determining whether a graph is 2-colorable is in P, but determining whether it is 3-colorable is NP-Complete.",options:["True","False"],correctAnswer:0,explanation:"True. 2-colorability is equivalent to checking if a graph is bipartite, which can be done in O(V + E) using BFS/DFS. However, 3-colorability is NP-Complete. This is one of the most striking examples of how a small change in a problem's parameters can cause a dramatic jump in computational complexity."},
+    {id:8,section:"Class P",type:"multiple-choice",difficulty:"medium",points:3,question:"Which statement best describes the class P?",options:["Problems that can be verified in polynomial time","Problems that require exponential time to solve","Problems that can be solved in polynomial time by a deterministic Turing machine","Problems that cannot be solved by any algorithm"],correctAnswer:2,explanation:"P is formally defined as the set of decision problems solvable in polynomial time by a deterministic Turing machine. Option A describes NP (not specifically P), option B describes intractable problems, and option D describes undecidable problems."},
+    {id:9,section:"Class P",type:"multiple-choice",difficulty:"hard",points:4,question:"Which of these pairs correctly contrasts a P problem with its NP-Hard counterpart?",options:["Shortest Path (P) vs. Longest Path (NP-Hard)","Hamiltonian Path (P) vs. Euler Path (NP-Hard)","3-SAT (P) vs. 2-SAT (NP-Hard)","Graph Coloring (P) vs. Sorting (NP-Hard)"],correctAnswer:0,explanation:"Shortest Path is solvable in polynomial time (Dijkstra's), while Longest Path is NP-Hard. The other options are reversed or incorrect: Euler Path is in P while Hamiltonian Path is NP-Complete; 2-SAT is in P while 3-SAT is NP-Complete; Sorting is in P and Graph Coloring (with \u22653 colors) is NP-Complete."},
+    {id:10,section:"Class P",type:"true-false",difficulty:"easy",points:2,question:"If a problem is in P, it is also in NP.",options:["True","False"],correctAnswer:0,explanation:"True. P \u2286 NP. If you can solve a problem in polynomial time, you can certainly verify a solution in polynomial time (just solve it again and compare). Every efficiently solvable problem is also efficiently verifiable."},
+    {id:11,section:"Class NP",type:"multiple-choice",difficulty:"easy",points:2,question:"What does NP stand for?",options:["Not Polynomial","Non-Practical","Nondeterministic Polynomial time","Nearly Polynomial"],correctAnswer:2,explanation:"NP stands for Nondeterministic Polynomial time. This is one of the most common misconceptions in computer science \u2014 many people incorrectly assume NP means 'Not Polynomial.' The name refers to the fact that a nondeterministic Turing machine could solve these problems in polynomial time."},
+    {id:12,section:"Class NP",type:"multiple-choice",difficulty:"medium",points:3,question:"In the context of NP, what is a 'certificate' (or 'witness')?",options:["A proof that the problem cannot be solved","A proposed solution that can be verified in polynomial time","The algorithm used to solve the problem","A digital signature for the answer"],correctAnswer:1,explanation:"A certificate (or witness) is a piece of information that, if correct, allows us to verify a YES answer in polynomial time. For example, for the Subset Sum problem, the certificate would be the specific subset that sums to the target. We can check this certificate quickly even if finding it was hard."},
+    {id:13,section:"Class NP",type:"multiple-choice",difficulty:"medium",points:3,question:"Consider the Subset Sum problem with set S = {3, 7, 1, 8, -4}. Someone claims the subset {7, 1, -4} sums to a target of 4. How do you verify this?",options:["Try all 2\u2075 = 32 subsets to find a better one","Check that {7, 1, -4} \u2286 S, then compute 7 + 1 + (-4) = 4","Run an exponential-time algorithm to confirm","It cannot be verified without solving the entire problem"],correctAnswer:1,explanation:"Verification is simple: (1) Check that each element in the proposed subset belongs to S \u2014 yes, 7 \u2208 S, 1 \u2208 S, -4 \u2208 S. (2) Add the elements: 7 + 1 + (-4) = 4, which matches the target. This takes O(n) time, which is polynomial. This is exactly why Subset Sum is in NP \u2014 verification is fast even though finding the subset may be hard."},
+    {id:14,section:"Class NP",type:"true-false",difficulty:"medium",points:3,question:"If a problem is in NP, it cannot be solved in polynomial time.",options:["True","False"],correctAnswer:1,explanation:"False. Being in NP means solutions can be verified in polynomial time \u2014 it says nothing about whether the problem can be solved in polynomial time. In fact, all problems in P are also in NP (P \u2286 NP). For example, sorting is in both P and NP."},
+    {id:15,section:"Class NP",type:"multiple-choice",difficulty:"hard",points:4,question:"Which analogy best captures the relationship between solving and verifying for NP problems?",options:["Writing a novel vs. reading a novel","Composing a symphony vs. listening to a symphony","Assembling a jigsaw puzzle vs. checking if a completed puzzle is correct","All of the above"],correctAnswer:3,explanation:"All three analogies capture the asymmetry between solving (creating/finding) and verifying (checking). In each case, the creative/constructive task is much harder than the verification task. This asymmetry is the essence of the P vs NP question: is creation fundamentally harder than verification?"},
+    {id:16,section:"NP-Complete & NP-Hard",type:"multiple-choice",difficulty:"medium",points:3,question:"A problem is NP-Complete if and only if:",options:["It is in NP","It is NP-Hard","It is in NP AND it is NP-Hard","It is not in P"],correctAnswer:2,explanation:"NP-Complete = NP \u2229 NP-Hard. A problem must satisfy both conditions: (1) it is in NP (solutions can be verified in polynomial time), AND (2) it is NP-Hard (every problem in NP can be reduced to it in polynomial time). Being NP-Complete means the problem is the 'hardest' type of problem within NP."},
+    {id:17,section:"NP-Complete & NP-Hard",type:"true-false",difficulty:"medium",points:3,question:"Every NP-Hard problem is also NP-Complete.",options:["True","False"],correctAnswer:1,explanation:"False. NP-Hard problems are at least as hard as the hardest problems in NP, but they do not have to be in NP themselves. For example, the Halting Problem is NP-Hard (it's harder than any NP problem) but it's not in NP because it's undecidable \u2014 you can't even verify solutions in polynomial time. NP-Complete problems are the subset of NP-Hard problems that are also in NP."},
+    {id:18,section:"NP-Complete & NP-Hard",type:"multiple-choice",difficulty:"hard",points:4,question:"What was the significance of the Cook-Levin Theorem (1971)?",options:["It proved that P = NP","It proved that P \u2260 NP","It proved that SAT is the first NP-Complete problem","It proved that all NP problems are unsolvable"],correctAnswer:2,explanation:"The Cook-Levin Theorem (proven independently by Stephen Cook and Leonid Levin in 1971) established that the Boolean Satisfiability Problem (SAT) is NP-Complete. This was the first problem ever proven to be NP-Complete, and it was done from first principles by showing that any NP problem can be encoded as a SAT instance. This breakthrough enabled all subsequent NP-Completeness proofs via reductions from SAT."},
+    {id:19,section:"NP-Complete & NP-Hard",type:"multiple-choice",difficulty:"medium",points:3,question:"If you discover a polynomial-time algorithm for any single NP-Complete problem, what would this prove?",options:["Only that specific problem is in P","That P = NP","That P \u2260 NP","Nothing significant"],correctAnswer:1,explanation:"If any NP-Complete problem can be solved in polynomial time, then ALL problems in NP can be solved in polynomial time (because every NP problem reduces to every NP-Complete problem in polynomial time). This would prove P = NP, one of the most important open questions in mathematics and computer science."},
+    {id:20,section:"NP-Complete & NP-Hard",type:"multiple-choice",difficulty:"hard",points:4,question:"What does a polynomial-time reduction from problem A to problem B (A \u2264\u209A B) tell us?",options:["A is harder than B","B is at least as hard as A","A and B have the same complexity","B can be solved faster than A"],correctAnswer:1,explanation:"A \u2264\u209A B means we can transform any instance of A into an instance of B in polynomial time. If we could solve B efficiently, we could solve A efficiently too (transform A to B, then solve B). Therefore, B is at least as hard as A. Note: B could be harder than A \u2014 the reduction only establishes a lower bound on B's difficulty."},
+    {id:21,section:"NP-Complete & NP-Hard",type:"classify",difficulty:"hard",points:5,question:"Classify each problem into its correct complexity class. Select the answer that correctly matches ALL problems.",options:["Sorting \u2192 P, Sudoku (n\u00D7n) \u2192 NP-Complete, Halting Problem \u2192 NP-Hard (not in NP)","Sorting \u2192 NP, Sudoku (n\u00D7n) \u2192 P, Halting Problem \u2192 NP-Complete","Sorting \u2192 P, Sudoku (n\u00D7n) \u2192 NP-Hard (not in NP), Halting Problem \u2192 NP-Complete","Sorting \u2192 NP-Complete, Sudoku (n\u00D7n) \u2192 NP-Hard, Halting Problem \u2192 P"],correctAnswer:0,explanation:"Sorting is in P (merge sort runs in O(n log n)). Generalized n\u00D7n Sudoku is NP-Complete (it's in NP because solutions are verifiable, and it's NP-Hard because 3-SAT reduces to it). The Halting Problem is NP-Hard but NOT in NP \u2014 it's undecidable, meaning no algorithm can solve it at all, let alone verify solutions in polynomial time."},
+    {id:22,section:"NP-Complete & NP-Hard",type:"multiple-choice",difficulty:"medium",points:3,question:"Which of the following is NP-Complete?",options:["Finding the shortest path in a graph","Determining if a number is prime","The Knapsack Problem (decision version)","Sorting an array"],correctAnswer:2,explanation:"The Knapsack Problem (decision version: 'Can you select items with total weight \u2264 W and total value \u2265 V?') is NP-Complete. Shortest path, primality testing, and sorting are all in P \u2014 they have known polynomial-time algorithms."},
+    {id:23,section:"P vs NP & Implications",type:"true-false",difficulty:"medium",points:3,question:"Most computer scientists believe that P = NP.",options:["True","False"],correctAnswer:1,explanation:"False. The overwhelming consensus among computer scientists is that P \u2260 NP. In surveys, typically over 80% of researchers believe P \u2260 NP. However, this remains unproven \u2014 it is one of the seven Millennium Prize Problems with a $1,000,000 reward for a proof either way."},
+    {id:24,section:"P vs NP & Implications",type:"multiple-choice",difficulty:"hard",points:4,question:"If P = NP were proven true, which of the following would be a consequence?",options:["RSA encryption would remain secure","All NP-Complete problems could be solved in polynomial time","The Halting Problem would become solvable","Exponential-time algorithms would become polynomial"],correctAnswer:1,explanation:"If P = NP, every problem in NP (including all NP-Complete problems) would have polynomial-time solutions. This would break RSA encryption (which relies on the hardness of factoring). However, the Halting Problem is undecidable \u2014 it's outside NP entirely, so P = NP wouldn't make it solvable. And exponential-time algorithms wouldn't magically become faster; we'd just know that polynomial alternatives exist for NP problems."},
+    {id:25,section:"P vs NP & Implications",type:"multiple-choice",difficulty:"medium",points:3,question:"Why is the P vs NP question important for cryptography?",options:["Cryptographic algorithms are always in P","Many cryptographic systems rely on the assumption that certain problems are hard (not in P)","Cryptography only works if P = NP","Cryptographic keys must be NP-Complete"],correctAnswer:1,explanation:"Modern cryptography (RSA, Diffie-Hellman, etc.) relies on the assumption that certain mathematical problems (like integer factorization and discrete logarithm) are computationally hard \u2014 specifically, that they are not in P. If P = NP, these problems would have efficient solutions, and the security of virtually all internet encryption would collapse."},
+    {id:26,section:"P vs NP & Implications",type:"multiple-choice",difficulty:"medium",points:3,question:"Which strategy is NOT commonly used to cope with NP-Hard problems in practice?",options:["Approximation algorithms that find near-optimal solutions","Heuristics like genetic algorithms and simulated annealing","Waiting for someone to prove P = NP","Solving special cases where the problem becomes tractable"],correctAnswer:2,explanation:"In practice, engineers and scientists don't wait for a theoretical breakthrough. Instead, they use approximation algorithms (guaranteed near-optimal), heuristics (no guarantees but often work well), special-case solvers (many NP-Hard problems are easy for restricted inputs), and parameterized algorithms (efficient when certain parameters are small)."},
+    {id:27,section:"P vs NP & Implications",type:"true-false",difficulty:"hard",points:4,question:"The Venn diagram relationship (assuming P \u2260 NP) is: P \u2282 NP, NP-Complete \u2282 NP, NP-Complete \u2282 NP-Hard, and P \u2229 NP-Complete = \u2205.",options:["True","False"],correctAnswer:0,explanation:"True (assuming P \u2260 NP). P is a strict subset of NP. NP-Complete problems are in NP (by definition) and are NP-Hard (by definition). If P \u2260 NP, then no NP-Complete problem can be in P (because if any NP-Complete problem were in P, then P = NP). Therefore P and NP-Complete are disjoint sets."},
+    {id:28,section:"P vs NP & Implications",type:"multiple-choice",difficulty:"hard",points:5,question:"Consider this SAT formula: (x\u2081 \u2228 x\u2082) \u2227 (\u00ACx\u2081 \u2228 x\u2083) \u2227 (\u00ACx\u2082 \u2228 \u00ACx\u2083). Which assignment satisfies it?",codeSnippet:"(x\u2081 \u2228 x\u2082) \u2227 (\u00ACx\u2081 \u2228 x\u2083) \u2227 (\u00ACx\u2082 \u2228 \u00ACx\u2083)",options:["x\u2081 = T, x\u2082 = T, x\u2083 = T","x\u2081 = T, x\u2082 = F, x\u2083 = T","x\u2081 = F, x\u2082 = F, x\u2083 = F","x\u2081 = F, x\u2082 = F, x\u2083 = T"],correctAnswer:1,explanation:"Let's verify x\u2081 = T, x\u2082 = F, x\u2083 = T:\n\u2022 Clause 1: (T \u2228 F) = T \u2713\n\u2022 Clause 2: (\u00ACT \u2228 T) = (F \u2228 T) = T \u2713\n\u2022 Clause 3: (\u00ACF \u2228 \u00ACT) = (T \u2228 F) = T \u2713\nAll clauses are satisfied! Let's check why option A fails: x\u2081=T, x\u2082=T, x\u2083=T \u2192 Clause 3: (\u00ACT \u2228 \u00ACT) = (F \u2228 F) = F \u2717. Option C: x\u2081=F, x\u2082=F, x\u2083=F \u2192 Clause 1: (F \u2228 F) = F \u2717."},
+    {id:29,section:"Synthesis",type:"multiple-choice",difficulty:"hard",points:5,question:"Which of the following statements about the complexity class landscape is INCORRECT?",options:["P \u2286 NP \u2286 PSPACE \u2286 EXPTIME","We know for certain that P \u2260 EXPTIME","We know for certain that P \u2260 NP","NP-Complete problems are in NP by definition"],correctAnswer:2,explanation:"We do NOT know for certain that P \u2260 NP \u2014 this is the famous open question! We do know P \u2286 NP \u2286 PSPACE \u2286 EXPTIME (option A is correct). We also know P \u2260 EXPTIME by the time hierarchy theorem (option B is correct). And NP-Complete problems are in NP by definition (option D is correct). The P vs NP question remains one of the greatest unsolved problems in mathematics."},
+    {id:30,section:"Synthesis",type:"multiple-choice",difficulty:"hard",points:5,question:"An Euler path visits every EDGE exactly once. A Hamiltonian path visits every VERTEX exactly once. What are their complexity classes?",options:["Both are in P","Euler path is in P; Hamiltonian path is NP-Complete","Euler path is NP-Complete; Hamiltonian path is in P","Both are NP-Complete"],correctAnswer:1,explanation:"Euler path is in P \u2014 you can check if one exists by verifying that at most two vertices have odd degree (O(V + E) time). Hamiltonian path is NP-Complete \u2014 despite the superficial similarity, changing 'every edge once' to 'every vertex once' makes the problem exponentially harder. This is one of the most famous examples of how a small change in problem definition can cause a dramatic complexity jump."},
+    {id:31,section:"Synthesis",type:"multiple-choice",difficulty:"hard",points:5,question:"You need to prove that problem X is NP-Complete. You have already shown X \u2208 NP. For the NP-Hard part, which approach is correct?",options:["Reduce X to a known NP-Complete problem Y","Reduce a known NP-Complete problem Y to X","Show that X takes exponential time in the worst case","Show that X cannot be solved by any polynomial-time algorithm"],correctAnswer:1,explanation:"To prove X is NP-Hard, you must reduce a KNOWN NP-Complete problem Y TO X (Y \u2264\u209A X), not the other way around. This shows that X is at least as hard as Y. Reducing X to Y would only show that X is no harder than Y \u2014 which doesn't help prove hardness. Options C and D would require proving P \u2260 NP first, which nobody has done."},
+    {id:32,section:"Synthesis",type:"true-false",difficulty:"medium",points:3,question:"If a problem is NP-Hard, it must be a decision problem.",options:["True","False"],correctAnswer:1,explanation:"False. NP-Hard problems do not have to be decision problems. For example, the optimization version of TSP ('Find the shortest tour') is NP-Hard, but its output is a number (the tour length) or a tour, not a YES/NO answer. The Halting Problem is another NP-Hard problem that is not a standard decision problem in the NP sense (it's undecidable)."}
+];
+
+// ==================== STATE ====================
+let currentSection = 0;
+let answersMap = {}; // { questionId: { selected, isCorrect, revealed } }
+
+// ==================== HELPERS ====================
+function getQuestionsForSection(sectionIndex) {
+    return questions.filter(q => q.section === sections[sectionIndex].name);
+}
+
+function getTotalPoints() {
+    return questions.reduce((s, q) => s + q.points, 0);
+}
+
+function getEarnedPoints() {
+    return Object.entries(answersMap).reduce((s, [id, a]) => {
+        if (a.isCorrect) {
+            const q = questions.find(q => q.id === Number(id));
+            return s + (q ? q.points : 0);
+        }
+        return s;
+    }, 0);
+}
+
+function getCorrectCount() {
+    return Object.values(answersMap).filter(a => a.isCorrect).length;
+}
+
+function showToast(message, type) {
+    const t = document.getElementById('toast');
+    t.textContent = message;
+    t.className = 'toast ' + type + ' show';
+    setTimeout(() => { t.className = 'toast'; }, 2500);
+}
+
+function scrollTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ==================== RENDER FUNCTIONS ====================
+function renderLanding() {
+    const total = getTotalPoints();
+    const sectionCounts = sections.map((_, i) => getQuestionsForSection(i).length);
+
+    document.getElementById('landing-stats').innerHTML =
+        `<div class="stat-box"><div class="stat-value">32</div><div class="stat-label">Questions</div></div>` +
+        `<div class="stat-box"><div class="stat-value">6</div><div class="stat-label">Sections</div></div>` +
+        `<div class="stat-box"><div class="stat-value accent">${total}</div><div class="stat-label">Total Points</div></div>`;
+
+    document.getElementById('landing-sections').innerHTML = sections.map((s, i) =>
+        `<div class="section-item">
+            <span class="section-num">\u00A7${i + 1}</span>
+            <span class="section-name">${s.name}</span>
+            <span class="section-count">${sectionCounts[i]} questions</span>
+        </div>`
+    ).join('');
+}
+
+function renderExercise() {
+    const sec = sections[currentSection];
+    const qs = getQuestionsForSection(currentSection);
+    const total = getTotalPoints();
+    const earned = getEarnedPoints();
+
+    document.getElementById('ex-section-label').textContent = `\u00A7${currentSection + 1} of ${sections.length}`;
+    document.getElementById('ex-score-label').textContent = `${earned} / ${total} pts`;
+
+    const allAnswered = qs.every(q => answersMap[q.id]?.revealed);
+    const progress = ((currentSection + (allAnswered ? 1 : 0)) / sections.length) * 100;
+    document.getElementById('ex-progress').style.width = progress + '%';
+
+    document.getElementById('ex-section-header').innerHTML =
+        `<span class="section-num">\u00A7${currentSection + 1}</span>
+         <div>
+            <h2>${sec.name}</h2>
+            <p>${sec.description}</p>
+         </div>`;
+
+    document.getElementById('ex-questions').innerHTML = qs.map((q, qi) => renderQuestion(q, qi)).join('');
+
+    const nav = document.getElementById('ex-nav');
+    const navBtn = document.getElementById('ex-nav-btn');
+    if (allAnswered) {
+        nav.classList.remove('hidden');
+        if (currentSection < sections.length - 1) {
+            navBtn.innerHTML = 'NEXT SECTION <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>';
+        } else {
+            navBtn.innerHTML = 'VIEW RESULTS <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>';
+        }
+    } else {
+        nav.classList.add('hidden');
+    }
+}
+
+function renderQuestion(q, index) {
+    const a = answersMap[q.id];
+    const diffClass = q.difficulty;
+    const letters = ['A', 'B', 'C', 'D', 'E'];
+
+    let optionsHtml = q.options.map((opt, oi) => {
+        let cls = 'option-btn';
+        let iconHtml = '';
+        const disabled = a?.revealed ? 'disabled' : '';
+
+        if (a?.revealed) {
+            if (oi === q.correctAnswer) {
+                cls += ' correct';
+                iconHtml = '<svg class="opt-icon icon-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>';
+            } else if (a.selected === oi && !a.isCorrect) {
+                cls += ' incorrect';
+                iconHtml = '<svg class="opt-icon icon-x" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>';
+            } else {
+                cls += ' dimmed';
+            }
+        }
+
+        return `<button class="${cls}" ${disabled} onclick="handleAnswer(${q.id}, ${oi})">
+            <span class="opt-letter">${letters[oi]}.</span>
+            <span class="opt-text">${opt}</span>
+            ${iconHtml}
+        </button>`;
+    }).join('');
+
+    let codeHtml = '';
+    if (q.codeSnippet) {
+        codeHtml = `<div class="q-code">${q.codeSnippet}</div>`;
+    }
+
+    let explanationHtml = '';
+    if (a?.revealed) {
+        explanationHtml = `<div class="explanation">
+            <svg class="exp-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            <div>
+                <div class="exp-label">EXPLANATION</div>
+                <div class="exp-text">${q.explanation}</div>
+            </div>
+        </div>`;
+    }
+
+    return `<div class="q-card">
+        <div class="q-header">
+            <div class="q-header-left">
+                <span class="q-id">Q${q.id}</span>
+                <span class="q-diff ${diffClass}">${q.difficulty.toUpperCase()}</span>
+            </div>
+            <span class="q-pts">${q.points} pts</span>
+        </div>
+        <div class="q-body">
+            <p class="q-text">${q.question}</p>
+            ${codeHtml}
+            <div style="margin-top:1rem;">${optionsHtml}</div>
+            ${explanationHtml}
+        </div>
+    </div>`;
+}
+
+function renderResults() {
+    const total = getTotalPoints();
+    const earned = getEarnedPoints();
+    const answered = Object.keys(answersMap).length;
+    const correct = getCorrectCount();
+    const pct = total > 0 ? Math.round((earned / total) * 100) : 0;
+    const grade = pct >= 90 ? 'A' : pct >= 80 ? 'B' : pct >= 70 ? 'C' : pct >= 60 ? 'D' : 'F';
+
+    document.getElementById('results-scores').innerHTML =
+        `<div class="stat-box"><div class="stat-value">${grade}</div><div class="stat-label">Grade</div></div>` +
+        `<div class="stat-box"><div class="stat-value accent">${pct}%</div><div class="stat-label">Score</div></div>` +
+        `<div class="stat-box"><div class="stat-value">${earned}/${total}</div><div class="stat-label">Points</div></div>` +
+        `<div class="stat-box"><div class="stat-value">${correct}/${answered}</div><div class="stat-label">Correct</div></div>`;
+
+    document.getElementById('results-sections').innerHTML = sections.map((s, i) => {
+        const sqs = getQuestionsForSection(i);
+        const sCorrect = sqs.filter(q => answersMap[q.id]?.isCorrect).length;
+        const sTotal = sqs.length;
+        const sPoints = sqs.reduce((sum, q) => sum + (answersMap[q.id]?.isCorrect ? q.points : 0), 0);
+        const sMaxPoints = sqs.reduce((sum, q) => sum + q.points, 0);
+        return `<div class="section-item">
+            <span class="section-num">\u00A7${i + 1}</span>
+            <span class="section-name" style="flex:1;">${s.name}</span>
+            <span style="font-family:var(--font-mono);font-size:0.875rem;color:rgba(26,39,68,0.7);">${sCorrect}/${sTotal} correct</span>
+            <span style="font-family:var(--font-mono);font-size:0.875rem;font-weight:700;">${sPoints}/${sMaxPoints} pts</span>
+        </div>`;
+    }).join('');
+}
+
+// ==================== ACTIONS ====================
+function startExercise() {
+    document.getElementById('page-landing').classList.add('hidden');
+    document.getElementById('page-exercise').classList.remove('hidden');
+    currentSection = 0;
+    renderExercise();
+    scrollTop();
+}
+
+function handleAnswer(questionId, optionIndex) {
+    if (answersMap[questionId]?.revealed) return;
+    const q = questions.find(q => q.id === questionId);
+    if (!q) return;
+
+    const isCorrect = optionIndex === q.correctAnswer;
+    answersMap[questionId] = { selected: optionIndex, isCorrect, revealed: true };
+
+    if (isCorrect) {
+        showToast(`Correct! +${q.points} points`, 'success');
+    } else {
+        showToast('Incorrect \u2014 see the explanation below.', 'error');
+    }
+
+    renderExercise();
+}
+
+function nextSection() {
+    if (currentSection < sections.length - 1) {
+        currentSection++;
+        renderExercise();
+        scrollTop();
+    } else {
+        document.getElementById('page-exercise').classList.add('hidden');
+        document.getElementById('page-results').classList.remove('hidden');
+        renderResults();
+        scrollTop();
+    }
+}
+
+function resetExercise() {
+    answersMap = {};
+    currentSection = 0;
+    document.getElementById('page-results').classList.add('hidden');
+    document.getElementById('page-exercise').classList.add('hidden');
+    document.getElementById('page-landing').classList.remove('hidden');
+    renderLanding();
+    scrollTop();
+}
+
+// ==================== INIT ====================
+renderLanding();
+</script>
+</body>
+</html>

@@ -1,0 +1,1044 @@
+<style>body{margin:0}img{display:block;max-width:100%}</style><script>(function(){function S(){var d={};Object.defineProperties(this,{getItem:{value:function(k){return d.hasOwnProperty(k)?d[k]:null}},setItem:{value:function(k,v){var o=d[k]||null;d[k]=String(v);this.length=Object.keys(d).length}},removeItem:{value:function(k){delete d[k];this.length=Object.keys(d).length}},clear:{value:function(){d={};this.length=0}},key:{value:function(i){return Object.keys(d)[i]||null}},length:{value:0,writable:true}})}try{window.localStorage}catch(e){Object.defineProperty(window,'localStorage',{value:new S(),configurable:true})}try{window.sessionStorage}catch(e){Object.defineProperty(window,'sessionStorage',{value:new S(),configurable:true})}var hp=history.pushState;history.pushState=function(){try{hp.apply(history,arguments)}catch(e){}};var hr=history.replaceState;history.replaceState=function(){try{hr.apply(history,arguments)}catch(e){}};try{document.cookie}catch(e){Object.defineProperty(document,'cookie',{get:function(){return ''},set:function(){},configurable:true})}})();</script><script>document.addEventListener('click',function(e){var a=e.target.closest('a[href^="#"]');if(!a)return;e.preventDefault();var id=a.getAttribute('href').slice(1);if(!id)return;var el=document.getElementById(id);if(el){el.scrollIntoView({behavior:'smooth',block:'start'});}try{history.replaceState(null,'','#'+id)}catch(e){}});</script><!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<title>COMPE496 — Algorithm Design &amp; Analysis</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f4f6f9;color:#1a1a2e;line-height:1.7}
+nav{position:fixed;top:0;left:0;width:250px;height:100vh;background:#1a1a2e;color:#ccc;overflow-y:auto;padding:16px 0;z-index:100}
+nav h2{color:#fff;font-size:15px;padding:8px 20px;margin:0}
+nav .nav-section{font-size:11px;color:#7f8fa6;text-transform:uppercase;padding:14px 20px 4px;letter-spacing:1px}
+nav a{display:block;color:#b0b8c8;text-decoration:none;padding:5px 20px;font-size:13px;transition:all .2s}
+nav a:hover,nav a.active{color:#fff;background:rgba(255,255,255,.08)}
+main{margin-left:250px;padding:30px 40px 60px;max-width:1000px}
+.course-header{background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);color:#fff;padding:40px;border-radius:12px;margin-bottom:30px}
+.course-header h1{font-size:28px;margin-bottom:6px}
+.course-header .subtitle{font-size:15px;opacity:.85}
+.course-header .meta{margin-top:12px;font-size:13px;opacity:.7}
+.module{background:#fff;border-radius:10px;padding:30px;margin-bottom:24px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.module h2{color:#0f3460;border-bottom:3px solid #e94560;padding-bottom:8px;margin-bottom:18px;font-size:22px}
+.algo{margin:20px 0;padding:20px;background:#f8f9fc;border-radius:8px;border-left:4px solid #0f3460}
+.algo h3{color:#16213e;font-size:18px;margin-bottom:8px}
+.algo h4{color:#e94560;font-size:14px;margin:14px 0 6px}
+.complexity{display:inline-block;background:#e8f0fe;color:#0f3460;padding:2px 10px;border-radius:12px;font-size:12px;margin:2px 4px 2px 0;font-family:monospace}
+.code-block{background:#1e1e2e;color:#cdd6f4;padding:16px;border-radius:8px;overflow-x:auto;font-size:13px;line-height:1.5;margin:10px 0}
+.code-block code{font-family:'Fira Code','Cascadia Code',monospace}
+.steps{background:#fff;padding:14px 18px;border-radius:6px;margin:10px 0}
+.steps ol{padding-left:20px}
+.steps li{margin:4px 0;font-size:14px}
+.anim-container{background:#fff;border:2px solid #e0e4ec;border-radius:8px;padding:12px;margin:14px 0;text-align:center}
+.anim-container canvas{border:1px solid #e0e4ec;border-radius:4px;max-width:100%}
+.anim-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+.anim-controls button{padding:6px 14px;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;transition:all .2s}
+.play-btn{background:#0f3460;color:#fff}.play-btn:hover{background:#16213e}
+.step-btn{background:#e8f0fe;color:#0f3460}.step-btn:hover{background:#d0e0fd}
+.reset-btn{background:#fce4ec;color:#c62828}.reset-btn:hover{background:#f8bbd0}
+.new-input-btn{background:#e8f5e9;color:#2e7d32}.new-input-btn:hover{background:#c8e6c9}
+.speed-slider{width:80px}
+.step-info{font-size:12px;color:#666;font-family:monospace;min-width:120px}
+.anim-controls label{font-size:12px;color:#666;display:flex;align-items:center;gap:4px}
+@media(max-width:900px){nav{display:none}main{margin-left:0;padding:16px}}
+@media print{nav{display:none}main{margin-left:0}.anim-container{page-break-inside:avoid}}
+</style></head><body>
+<nav>
+<h2>📘 COMPE496</h2>
+<div class="nav-section">Module 1 — Sorting I</div>
+<a href="#bubble-sort">Bubble Sort</a><a href="#selection-sort">Selection Sort</a><a href="#insertion-sort">Insertion Sort</a>
+<div class="nav-section">Module 2 — Sorting II</div>
+<a href="#merge-sort">Merge Sort</a><a href="#quick-sort">Quick Sort</a><a href="#heap-sort">Heap Sort</a>
+<div class="nav-section">Module 3 — Searching</div>
+<a href="#linear-search">Linear Search</a><a href="#binary-search">Binary Search</a>
+<div class="nav-section">Module 4 — Graphs</div>
+<a href="#bfs">BFS</a><a href="#dfs">DFS</a><a href="#dijkstra">Dijkstra's</a>
+<div class="nav-section">Module 5 — Dynamic Prog.</div>
+<a href="#fibonacci">Fibonacci</a><a href="#lcs">LCS</a><a href="#knapsack">0/1 Knapsack</a>
+<div class="nav-section">Module 6 — Trees &amp; Greedy</div>
+<a href="#bst">BST Traversals</a><a href="#kruskal">Kruskal's MST</a>
+</nav>
+<main>
+<div class="course-header">
+<h1>COMPE496 — Algorithm Design &amp; Analysis</h1>
+<div class="subtitle">A Comprehensive 6-Hour Interactive Course on Essential Computer Science Algorithms</div>
+<div class="meta">Instructor: <strong>Murat Balci, PhD</strong> &nbsp;|&nbsp; Format: Lecture + Interactive Animations &nbsp;|&nbsp; Language: C++ (C++11)</div>
+</div>
+<div class="module" id="module1"><h2>Module 1: Sorting Algorithms — Part I (1 Hour)</h2><p>Sorting is the foundation of algorithm study. We begin with three intuitive O(n²) algorithms that illustrate core concepts: comparison, swapping, and incremental construction.</p><div class="algo" id="bubble-sort"><h3>1.1 Bubble Sort</h3><span class="complexity">Time: O(n²)</span><span class="complexity">Space: O(1)</span><span class="complexity">Stable: Yes</span><h4>How It Works (Verbal Explanation)</h4><div class="steps"><ol><li>Start at the beginning of the array.</li><li>Compare each pair of adjacent elements.</li><li>If the left element is greater than the right, <strong>swap</strong> them.</li><li>After one full pass, the largest element "bubbles up" to the last position.</li><li>Repeat for the remaining unsorted portion (exclude the last sorted elements).</li><li>Continue until no swaps are needed in a pass — the array is sorted.</li></ol></div><h4>C++ Implementation</h4><pre class="code-block"><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+using namespace std;
+
+void bubbleSort(vector&lt;int&gt;&amp; arr) {
+    int n = arr.size();
+    for (int i = 0; i &lt; n - 1; i++) {
+        bool swapped = false;
+        for (int j = 0; j &lt; n - i - 1; j++) {
+            if (arr[j] &gt; arr[j + 1]) {
+                swap(arr[j], arr[j + 1]);
+                swapped = true;
+            }
+        }
+        if (!swapped) break; // Optimization: early exit
+    }
+}
+
+int main() {
+    vector&lt;int&gt; arr = {64, 34, 25, 12, 22, 11, 90};
+    bubbleSort(arr);
+    for (int x : arr) cout &lt;&lt; x &lt;&lt; &quot; &quot;;
+    return 0;
+}</code></pre><h4>Interactive Animation</h4><div class="anim-container" id="bubble-sort-anim">
+<canvas width="720" height="300"></canvas>
+<div class="anim-controls">
+<button class="play-btn" title="Play/Pause">▶ Play</button>
+<button class="step-btn" title="Step Forward">Step →</button>
+<button class="reset-btn" title="Reset">⟲ Reset</button>
+<button class="new-input-btn" title="Generate New Random Input">🔄 New Input</button>
+<label>Speed <input type="range" class="speed-slider" min="1" max="100" value="50"></label>
+<span class="step-info">Step 0 / 0</span>
+</div></div></div><div class="algo" id="selection-sort"><h3>1.2 Selection Sort</h3><span class="complexity">Time: O(n²)</span><span class="complexity">Space: O(1)</span><span class="complexity">Stable: No</span><h4>How It Works</h4><div class="steps"><ol><li>Divide the array into a sorted region (left, initially empty) and unsorted region (right).</li><li>Find the <strong>minimum element</strong> in the unsorted region.</li><li>Swap it with the first element of the unsorted region.</li><li>Expand the sorted region by one element.</li><li>Repeat until the entire array is sorted.</li></ol></div><h4>C++ Implementation</h4><pre class="code-block"><code>void selectionSort(vector&lt;int&gt;&amp; arr) {
+    int n = arr.size();
+    for (int i = 0; i &lt; n - 1; i++) {
+        int minIdx = i;
+        for (int j = i + 1; j &lt; n; j++) {
+            if (arr[j] &lt; arr[minIdx])
+                minIdx = j;
+        }
+        swap(arr[i], arr[minIdx]);
+    }
+}</code></pre><h4>Interactive Animation</h4><div class="anim-container" id="selection-sort-anim">
+<canvas width="720" height="300"></canvas>
+<div class="anim-controls">
+<button class="play-btn" title="Play/Pause">▶ Play</button>
+<button class="step-btn" title="Step Forward">Step →</button>
+<button class="reset-btn" title="Reset">⟲ Reset</button>
+<button class="new-input-btn" title="Generate New Random Input">🔄 New Input</button>
+<label>Speed <input type="range" class="speed-slider" min="1" max="100" value="50"></label>
+<span class="step-info">Step 0 / 0</span>
+</div></div></div><div class="algo" id="insertion-sort"><h3>1.3 Insertion Sort</h3><span class="complexity">Time: O(n²) worst, O(n) best</span><span class="complexity">Space: O(1)</span><span class="complexity">Stable: Yes</span><h4>How It Works</h4><div class="steps"><ol><li>Start from the second element (index 1). Consider the first element as already sorted.</li><li>Take the current element as the <strong>key</strong>.</li><li>Compare the key with elements to its left, shifting larger elements one position right.</li><li>Insert the key into its correct position in the sorted portion.</li><li>Repeat for all remaining elements.</li><li>Works like sorting playing cards — you pick one card and insert it in the right place.</li></ol></div><h4>C++ Implementation</h4><pre class="code-block"><code>void insertionSort(vector&lt;int&gt;&amp; arr) {
+    int n = arr.size();
+    for (int i = 1; i &lt; n; i++) {
+        int key = arr[i];
+        int j = i - 1;
+        while (j &gt;= 0 &amp;&amp; arr[j] &gt; key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key;
+    }
+}</code></pre><h4>Interactive Animation</h4><div class="anim-container" id="insertion-sort-anim">
+<canvas width="720" height="300"></canvas>
+<div class="anim-controls">
+<button class="play-btn" title="Play/Pause">▶ Play</button>
+<button class="step-btn" title="Step Forward">Step →</button>
+<button class="reset-btn" title="Reset">⟲ Reset</button>
+<button class="new-input-btn" title="Generate New Random Input">🔄 New Input</button>
+<label>Speed <input type="range" class="speed-slider" min="1" max="100" value="50"></label>
+<span class="step-info">Step 0 / 0</span>
+</div></div></div></div><div class="module" id="module2"><h2>Module 2: Sorting Algorithms — Part II (1 Hour)</h2><p>These advanced sorting algorithms achieve O(n log n) performance using divide-and-conquer and heap data structures.</p><div class="algo" id="merge-sort"><h3>2.1 Merge Sort</h3><span class="complexity">Time: O(n log n)</span><span class="complexity">Space: O(n)</span><span class="complexity">Stable: Yes</span><h4>How It Works</h4><div class="steps"><ol><li><strong>Divide:</strong> Split the array into two halves recursively until each sub-array has one element.</li><li><strong>Conquer:</strong> Each single-element sub-array is trivially sorted.</li><li><strong>Merge:</strong> Combine two sorted halves by comparing elements from the front of each half and picking the smaller one.</li><li>Continue merging until you reconstruct the full sorted array.</li><li>Think of it as splitting a deck of cards in half repeatedly, then merging sorted piles back together.</li></ol></div><h4>C++ Implementation</h4><pre class="code-block"><code>void merge(vector&lt;int&gt;&amp; arr, int l, int m, int r) {
+    vector&lt;int&gt; L(arr.begin()+l, arr.begin()+m+1);
+    vector&lt;int&gt; R(arr.begin()+m+1, arr.begin()+r+1);
+    int i = 0, j = 0, k = l;
+    while (i &lt; L.size() &amp;&amp; j &lt; R.size())
+        arr[k++] = (L[i] &lt;= R[j]) ? L[i++] : R[j++];
+    while (i &lt; L.size()) arr[k++] = L[i++];
+    while (j &lt; R.size()) arr[k++] = R[j++];
+}
+
+void mergeSort(vector&lt;int&gt;&amp; arr, int l, int r) {
+    if (l &lt; r) {
+        int m = l + (r - l) / 2;
+        mergeSort(arr, l, m);
+        mergeSort(arr, m + 1, r);
+        merge(arr, l, m, r);
+    }
+}</code></pre><h4>Interactive Animation</h4><div class="anim-container" id="merge-sort-anim">
+<canvas width="720" height="300"></canvas>
+<div class="anim-controls">
+<button class="play-btn" title="Play/Pause">▶ Play</button>
+<button class="step-btn" title="Step Forward">Step →</button>
+<button class="reset-btn" title="Reset">⟲ Reset</button>
+<button class="new-input-btn" title="Generate New Random Input">🔄 New Input</button>
+<label>Speed <input type="range" class="speed-slider" min="1" max="100" value="50"></label>
+<span class="step-info">Step 0 / 0</span>
+</div></div></div><div class="algo" id="quick-sort"><h3>2.2 Quick Sort</h3><span class="complexity">Time: O(n log n) avg, O(n²) worst</span><span class="complexity">Space: O(log n)</span><span class="complexity">Stable: No</span><h4>How It Works</h4><div class="steps"><ol><li>Choose a <strong>pivot</strong> element (commonly the last element).</li><li><strong>Partition:</strong> Rearrange so elements less than pivot go left, greater go right.</li><li>The pivot is now in its final sorted position.</li><li>Recursively apply Quick Sort to the left and right sub-arrays.</li><li>Base case: sub-arrays of size 0 or 1 are already sorted.</li><li>In practice, Quick Sort is often the fastest general-purpose sort due to excellent cache performance.</li></ol></div><h4>C++ Implementation</h4><pre class="code-block"><code>int partition(vector&lt;int&gt;&amp; arr, int low, int high) {
+    int pivot = arr[high];
+    int i = low - 1;
+    for (int j = low; j &lt; high; j++) {
+        if (arr[j] &lt; pivot) {
+            i++;
+            swap(arr[i], arr[j]);
+        }
+    }
+    swap(arr[i + 1], arr[high]);
+    return i + 1;
+}
+
+void quickSort(vector&lt;int&gt;&amp; arr, int low, int high) {
+    if (low &lt; high) {
+        int pi = partition(arr, low, high);
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
+    }
+}</code></pre><h4>Interactive Animation</h4><div class="anim-container" id="quick-sort-anim">
+<canvas width="720" height="300"></canvas>
+<div class="anim-controls">
+<button class="play-btn" title="Play/Pause">▶ Play</button>
+<button class="step-btn" title="Step Forward">Step →</button>
+<button class="reset-btn" title="Reset">⟲ Reset</button>
+<button class="new-input-btn" title="Generate New Random Input">🔄 New Input</button>
+<label>Speed <input type="range" class="speed-slider" min="1" max="100" value="50"></label>
+<span class="step-info">Step 0 / 0</span>
+</div></div></div><div class="algo" id="heap-sort"><h3>2.3 Heap Sort</h3><span class="complexity">Time: O(n log n)</span><span class="complexity">Space: O(1)</span><span class="complexity">Stable: No</span><h4>How It Works</h4><div class="steps"><ol><li><strong>Build a Max-Heap:</strong> Rearrange the array so it satisfies the heap property (parent ≥ children).</li><li>The largest element is now at the root (index 0).</li><li><strong>Extract Max:</strong> Swap the root with the last element, reducing heap size by one.</li><li><strong>Heapify:</strong> Restore the heap property by sifting the new root down.</li><li>Repeat extraction until the heap is empty — the array is sorted.</li><li>Heap Sort guarantees O(n log n) in all cases, unlike Quick Sort.</li></ol></div><h4>C++ Implementation</h4><pre class="code-block"><code>void heapify(vector&lt;int&gt;&amp; arr, int n, int i) {
+    int largest = i;
+    int left = 2 * i + 1, right = 2 * i + 2;
+    if (left &lt; n &amp;&amp; arr[left] &gt; arr[largest]) largest = left;
+    if (right &lt; n &amp;&amp; arr[right] &gt; arr[largest]) largest = right;
+    if (largest != i) {
+        swap(arr[i], arr[largest]);
+        heapify(arr, n, largest);
+    }
+}
+
+void heapSort(vector&lt;int&gt;&amp; arr) {
+    int n = arr.size();
+    for (int i = n / 2 - 1; i &gt;= 0; i--)  // Build heap
+        heapify(arr, n, i);
+    for (int i = n - 1; i &gt; 0; i--) {      // Extract
+        swap(arr[0], arr[i]);
+        heapify(arr, i, 0);
+    }
+}</code></pre><h4>Interactive Animation</h4><div class="anim-container" id="heap-sort-anim">
+<canvas width="720" height="300"></canvas>
+<div class="anim-controls">
+<button class="play-btn" title="Play/Pause">▶ Play</button>
+<button class="step-btn" title="Step Forward">Step →</button>
+<button class="reset-btn" title="Reset">⟲ Reset</button>
+<button class="new-input-btn" title="Generate New Random Input">🔄 New Input</button>
+<label>Speed <input type="range" class="speed-slider" min="1" max="100" value="50"></label>
+<span class="step-info">Step 0 / 0</span>
+</div></div></div></div><div class="module" id="module3"><h2>Module 3: Searching Algorithms (1 Hour)</h2><p>Searching is one of the most fundamental operations. We cover two essential approaches: brute-force linear scan and the elegant binary search.</p><div class="algo" id="linear-search"><h3>3.1 Linear Search</h3><span class="complexity">Time: O(n)</span><span class="complexity">Space: O(1)</span><h4>How It Works</h4><div class="steps"><ol><li>Start from the first element of the array.</li><li>Compare the current element with the target value.</li><li>If they match, return the current index — <strong>found!</strong></li><li>If not, move to the next element.</li><li>If you reach the end without finding the target, return -1 — <strong>not found</strong>.</li><li>This is the simplest search. It works on unsorted data but is slow for large datasets.</li></ol></div><h4>C++ Implementation</h4><pre class="code-block"><code>int linearSearch(const vector&lt;int&gt;&amp; arr, int target) {
+    for (int i = 0; i &lt; arr.size(); i++) {
+        if (arr[i] == target)
+            return i;  // Found at index i
+    }
+    return -1;  // Not found
+}</code></pre><h4>Interactive Animation</h4><div class="anim-container" id="linear-search-anim">
+<canvas width="720" height="300"></canvas>
+<div class="anim-controls">
+<button class="play-btn" title="Play/Pause">▶ Play</button>
+<button class="step-btn" title="Step Forward">Step →</button>
+<button class="reset-btn" title="Reset">⟲ Reset</button>
+<button class="new-input-btn" title="Generate New Random Input">🔄 New Input</button>
+<label>Speed <input type="range" class="speed-slider" min="1" max="100" value="50"></label>
+<span class="step-info">Step 0 / 0</span>
+</div></div></div><div class="algo" id="binary-search"><h3>3.2 Binary Search</h3><span class="complexity">Time: O(log n)</span><span class="complexity">Space: O(1)</span><span class="complexity">Requires: Sorted Array</span><h4>How It Works</h4><div class="steps"><ol><li>The array <strong>must be sorted</strong> before applying binary search.</li><li>Set two pointers: <code>low = 0</code> and <code>high = n-1</code>.</li><li>Calculate the middle index: <code>mid = low + (high - low) / 2</code>.</li><li>If <code>arr[mid] == target</code>, you found it!</li><li>If <code>arr[mid] &lt; target</code>, search the right half: <code>low = mid + 1</code>.</li><li>If <code>arr[mid] &gt; target</code>, search the left half: <code>high = mid - 1</code>.</li><li>Repeat until <code>low &gt; high</code> (not found) or you find the target.</li><li>Each step eliminates half the remaining elements — incredibly efficient!</li></ol></div><h4>C++ Implementation</h4><pre class="code-block"><code>int binarySearch(const vector&lt;int&gt;&amp; arr, int target) {
+    int low = 0, high = arr.size() - 1;
+    while (low &lt;= high) {
+        int mid = low + (high - low) / 2;
+        if (arr[mid] == target)
+            return mid;
+        else if (arr[mid] &lt; target)
+            low = mid + 1;
+        else
+            high = mid - 1;
+    }
+    return -1;  // Not found
+}</code></pre><h4>Interactive Animation</h4><div class="anim-container" id="binary-search-anim">
+<canvas width="720" height="300"></canvas>
+<div class="anim-controls">
+<button class="play-btn" title="Play/Pause">▶ Play</button>
+<button class="step-btn" title="Step Forward">Step →</button>
+<button class="reset-btn" title="Reset">⟲ Reset</button>
+<button class="new-input-btn" title="Generate New Random Input">🔄 New Input</button>
+<label>Speed <input type="range" class="speed-slider" min="1" max="100" value="50"></label>
+<span class="step-info">Step 0 / 0</span>
+</div></div></div></div><div class="module" id="module4"><h2>Module 4: Graph Algorithms (1 Hour)</h2><p>Graphs model relationships — social networks, maps, dependencies. These three algorithms are indispensable tools for traversing and analyzing graphs.</p><div class="algo" id="bfs"><h3>4.1 Breadth-First Search (BFS)</h3><span class="complexity">Time: O(V + E)</span><span class="complexity">Space: O(V)</span><h4>How It Works</h4><div class="steps"><ol><li>Start at a source node. Mark it as visited and add it to a <strong>queue</strong>.</li><li>Dequeue a node, process it, and enqueue all its <strong>unvisited neighbors</strong>.</li><li>Mark each neighbor as visited when enqueuing to avoid revisiting.</li><li>Repeat until the queue is empty.</li><li>BFS explores nodes <strong>level by level</strong> — all nodes at distance 1 first, then distance 2, etc.</li><li>This guarantees the <strong>shortest path</strong> in unweighted graphs.</li></ol></div><h4>C++ Implementation</h4><pre class="code-block"><code>#include &lt;queue&gt;
+void bfs(vector&lt;vector&lt;int&gt;&gt;&amp; adj, int start) {
+    int n = adj.size();
+    vector&lt;bool&gt; visited(n, false);
+    queue&lt;int&gt; q;
+    visited[start] = true;
+    q.push(start);
+    while (!q.empty()) {
+        int node = q.front(); q.pop();
+        cout &lt;&lt; node &lt;&lt; &quot; &quot;;
+        for (int neighbor : adj[node]) {
+            if (!visited[neighbor]) {
+                visited[neighbor] = true;
+                q.push(neighbor);
+            }
+        }
+    }
+}</code></pre><h4>Interactive Animation</h4><div class="anim-container" id="bfs-anim">
+<canvas width="720" height="300"></canvas>
+<div class="anim-controls">
+<button class="play-btn" title="Play/Pause">▶ Play</button>
+<button class="step-btn" title="Step Forward">Step →</button>
+<button class="reset-btn" title="Reset">⟲ Reset</button>
+<button class="new-input-btn" title="Generate New Random Input">🔄 New Input</button>
+<label>Speed <input type="range" class="speed-slider" min="1" max="100" value="50"></label>
+<span class="step-info">Step 0 / 0</span>
+</div></div></div><div class="algo" id="dfs"><h3>4.2 Depth-First Search (DFS)</h3><span class="complexity">Time: O(V + E)</span><span class="complexity">Space: O(V)</span><h4>How It Works</h4><div class="steps"><ol><li>Start at a source node. Mark it as visited.</li><li>Explore one unvisited neighbor, then recursively explore from <strong>that</strong> neighbor.</li><li>Go as <strong>deep as possible</strong> along each branch before backtracking.</li><li>When stuck (no unvisited neighbors), backtrack to the previous node.</li><li>Continue until all reachable nodes are visited.</li><li>Uses a <strong>stack</strong> (implicit via recursion, or explicit). Great for maze solving and topological sorting.</li></ol></div><h4>C++ Implementation</h4><pre class="code-block"><code>void dfs(vector&lt;vector&lt;int&gt;&gt;&amp; adj, int node, vector&lt;bool&gt;&amp; visited) {
+    visited[node] = true;
+    cout &lt;&lt; node &lt;&lt; &quot; &quot;;
+    for (int neighbor : adj[node]) {
+        if (!visited[neighbor])
+            dfs(adj, neighbor, visited);
+    }
+}
+// Iterative version using explicit stack:
+void dfsIterative(vector&lt;vector&lt;int&gt;&gt;&amp; adj, int start) {
+    int n = adj.size();
+    vector&lt;bool&gt; visited(n, false);
+    stack&lt;int&gt; s;
+    s.push(start);
+    while (!s.empty()) {
+        int node = s.top(); s.pop();
+        if (visited[node]) continue;
+        visited[node] = true;
+        cout &lt;&lt; node &lt;&lt; &quot; &quot;;
+        for (int i = adj[node].size()-1; i &gt;= 0; i--)
+            if (!visited[adj[node][i]])
+                s.push(adj[node][i]);
+    }
+}</code></pre><h4>Interactive Animation</h4><div class="anim-container" id="dfs-anim">
+<canvas width="720" height="300"></canvas>
+<div class="anim-controls">
+<button class="play-btn" title="Play/Pause">▶ Play</button>
+<button class="step-btn" title="Step Forward">Step →</button>
+<button class="reset-btn" title="Reset">⟲ Reset</button>
+<button class="new-input-btn" title="Generate New Random Input">🔄 New Input</button>
+<label>Speed <input type="range" class="speed-slider" min="1" max="100" value="50"></label>
+<span class="step-info">Step 0 / 0</span>
+</div></div></div><div class="algo" id="dijkstra"><h3>4.3 Dijkstra's Shortest Path</h3><span class="complexity">Time: O((V+E) log V)</span><span class="complexity">Space: O(V)</span><span class="complexity">Requires: Non-negative weights</span><h4>How It Works</h4><div class="steps"><ol><li>Initialize distance to source as 0, all others as infinity (∞).</li><li>Use a <strong>min-priority queue</strong>. Insert (0, source).</li><li>Extract the node with smallest distance from the queue.</li><li>For each neighbor, calculate <code>new_dist = dist[current] + edge_weight</code>.</li><li>If <code>new_dist &lt; dist[neighbor]</code>, update and insert neighbor into the queue.</li><li>Repeat until the queue is empty. Each node is finalized once.</li><li>This is the gold standard for single-source shortest paths in weighted graphs.</li></ol></div><h4>C++ Implementation</h4><pre class="code-block"><code>#include &lt;climits&gt;
+typedef pair&lt;int,int&gt; pii;
+vector&lt;int&gt; dijkstra(vector&lt;vector&lt;pii&gt;&gt;&amp; adj, int src) {
+    int n = adj.size();
+    vector&lt;int&gt; dist(n, INT_MAX);
+    priority_queue&lt;pii, vector&lt;pii&gt;, greater&lt;pii&gt;&gt; pq;
+    dist[src] = 0;
+    pq.push({0, src});
+    while (!pq.empty()) {
+        auto [d, u] = pq.top(); pq.pop();
+        if (d &gt; dist[u]) continue;
+        for (auto [v, w] : adj[u]) {
+            if (dist[u] + w &lt; dist[v]) {
+                dist[v] = dist[u] + w;
+                pq.push({dist[v], v});
+            }
+        }
+    }
+    return dist;
+}</code></pre><h4>Interactive Animation</h4><div class="anim-container" id="dijkstra-anim">
+<canvas width="720" height="300"></canvas>
+<div class="anim-controls">
+<button class="play-btn" title="Play/Pause">▶ Play</button>
+<button class="step-btn" title="Step Forward">Step →</button>
+<button class="reset-btn" title="Reset">⟲ Reset</button>
+<button class="new-input-btn" title="Generate New Random Input">🔄 New Input</button>
+<label>Speed <input type="range" class="speed-slider" min="1" max="100" value="50"></label>
+<span class="step-info">Step 0 / 0</span>
+</div></div></div></div><div class="module" id="module5"><h2>Module 5: Dynamic Programming (1 Hour)</h2><p>Dynamic Programming (DP) solves complex problems by breaking them into overlapping subproblems and storing results to avoid redundant computation. It is the most powerful algorithmic technique for optimization problems.</p><div class="algo" id="fibonacci"><h3>5.1 Fibonacci Sequence (DP Introduction)</h3><span class="complexity">Naive: O(2ⁿ)</span><span class="complexity">DP: O(n)</span><span class="complexity">Space: O(n) or O(1)</span><h4>How It Works</h4><div class="steps"><ol><li>Fibonacci: F(0)=0, F(1)=1, F(n) = F(n-1) + F(n-2).</li><li><strong>Naive recursion</strong> recalculates the same values exponentially many times.</li><li><strong>Memoization (Top-Down):</strong> Store computed results in a table. Before computing F(n), check if it's already cached.</li><li><strong>Tabulation (Bottom-Up):</strong> Fill a table from F(0) up to F(n), each entry using the two before it.</li><li>This simple example perfectly illustrates the DP principle: <em>overlapping subproblems + optimal substructure</em>.</li></ol></div><h4>C++ Implementation</h4><pre class="code-block"><code>// Bottom-Up DP (Tabulation)
+long long fibonacci(int n) {
+    if (n &lt;= 1) return n;
+    vector&lt;long long&gt; dp(n + 1);
+    dp[0] = 0; dp[1] = 1;
+    for (int i = 2; i &lt;= n; i++)
+        dp[i] = dp[i-1] + dp[i-2];
+    return dp[n];
+}
+// Space-Optimized O(1)
+long long fibOptimized(int n) {
+    if (n &lt;= 1) return n;
+    long long prev2 = 0, prev1 = 1, curr;
+    for (int i = 2; i &lt;= n; i++) {
+        curr = prev1 + prev2;
+        prev2 = prev1;
+        prev1 = curr;
+    }
+    return prev1;
+}</code></pre><h4>Interactive Animation</h4><div class="anim-container" id="fibonacci-anim">
+<canvas width="720" height="300"></canvas>
+<div class="anim-controls">
+<button class="play-btn" title="Play/Pause">▶ Play</button>
+<button class="step-btn" title="Step Forward">Step →</button>
+<button class="reset-btn" title="Reset">⟲ Reset</button>
+<button class="new-input-btn" title="Generate New Random Input">🔄 New Input</button>
+<label>Speed <input type="range" class="speed-slider" min="1" max="100" value="50"></label>
+<span class="step-info">Step 0 / 0</span>
+</div></div></div><div class="algo" id="lcs"><h3>5.2 Longest Common Subsequence (LCS)</h3><span class="complexity">Time: O(m × n)</span><span class="complexity">Space: O(m × n)</span><h4>How It Works</h4><div class="steps"><ol><li>Given two strings X and Y, find the longest subsequence common to both.</li><li>Create a 2D table <code>dp[i][j]</code> = length of LCS of X[0..i-1] and Y[0..j-1].</li><li>If <code>X[i-1] == Y[j-1]</code>: characters match, so <code>dp[i][j] = dp[i-1][j-1] + 1</code>.</li><li>Otherwise: <code>dp[i][j] = max(dp[i-1][j], dp[i][j-1])</code> — skip one character from either string.</li><li>Fill the table row by row. The answer is in <code>dp[m][n]</code>.</li><li>To reconstruct the actual LCS, trace back from dp[m][n] following the choices made.</li></ol></div><h4>C++ Implementation</h4><pre class="code-block"><code>string lcs(const string&amp; X, const string&amp; Y) {
+    int m = X.size(), n = Y.size();
+    vector&lt;vector&lt;int&gt;&gt; dp(m+1, vector&lt;int&gt;(n+1, 0));
+    for (int i = 1; i &lt;= m; i++)
+        for (int j = 1; j &lt;= n; j++)
+            dp[i][j] = (X[i-1] == Y[j-1])
+                ? dp[i-1][j-1] + 1
+                : max(dp[i-1][j], dp[i][j-1]);
+    // Reconstruct
+    string result;
+    int i = m, j = n;
+    while (i &gt; 0 &amp;&amp; j &gt; 0) {
+        if (X[i-1] == Y[j-1]) {
+            result = X[i-1] + result;
+            i--; j--;
+        } else if (dp[i-1][j] &gt; dp[i][j-1]) i--;
+        else j--;
+    }
+    return result;
+}</code></pre><h4>Interactive Animation</h4><div class="anim-container" id="lcs-anim">
+<canvas width="720" height="300"></canvas>
+<div class="anim-controls">
+<button class="play-btn" title="Play/Pause">▶ Play</button>
+<button class="step-btn" title="Step Forward">Step →</button>
+<button class="reset-btn" title="Reset">⟲ Reset</button>
+<button class="new-input-btn" title="Generate New Random Input">🔄 New Input</button>
+<label>Speed <input type="range" class="speed-slider" min="1" max="100" value="50"></label>
+<span class="step-info">Step 0 / 0</span>
+</div></div></div><div class="algo" id="knapsack"><h3>5.3 0/1 Knapsack Problem</h3><span class="complexity">Time: O(n × W)</span><span class="complexity">Space: O(n × W)</span><h4>How It Works</h4><div class="steps"><ol><li>Given n items with weights and values, and a knapsack of capacity W.</li><li>Goal: maximize total value without exceeding capacity. Each item is taken or not (0/1).</li><li>Create table <code>dp[i][w]</code> = max value using first i items with capacity w.</li><li>For each item i and capacity w: either <strong>skip</strong> it (<code>dp[i-1][w]</code>) or <strong>take</strong> it (<code>dp[i-1][w - weight[i]] + value[i]</code>).</li><li>Choose the option giving higher value: <code>dp[i][w] = max(skip, take)</code>.</li><li>Answer is <code>dp[n][W]</code>. Trace back to find which items were selected.</li></ol></div><h4>C++ Implementation</h4><pre class="code-block"><code>int knapsack(int W, vector&lt;int&gt;&amp; wt, vector&lt;int&gt;&amp; val) {
+    int n = wt.size();
+    vector&lt;vector&lt;int&gt;&gt; dp(n+1, vector&lt;int&gt;(W+1, 0));
+    for (int i = 1; i &lt;= n; i++) {
+        for (int w = 0; w &lt;= W; w++) {
+            dp[i][w] = dp[i-1][w]; // skip item i
+            if (wt[i-1] &lt;= w)
+                dp[i][w] = max(dp[i][w],
+                    dp[i-1][w - wt[i-1]] + val[i-1]);
+        }
+    }
+    return dp[n][W];
+}</code></pre><h4>Interactive Animation</h4><div class="anim-container" id="knapsack-anim">
+<canvas width="720" height="300"></canvas>
+<div class="anim-controls">
+<button class="play-btn" title="Play/Pause">▶ Play</button>
+<button class="step-btn" title="Step Forward">Step →</button>
+<button class="reset-btn" title="Reset">⟲ Reset</button>
+<button class="new-input-btn" title="Generate New Random Input">🔄 New Input</button>
+<label>Speed <input type="range" class="speed-slider" min="1" max="100" value="50"></label>
+<span class="step-info">Step 0 / 0</span>
+</div></div></div></div><div class="module" id="module6"><h2>Module 6: Tree Algorithms &amp; Greedy Strategies (1 Hour)</h2><p>Trees are hierarchical structures fundamental to CS. Greedy algorithms build solutions by making locally optimal choices. We cover BST traversals and Kruskal's MST algorithm.</p><div class="algo" id="bst"><h3>6.1 Binary Search Tree Traversals</h3><span class="complexity">Time: O(n)</span><span class="complexity">Space: O(h) where h = tree height</span><h4>How It Works</h4><div class="steps"><ol><li>A <strong>BST</strong> maintains the property: left child &lt; parent &lt; right child.</li><li><strong>In-Order (Left → Root → Right):</strong> Visits nodes in ascending sorted order. This is the most useful BST traversal.</li><li><strong>Pre-Order (Root → Left → Right):</strong> Visits the root first. Useful for copying/serializing the tree.</li><li><strong>Post-Order (Left → Right → Root):</strong> Visits root last. Useful for deleting the tree or evaluating expressions.</li><li><strong>Level-Order (BFS):</strong> Visits nodes level by level using a queue — same as BFS on trees.</li><li>All traversals visit every node exactly once, giving O(n) time complexity.</li></ol></div><h4>C++ Implementation</h4><pre class="code-block"><code>struct TreeNode {
+    int val;
+    TreeNode *left, *right;
+    TreeNode(int v) : val(v), left(nullptr), right(nullptr) {}
+};
+
+void inOrder(TreeNode* root) {
+    if (!root) return;
+    inOrder(root-&gt;left);
+    cout &lt;&lt; root-&gt;val &lt;&lt; &quot; &quot;;
+    inOrder(root-&gt;right);
+}
+
+void preOrder(TreeNode* root) {
+    if (!root) return;
+    cout &lt;&lt; root-&gt;val &lt;&lt; &quot; &quot;;
+    preOrder(root-&gt;left);
+    preOrder(root-&gt;right);
+}
+
+void postOrder(TreeNode* root) {
+    if (!root) return;
+    postOrder(root-&gt;left);
+    postOrder(root-&gt;right);
+    cout &lt;&lt; root-&gt;val &lt;&lt; &quot; &quot;;
+}
+
+// BST Insert
+TreeNode* insert(TreeNode* root, int val) {
+    if (!root) return new TreeNode(val);
+    if (val &lt; root-&gt;val) root-&gt;left = insert(root-&gt;left, val);
+    else root-&gt;right = insert(root-&gt;right, val);
+    return root;
+}</code></pre><h4>Interactive Animation</h4><div class="anim-container" id="bst-anim">
+<canvas width="720" height="300"></canvas>
+<div class="anim-controls">
+<button class="play-btn" title="Play/Pause">▶ Play</button>
+<button class="step-btn" title="Step Forward">Step →</button>
+<button class="reset-btn" title="Reset">⟲ Reset</button>
+<button class="new-input-btn" title="Generate New Random Input">🔄 New Input</button>
+<label>Speed <input type="range" class="speed-slider" min="1" max="100" value="50"></label>
+<span class="step-info">Step 0 / 0</span>
+</div></div></div><div class="algo" id="kruskal"><h3>6.2 Kruskal's Minimum Spanning Tree</h3><span class="complexity">Time: O(E log E)</span><span class="complexity">Space: O(V)</span><span class="complexity">Greedy Algorithm</span><h4>How It Works</h4><div class="steps"><ol><li>A <strong>Minimum Spanning Tree</strong> connects all vertices with minimum total edge weight and no cycles.</li><li><strong>Sort</strong> all edges by weight in ascending order.</li><li>Initialize a <strong>Union-Find</strong> (Disjoint Set) structure with each vertex in its own set.</li><li>Iterate through sorted edges. For each edge (u, v):</li><li>If u and v are in <strong>different sets</strong>, add this edge to the MST and <strong>union</strong> their sets.</li><li>If they're in the <strong>same set</strong>, skip (adding it would create a cycle).</li><li>Stop when you have V-1 edges — the MST is complete.</li><li>This greedy choice (always pick cheapest safe edge) is provably optimal.</li></ol></div><h4>C++ Implementation</h4><pre class="code-block"><code>struct Edge { int u, v, w; };
+
+class UnionFind {
+    vector&lt;int&gt; parent, rank_;
+public:
+    UnionFind(int n) : parent(n), rank_(n, 0) {
+        iota(parent.begin(), parent.end(), 0);
+    }
+    int find(int x) {
+        if (parent[x] != x) parent[x] = find(parent[x]);
+        return parent[x];
+    }
+    bool unite(int x, int y) {
+        int px = find(x), py = find(y);
+        if (px == py) return false;
+        if (rank_[px] &lt; rank_[py]) swap(px, py);
+        parent[py] = px;
+        if (rank_[px] == rank_[py]) rank_[px]++;
+        return true;
+    }
+};
+
+vector&lt;Edge&gt; kruskal(int V, vector&lt;Edge&gt;&amp; edges) {
+    sort(edges.begin(), edges.end(),
+         [](const Edge&amp; a, const Edge&amp; b){ return a.w &lt; b.w; });
+    UnionFind uf(V);
+    vector&lt;Edge&gt; mst;
+    for (auto&amp; e : edges) {
+        if (uf.unite(e.u, e.v))
+            mst.push_back(e);
+        if (mst.size() == V - 1) break;
+    }
+    return mst;
+}</code></pre><h4>Interactive Animation</h4><div class="anim-container" id="kruskal-anim">
+<canvas width="720" height="300"></canvas>
+<div class="anim-controls">
+<button class="play-btn" title="Play/Pause">▶ Play</button>
+<button class="step-btn" title="Step Forward">Step →</button>
+<button class="reset-btn" title="Reset">⟲ Reset</button>
+<button class="new-input-btn" title="Generate New Random Input">🔄 New Input</button>
+<label>Speed <input type="range" class="speed-slider" min="1" max="100" value="50"></label>
+<span class="step-info">Step 0 / 0</span>
+</div></div></div></div><div class="module"><h2>Course Summary &amp; Complexity Cheat Sheet</h2>
+<table style="width:100%;border-collapse:collapse;font-size:14px">
+<tr style="background:#0f3460;color:#fff"><th style="padding:8px;text-align:left">Algorithm</th><th>Best</th><th>Average</th><th>Worst</th><th>Space</th></tr>
+<tr style="background:#f8f9fc"><td style="padding:6px">Bubble Sort</td><td>O(n)</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td></tr>
+<tr><td style="padding:6px">Selection Sort</td><td>O(n²)</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td></tr>
+<tr style="background:#f8f9fc"><td style="padding:6px">Insertion Sort</td><td>O(n)</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td></tr>
+<tr><td style="padding:6px">Merge Sort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n)</td></tr>
+<tr style="background:#f8f9fc"><td style="padding:6px">Quick Sort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n²)</td><td>O(log n)</td></tr>
+<tr><td style="padding:6px">Heap Sort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td><td>O(1)</td></tr>
+<tr style="background:#f8f9fc"><td style="padding:6px">Linear Search</td><td>O(1)</td><td>O(n)</td><td>O(n)</td><td>O(1)</td></tr>
+<tr><td style="padding:6px">Binary Search</td><td>O(1)</td><td>O(log n)</td><td>O(log n)</td><td>O(1)</td></tr>
+<tr style="background:#f8f9fc"><td style="padding:6px">BFS / DFS</td><td colspan="3">O(V + E)</td><td>O(V)</td></tr>
+<tr><td style="padding:6px">Dijkstra</td><td colspan="3">O((V+E) log V)</td><td>O(V)</td></tr>
+<tr style="background:#f8f9fc"><td style="padding:6px">LCS (DP)</td><td colspan="3">O(m × n)</td><td>O(m × n)</td></tr>
+<tr><td style="padding:6px">0/1 Knapsack</td><td colspan="3">O(n × W)</td><td>O(n × W)</td></tr>
+<tr style="background:#f8f9fc"><td style="padding:6px">Kruskal MST</td><td colspan="3">O(E log E)</td><td>O(V)</td></tr>
+</table>
+<p style="margin-top:16px;font-style:italic">© 2026 Murat Balci, PhD — COMPE496 Algorithm Design &amp; Analysis</p>
+</div></main><script>
+// =================== ANIMATION FRAMEWORK ===================
+class Anim {
+  constructor(id){
+    this.el=document.getElementById(id);if(!this.el)return;
+    this.cv=this.el.querySelector('canvas');this.ctx=this.cv.getContext('2d');
+    this.states=[];this.step=0;this.playing=false;this.speed=400;this.timer=null;
+    this.el.querySelector('.play-btn').onclick=()=>this.togglePlay();
+    this.el.querySelector('.step-btn').onclick=()=>this.stepFwd();
+    this.el.querySelector('.reset-btn').onclick=()=>this.doReset();
+    this.el.querySelector('.new-input-btn').onclick=()=>this.newInput();
+    let sl=this.el.querySelector('.speed-slider');
+    sl.oninput=e=>{this.speed=1050-e.target.value*10;if(this.playing){this.pause();this.play();}};
+    this.newInput();
+  }
+  togglePlay(){this.playing?this.pause():this.play()}
+  play(){if(this.step>=this.states.length-1)this.step=0;this.playing=true;
+    this.el.querySelector('.play-btn').textContent='⏸ Pause';
+    this.timer=setInterval(()=>{if(this.step<this.states.length-1){this.step++;this.draw();}else this.pause();},this.speed);}
+  pause(){this.playing=false;this.el.querySelector('.play-btn').textContent='▶ Play';clearInterval(this.timer);}
+  doReset(){this.pause();this.step=0;this.draw();}
+  stepFwd(){if(this.step<this.states.length-1){this.step++;this.draw();}}
+  newInput(){this.pause();this.genStates();this.step=0;this.draw();}
+  updInfo(s){let si=this.el.querySelector('.step-info');si.textContent='Step '+this.step+'/'+(this.states.length-1);}
+  genStates(){}
+  draw(){}
+}
+// =================== BAR DRAWING (shared by all sorting) ===================
+function drawBars(ctx,w,h,arr,cmp,swp,sorted,pivot,desc,step,total){
+  ctx.clearRect(0,0,w,h);let n=arr.length,bw=(w-40)/n,mx=Math.max(...arr);
+  for(let i=0;i<n;i++){
+    let bh=(arr[i]/mx)*(h-65),x=20+i*bw,y=h-30-bh;
+    if(sorted.includes(i))ctx.fillStyle='#4CAF50';
+    else if(swp.includes(i))ctx.fillStyle='#f44336';
+    else if(pivot.includes(i))ctx.fillStyle='#9C27B0';
+    else if(cmp.includes(i))ctx.fillStyle='#FF9800';
+    else ctx.fillStyle='#2196F3';
+    ctx.fillRect(x+2,y,bw-4,bh);
+    ctx.fillStyle='#333';ctx.font='11px monospace';ctx.textAlign='center';
+    ctx.fillText(arr[i],x+bw/2,h-16);
+  }
+  ctx.fillStyle='#333';ctx.font='13px sans-serif';ctx.textAlign='left';
+  ctx.fillText('Step '+step+'/'+total+': '+desc,10,16);
+}
+
+// =================== BUBBLE SORT ===================
+class BubbleSort extends Anim{
+  genStates(){
+    let a=Array.from({length:12},()=>Math.floor(Math.random()*90)+10);
+    this.states=[{a:[...a],c:[],s:[],so:[],p:[],d:'Initial array'}];
+    let n=a.length;
+    for(let i=0;i<n-1;i++){for(let j=0;j<n-i-1;j++){
+      let so=[];for(let k=n-1;k>n-1-i;k--)so.push(k);
+      this.states.push({a:[...a],c:[j,j+1],s:[],so,p:[],d:'Compare arr['+j+']='+a[j]+' vs arr['+(j+1)+']='+a[j+1]});
+      if(a[j]>a[j+1]){[a[j],a[j+1]]=[a[j+1],a[j]];
+        this.states.push({a:[...a],c:[],s:[j,j+1],so,p:[],d:'Swap! '+a[j]+' ↔ '+a[j+1]});}
+    }}
+    this.states.push({a:[...a],c:[],s:[],so:a.map((_,i)=>i),p:[],d:'✓ Sorted!'});
+  }
+  draw(){let s=this.states[this.step];
+    drawBars(this.ctx,this.cv.width,this.cv.height,s.a,s.c,s.s,s.so,s.p,s.d,this.step,this.states.length-1);this.updInfo();}
+}
+
+// =================== SELECTION SORT ===================
+class SelectionSort extends Anim{
+  genStates(){
+    let a=Array.from({length:12},()=>Math.floor(Math.random()*90)+10);
+    this.states=[{a:[...a],c:[],s:[],so:[],p:[],d:'Initial array'}];
+    let n=a.length;
+    for(let i=0;i<n-1;i++){
+      let mi=i,so=[];for(let k=0;k<i;k++)so.push(k);
+      for(let j=i+1;j<n;j++){
+        this.states.push({a:[...a],c:[mi,j],s:[],so,p:[i],d:'min=arr['+mi+']='+a[mi]+', checking arr['+j+']='+a[j]});
+        if(a[j]<a[mi])mi=j;
+      }
+      if(mi!==i){[a[i],a[mi]]=[a[mi],a[i]];
+        this.states.push({a:[...a],c:[],s:[i,mi],so,p:[],d:'Swap arr['+i+'] ↔ arr['+mi+']'});}
+    }
+    this.states.push({a:[...a],c:[],s:[],so:a.map((_,i)=>i),p:[],d:'✓ Sorted!'});
+  }
+  draw(){let s=this.states[this.step];
+    drawBars(this.ctx,this.cv.width,this.cv.height,s.a,s.c,s.s,s.so,s.p,s.d,this.step,this.states.length-1);this.updInfo();}
+}
+
+// =================== INSERTION SORT ===================
+class InsertionSort extends Anim{
+  genStates(){
+    let a=Array.from({length:12},()=>Math.floor(Math.random()*90)+10);
+    this.states=[{a:[...a],c:[],s:[],so:[0],p:[],d:'Initial array, first element trivially sorted'}];
+    let n=a.length;
+    for(let i=1;i<n;i++){
+      let key=a[i];let j=i-1;
+      this.states.push({a:[...a],c:[i],s:[],so:[],p:[],d:'Key = arr['+i+'] = '+key});
+      while(j>=0&&a[j]>key){a[j+1]=a[j];
+        this.states.push({a:[...a],c:[j],s:[j,j+1],so:[],p:[],d:'Shift arr['+j+']='+a[j]+' right'});j--;}
+      a[j+1]=key;
+      this.states.push({a:[...a],c:[],s:[],so:[],p:[j+1],d:'Insert key='+key+' at position '+(j+1)});
+    }
+    this.states.push({a:[...a],c:[],s:[],so:a.map((_,i)=>i),p:[],d:'✓ Sorted!'});
+  }
+  draw(){let s=this.states[this.step];
+    drawBars(this.ctx,this.cv.width,this.cv.height,s.a,s.c,s.s,s.so,s.p,s.d,this.step,this.states.length-1);this.updInfo();}
+}
+
+// =================== MERGE SORT ===================
+class MergeSort extends Anim{
+  genStates(){
+    let a=Array.from({length:12},()=>Math.floor(Math.random()*90)+10);
+    this.states=[{a:[...a],c:[],s:[],so:[],p:[],d:'Initial array'}];
+    this._ms(a,0,a.length-1);
+    this.states.push({a:[...a],c:[],s:[],so:a.map((_,i)=>i),p:[],d:'✓ Sorted!'});
+  }
+  _ms(a,l,r){if(l>=r)return;let m=Math.floor((l+r)/2);
+    this.states.push({a:[...a],c:[],s:[],so:[],p:Array.from({length:r-l+1},(_,i)=>l+i),d:'Divide: ['+l+'..'+m+'] and ['+(m+1)+'..'+r+']'});
+    this._ms(a,l,m);this._ms(a,m+1,r);
+    let L=a.slice(l,m+1),R=a.slice(m+1,r+1),i=0,j=0,k=l;
+    while(i<L.length&&j<R.length){
+      a[k]=(L[i]<=R[j])?L[i++]:R[j++];
+      this.states.push({a:[...a],c:[k],s:[],so:[],p:[],d:'Merge: place '+a[k]+' at pos '+k});k++;}
+    while(i<L.length){a[k]=L[i++];this.states.push({a:[...a],c:[k],s:[],so:[],p:[],d:'Merge remaining: '+a[k]});k++;}
+    while(j<R.length){a[k]=R[j++];this.states.push({a:[...a],c:[k],s:[],so:[],p:[],d:'Merge remaining: '+a[k]});k++;}
+  }
+  draw(){let s=this.states[this.step];
+    drawBars(this.ctx,this.cv.width,this.cv.height,s.a,s.c,s.s,s.so,s.p,s.d,this.step,this.states.length-1);this.updInfo();}
+}
+
+// =================== QUICK SORT ===================
+class QuickSort extends Anim{
+  genStates(){
+    let a=Array.from({length:12},()=>Math.floor(Math.random()*90)+10);
+    this.states=[{a:[...a],c:[],s:[],so:[],p:[],d:'Initial array'}];
+    this._qs(a,0,a.length-1);
+    this.states.push({a:[...a],c:[],s:[],so:a.map((_,i)=>i),p:[],d:'✓ Sorted!'});
+  }
+  _qs(a,lo,hi){if(lo>=hi)return;
+    let pivot=a[hi],idx=lo;
+    this.states.push({a:[...a],c:[],s:[],so:[],p:[hi],d:'Pivot = '+pivot+' (index '+hi+')'});
+    for(let j=lo;j<hi;j++){
+      this.states.push({a:[...a],c:[j,hi],s:[],so:[],p:[hi],d:'Compare arr['+j+']='+a[j]+' with pivot='+pivot});
+      if(a[j]<pivot){[a[idx],a[j]]=[a[j],a[idx]];
+        this.states.push({a:[...a],c:[],s:[idx,j],so:[],p:[hi],d:'Swap arr['+idx+'] ↔ arr['+j+']'});idx++;}
+    }
+    [a[idx],a[hi]]=[a[hi],a[idx]];
+    this.states.push({a:[...a],c:[],s:[],so:[idx],p:[],d:'Pivot placed at final position '+idx});
+    this._qs(a,lo,idx-1);this._qs(a,idx+1,hi);
+  }
+  draw(){let s=this.states[this.step];
+    drawBars(this.ctx,this.cv.width,this.cv.height,s.a,s.c,s.s,s.so,s.p,s.d,this.step,this.states.length-1);this.updInfo();}
+}
+
+// =================== HEAP SORT ===================
+class HeapSort extends Anim{
+  genStates(){
+    let a=Array.from({length:12},()=>Math.floor(Math.random()*90)+10);
+    this.states=[{a:[...a],c:[],s:[],so:[],p:[],d:'Initial array — building max-heap'}];
+    let n=a.length;
+    for(let i=Math.floor(n/2)-1;i>=0;i--)this._heapify(a,n,i,'Build');
+    this.states.push({a:[...a],c:[],s:[],so:[],p:[],d:'Max-heap built! Now extracting...'});
+    for(let i=n-1;i>0;i--){
+      [a[0],a[i]]=[a[i],a[0]];
+      let so=[];for(let k=n-1;k>=i;k--)so.push(k);
+      this.states.push({a:[...a],c:[],s:[0,i],so,p:[],d:'Swap root('+a[i]+') with pos '+i});
+      this._heapify(a,i,0,'Heapify',so);
+    }
+    this.states.push({a:[...a],c:[],s:[],so:a.map((_,i)=>i),p:[],d:'✓ Sorted!'});
+  }
+  _heapify(a,n,i,phase,so=[]){
+    let lg=i,l=2*i+1,r=2*i+2;
+    if(l<n&&a[l]>a[lg])lg=l;if(r<n&&a[r]>a[lg])lg=r;
+    if(lg!==i){
+      this.states.push({a:[...a],c:[i,lg],s:[],so,p:[],d:phase+': compare pos '+i+'('+a[i]+') & '+lg+'('+a[lg]+')'});
+      [a[i],a[lg]]=[a[lg],a[i]];
+      this.states.push({a:[...a],c:[],s:[i,lg],so,p:[],d:phase+': swap '+a[i]+' ↔ '+a[lg]});
+      this._heapify(a,n,lg,phase,so);
+    }
+  }
+  draw(){let s=this.states[this.step];
+    drawBars(this.ctx,this.cv.width,this.cv.height,s.a,s.c,s.s,s.so,s.p,s.d,this.step,this.states.length-1);this.updInfo();}
+}
+
+// =================== LINEAR SEARCH ===================
+function drawSearchArr(ctx,w,h,arr,target,colors,desc,step,total){
+  ctx.clearRect(0,0,w,h);let n=arr.length,cw=Math.min(55,(w-40)/n);
+  let startX=(w-n*cw)/2;
+  for(let i=0;i<n;i++){
+    let x=startX+i*cw,y=h/2-20;
+    ctx.fillStyle=colors[i]||'#e8f0fe';ctx.fillRect(x+1,y,cw-2,40);
+    ctx.strokeStyle='#333';ctx.strokeRect(x+1,y,cw-2,40);
+    ctx.fillStyle='#1a1a2e';ctx.font='bold 14px monospace';ctx.textAlign='center';
+    ctx.fillText(arr[i],x+cw/2,y+25);
+    ctx.fillStyle='#888';ctx.font='10px monospace';ctx.fillText(i,x+cw/2,y+52);
+  }
+  ctx.fillStyle='#e94560';ctx.font='bold 14px sans-serif';ctx.textAlign='left';
+  ctx.fillText('Target: '+target,10,30);
+  ctx.fillStyle='#333';ctx.font='13px sans-serif';
+  ctx.fillText('Step '+step+'/'+total+': '+desc,10,h-10);
+}
+class LinearSearch extends Anim{
+  genStates(){
+    let a=Array.from({length:14},()=>Math.floor(Math.random()*99)+1);
+    let t=a[Math.floor(Math.random()*a.length)];
+    this.states=[{a:[...a],t:t,col:{},d:'Searching for '+t+' ...'}];
+    for(let i=0;i<a.length;i++){
+      let col={};col[i]='#FF9800';
+      this.states.push({a,t,col:{...col},d:'Check index '+i+': arr['+i+']='+a[i]+(a[i]===t?' → FOUND!':' ≠ '+t)});
+      if(a[i]===t){let fc={};fc[i]='#4CAF50';
+        this.states.push({a,t,col:fc,d:'✓ Found '+t+' at index '+i+'!'});return;}
+    }
+    this.states.push({a,t,col:{},d:'✗ Not found'});
+  }
+  draw(){let s=this.states[this.step],col={};
+    for(let k in s.col)col[k]=s.col[k];
+    let ca=[];for(let i=0;i<s.a.length;i++)ca.push(col[i]||null);
+    drawSearchArr(this.ctx,this.cv.width,this.cv.height,s.a,s.t,ca,s.d,this.step,this.states.length-1);this.updInfo();}
+}
+
+// =================== BINARY SEARCH ===================
+class BinarySearch extends Anim{
+  genStates(){
+    let a=Array.from({length:15},()=>Math.floor(Math.random()*99)+1).sort((a,b)=>a-b);
+    let t=a[Math.floor(Math.random()*a.length)];
+    this.states=[{a:[...a],t:t,col:{},d:'Sorted array. Searching for '+t}];
+    let lo=0,hi=a.length-1;
+    while(lo<=hi){
+      let mid=Math.floor((lo+hi)/2);
+      let col={};for(let i=lo;i<=hi;i++)col[i]='#e8f0fe';col[mid]='#FF9800';
+      for(let i=0;i<lo;i++)col[i]='#eee';for(let i=hi+1;i<a.length;i++)col[i]='#eee';
+      this.states.push({a,t,col:{...col},d:'lo='+lo+' hi='+hi+' mid='+mid+' → arr[mid]='+a[mid]});
+      if(a[mid]===t){col[mid]='#4CAF50';
+        this.states.push({a,t,col:{...col},d:'✓ Found '+t+' at index '+mid+'!'});return;}
+      else if(a[mid]<t){
+        this.states.push({a,t,col:{...col},d:a[mid]+' < '+t+' → search RIGHT half'});lo=mid+1;}
+      else{this.states.push({a,t,col:{...col},d:a[mid]+' > '+t+' → search LEFT half'});hi=mid-1;}
+    }
+    this.states.push({a,t,col:{},d:'✗ Not found'});
+  }
+  draw(){let s=this.states[this.step],ca=[];
+    for(let i=0;i<s.a.length;i++)ca.push(s.col[i]||null);
+    drawSearchArr(this.ctx,this.cv.width,this.cv.height,s.a,s.t,ca,s.d,this.step,this.states.length-1);this.updInfo();}
+}
+
+// =================== GRAPH DRAWING HELPER ===================
+const GRAPH_POS=[{x:360,y:30},{x:180,y:100},{x:540,y:100},{x:90,y:200},{x:270,y:200},{x:450,y:200},{x:630,y:200},{x:180,y:280},{x:540,y:280}];
+function drawGraph(ctx,w,h,adj,nodeColors,edgeColors,labels,desc,step,total,weighted,dist){
+  ctx.clearRect(0,0,w,h);let pos=GRAPH_POS.slice(0,adj.length),R=20;
+  // edges
+  for(let u=0;u<adj.length;u++)for(let e of adj[u]){
+    let v=typeof e==='object'?e.v:e;if(u<v||weighted){
+      let ec=(edgeColors[u+'-'+v]||edgeColors[v+'-'+u])||'#ccc';
+      ctx.strokeStyle=ec;ctx.lineWidth=ec==='#ccc'?1.5:3;
+      ctx.beginPath();ctx.moveTo(pos[u].x,pos[u].y);ctx.lineTo(pos[v].x,pos[v].y);ctx.stroke();
+      if(weighted&&typeof e==='object'){let mx=(pos[u].x+pos[v].x)/2,my=(pos[u].y+pos[v].y)/2;
+        ctx.fillStyle='#e94560';ctx.font='bold 12px monospace';ctx.textAlign='center';ctx.fillText(e.w,mx,my-6);}
+    }}
+  ctx.lineWidth=1;
+  // nodes
+  for(let i=0;i<adj.length;i++){
+    ctx.beginPath();ctx.arc(pos[i].x,pos[i].y,R,0,Math.PI*2);
+    ctx.fillStyle=nodeColors[i]||'#fff';ctx.fill();ctx.strokeStyle='#333';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle=nodeColors[i]==='#1a1a2e'?'#fff':'#1a1a2e';ctx.font='bold 14px monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(labels?labels[i]:i,pos[i].x,pos[i].y);
+  }
+  if(dist){ctx.font='11px monospace';ctx.fillStyle='#0f3460';
+    for(let i=0;i<dist.length;i++)ctx.fillText('d='+dist[i],pos[i].x,pos[i].y+R+14);}
+  ctx.fillStyle='#333';ctx.font='13px sans-serif';ctx.textAlign='left';ctx.textBaseline='alphabetic';
+  ctx.fillText('Step '+step+'/'+total+': '+desc,10,h-8);
+}
+
+// =================== BFS ===================
+class BFSAnim extends Anim{
+  genStates(){
+    let adj=[[1,2],[0,3,4],[0,5,6],[1,7],[1],[2,8],[2],[3],[5]];
+    let n=adj.length,vis=Array(n).fill(false),nc=Array(n).fill('#fff'),ec={};
+    this.adj=adj;
+    this.states=[{nc:[...nc],ec:{...ec},d:'Start BFS from node 0'}];
+    let q=[0];vis[0]=true;nc[0]='#FF9800';
+    this.states.push({nc:[...nc],ec:{...ec},d:'Enqueue node 0 (orange=frontier)'});
+    while(q.length){
+      let u=q.shift();nc[u]='#4CAF50';
+      this.states.push({nc:[...nc],ec:{...ec},d:'Visit node '+u+' (green=visited)'});
+      for(let v of adj[u])if(!vis[v]){vis[v]=true;nc[v]='#FF9800';ec[u+'-'+v]='#e94560';q.push(v);
+        this.states.push({nc:[...nc],ec:{...ec},d:'Discover node '+v+' from '+u});}
+    }
+    this.states.push({nc:[...nc],ec:{...ec},d:'✓ BFS complete!'});
+  }
+  draw(){let s=this.states[this.step];
+    drawGraph(this.ctx,this.cv.width,this.cv.height,this.adj||[[1,2],[0,3,4],[0,5,6],[1,7],[1],[2,8],[2],[3],[5]],s.nc,s.ec,null,s.d,this.step,this.states.length-1,false);this.updInfo();}
+}
+
+// =================== DFS ===================
+class DFSAnim extends Anim{
+  genStates(){
+    let adj=[[1,2],[0,3,4],[0,5,6],[1,7],[1],[2,8],[2],[3],[5]];
+    this.adj=adj;let n=adj.length,vis=Array(n).fill(false),nc=Array(n).fill('#fff'),ec={};
+    this.states=[{nc:[...nc],ec:{...ec},d:'Start DFS from node 0'}];
+    let stk=[0];
+    while(stk.length){
+      let u=stk.pop();
+      if(vis[u])continue;vis[u]=true;nc[u]='#4CAF50';
+      this.states.push({nc:[...nc],ec:{...ec},d:'Visit node '+u+' (DFS goes deep)'});
+      for(let i=adj[u].length-1;i>=0;i--){let v=adj[u][i];
+        if(!vis[v]){nc[v]='#FF9800';ec[u+'-'+v]='#e94560';stk.push(v);
+          this.states.push({nc:[...nc],ec:{...ec},d:'Push node '+v+' to stack from '+u});}}
+    }
+    this.states.push({nc:[...nc],ec:{...ec},d:'✓ DFS complete!'});
+  }
+  draw(){let s=this.states[this.step];
+    drawGraph(this.ctx,this.cv.width,this.cv.height,this.adj||[],s.nc,s.ec,null,s.d,this.step,this.states.length-1,false);this.updInfo();}
+}
+
+// =================== DIJKSTRA ===================
+class DijkstraAnim extends Anim{
+  genStates(){
+    let adj=[[{v:1,w:4},{v:2,w:1}],[{v:0,w:4},{v:3,w:1},{v:4,w:5}],[{v:0,w:1},{v:5,w:8},{v:6,w:3}],[{v:1,w:1},{v:7,w:2}],[{v:1,w:5}],[{v:2,w:8},{v:8,w:1}],[{v:2,w:3}],[{v:3,w:2}],[{v:5,w:1}]];
+    this.adj=adj;let n=adj.length,dist=Array(n).fill('∞'),fin=Array(n).fill(false);
+    dist[0]=0;let nc=Array(n).fill('#fff'),ec={};
+    this.states=[{nc:[...nc],ec:{...ec},dist:[...dist],d:'Init: dist[0]=0, all others ∞'}];
+    for(let iter=0;iter<n;iter++){
+      let u=-1;for(let i=0;i<n;i++)if(!fin[i]&&(u===-1||dist[i]<dist[u]))u=i;
+      if(u===-1||dist[u]==='∞')break;
+      fin[u]=true;nc[u]='#4CAF50';
+      this.states.push({nc:[...nc],ec:{...ec},dist:[...dist],d:'Finalize node '+u+' (dist='+dist[u]+')'});
+      for(let e of adj[u]){let v=e.v,w=e.w,nd=dist[u]+w;
+        if(!fin[v]&&(dist[v]==='∞'||nd<dist[v])){
+          dist[v]=nd;nc[v]='#FF9800';ec[u+'-'+v]='#e94560';
+          this.states.push({nc:[...nc],ec:{...ec},dist:[...dist],d:'Relax edge '+u+'→'+v+': dist['+v+']='+nd});}}
+    }
+    this.states.push({nc:[...nc],ec:{...ec},dist:[...dist],d:'✓ Dijkstra complete!'});
+  }
+  draw(){let s=this.states[this.step];
+    drawGraph(this.ctx,this.cv.width,this.cv.height,this.adj||[],s.nc,s.ec,null,s.d,this.step,this.states.length-1,true,s.dist);this.updInfo();}
+}
+
+// =================== FIBONACCI DP ===================
+class FibAnim extends Anim{
+  genStates(){
+    let n=Math.floor(Math.random()*6)+8;
+    let dp=Array(n+1).fill(null);dp[0]=0;dp[1]=1;
+    this.n=n;
+    this.states=[{dp:[...dp],cur:-1,d:'Compute Fibonacci('+n+') using bottom-up DP'}];
+    this.states.push({dp:[...dp],cur:0,d:'Base case: F(0) = 0'});
+    this.states.push({dp:[...dp],cur:1,d:'Base case: F(1) = 1'});
+    for(let i=2;i<=n;i++){dp[i]=dp[i-1]+dp[i-2];
+      this.states.push({dp:[...dp],cur:i,d:'F('+i+') = F('+(i-1)+') + F('+(i-2)+') = '+dp[i-1]+' + '+dp[i-2]+' = '+dp[i]});}
+    this.states.push({dp:[...dp],cur:n,d:'✓ Fibonacci('+n+') = '+dp[n]});
+  }
+  draw(){let s=this.states[this.step],ctx=this.ctx,w=this.cv.width,ht=this.cv.height;
+    ctx.clearRect(0,0,w,ht);let dp=s.dp,n=dp.length,cw=Math.min(55,(w-20)/n),sx=(w-n*cw)/2;
+    for(let i=0;i<n;i++){let x=sx+i*cw,y=ht/2-30;
+      ctx.fillStyle=i===s.cur?'#FF9800':dp[i]!==null?'#4CAF50':'#eee';
+      ctx.fillRect(x+1,y,cw-2,40);ctx.strokeStyle='#333';ctx.strokeRect(x+1,y,cw-2,40);
+      ctx.fillStyle='#1a1a2e';ctx.font='bold 13px monospace';ctx.textAlign='center';
+      ctx.fillText(dp[i]!==null?dp[i]:'—',x+cw/2,y+25);
+      ctx.fillStyle='#888';ctx.font='10px sans-serif';ctx.fillText('F('+i+')',x+cw/2,y+54);
+    }
+    ctx.fillStyle='#333';ctx.font='13px sans-serif';ctx.textAlign='left';
+    ctx.fillText('Step '+this.step+'/'+(this.states.length-1)+': '+s.d,10,30);this.updInfo();
+  }
+}
+
+// =================== LCS DP ===================
+class LCSAnim extends Anim{
+  genStates(){
+    const words=['ABCBDAB','BDCAB','AGGTAB','GXTXAYB','ABCDGH','ACDGHR','STONE','LONGEST'];
+    let X=words[Math.floor(Math.random()*words.length)];
+    let Y=words[Math.floor(Math.random()*words.length)];
+    if(X===Y)Y=words[(words.indexOf(Y)+1)%words.length];
+    let m=X.length,n=Y.length;
+    let dp=Array.from({length:m+1},()=>Array(n+1).fill(0));
+    this.X=X;this.Y=Y;
+    this.states=[{dp:dp.map(r=>[...r]),r:-1,c:-1,d:'LCS of "'+X+'" and "'+Y+'"'}];
+    for(let i=1;i<=m;i++)for(let j=1;j<=n;j++){
+      if(X[i-1]===Y[j-1])dp[i][j]=dp[i-1][j-1]+1;
+      else dp[i][j]=Math.max(dp[i-1][j],dp[i][j-1]);
+      this.states.push({dp:dp.map(r=>[...r]),r:i,c:j,d:(X[i-1]===Y[j-1]?'Match! '+X[i-1]+'='+Y[j-1]+' → '+(dp[i-1][j-1]+1):'No match: max(↑'+dp[i-1][j]+',←'+dp[i][j-1]+')='+dp[i][j])});
+    }
+    this.states.push({dp:dp.map(r=>[...r]),r:m,c:n,d:'✓ LCS length = '+dp[m][n]});
+  }
+  draw(){let s=this.states[this.step],ctx=this.ctx,w=this.cv.width,ht=this.cv.height;
+    ctx.clearRect(0,0,w,ht);let dp=s.dp,X=this.X,Y=this.Y;
+    let cs=Math.min(32,Math.min((w-60)/(Y.length+2),(ht-70)/(X.length+2)));
+    let ox=40,oy=45;
+    ctx.font='bold 11px monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+    // col headers
+    for(let j=0;j<Y.length;j++){ctx.fillStyle='#0f3460';ctx.fillText(Y[j],ox+(j+2)*cs+cs/2,oy-8);}
+    // rows
+    for(let i=0;i<=X.length;i++){
+      if(i>0){ctx.fillStyle='#0f3460';ctx.fillText(X[i-1],ox+cs/2,oy+i*cs+cs/2);}
+      for(let j=0;j<=Y.length;j++){
+        let x=ox+(j+1)*cs,y=oy+i*cs;
+        ctx.fillStyle=(i===s.r&&j===s.c)?'#FF9800':(dp[i][j]>0?'#e8f5e9':'#f8f9fc');
+        ctx.fillRect(x,y,cs,cs);ctx.strokeStyle='#ccc';ctx.strokeRect(x,y,cs,cs);
+        ctx.fillStyle='#333';ctx.font='11px monospace';ctx.fillText(dp[i][j],x+cs/2,y+cs/2);
+      }
+    }
+    ctx.fillStyle='#333';ctx.font='13px sans-serif';ctx.textAlign='left';ctx.textBaseline='alphabetic';
+    ctx.fillText('Step '+this.step+'/'+(this.states.length-1)+': '+s.d,10,ht-8);this.updInfo();
+  }
+}
+
+// =================== 0/1 KNAPSACK ===================
+class KnapsackAnim extends Anim{
+  genStates(){
+    let items=[{w:2,v:3},{w:3,v:4},{w:4,v:5},{w:5,v:8},{w:1,v:2}];
+    let n=items.length,W=8;
+    let dp=Array.from({length:n+1},()=>Array(W+1).fill(0));
+    this.items=items;this.W=W;
+    this.states=[{dp:dp.map(r=>[...r]),r:-1,c:-1,d:'Knapsack: '+n+' items, capacity='+W}];
+    for(let i=1;i<=n;i++)for(let w=0;w<=W;w++){
+      dp[i][w]=dp[i-1][w];
+      let took=false;
+      if(items[i-1].w<=w){let tv=dp[i-1][w-items[i-1].w]+items[i-1].v;
+        if(tv>dp[i][w]){dp[i][w]=tv;took=true;}}
+      this.states.push({dp:dp.map(r=>[...r]),r:i,c:w,d:'Item '+i+'(w='+items[i-1].w+',v='+items[i-1].v+') cap='+w+(took?' → TAKE (val='+dp[i][w]+')':' → skip (val='+dp[i][w]+')')});
+    }
+    this.states.push({dp:dp.map(r=>[...r]),r:n,c:W,d:'✓ Max value = '+dp[n][W]});
+  }
+  draw(){let s=this.states[this.step],ctx=this.ctx,w=this.cv.width,ht=this.cv.height;
+    ctx.clearRect(0,0,w,ht);let dp=s.dp,W=this.W,items=this.items;
+    let cs=Math.min(36,(w-80)/(W+2));let ox=60,oy=50;
+    ctx.font='bold 10px monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+    for(let j=0;j<=W;j++){ctx.fillStyle='#0f3460';ctx.fillText('w='+j,ox+(j+1)*cs+cs/2,oy-10);}
+    for(let i=0;i<=items.length;i++){
+      if(i>0){ctx.fillStyle='#0f3460';ctx.textAlign='right';ctx.fillText('i'+i+'('+items[i-1].w+','+items[i-1].v+')',ox-2,oy+i*cs+cs/2);ctx.textAlign='center';}
+      for(let j=0;j<=W;j++){
+        let x=ox+(j+1)*cs-cs/2+cs/2,y2=oy+i*cs;
+        ctx.fillStyle=(i===s.r&&j===s.c)?'#FF9800':(dp[i][j]>0?'#e8f5e9':'#f8f9fc');
+        ctx.fillRect(ox+(j+1)*cs,y2,cs,cs);ctx.strokeStyle='#ccc';ctx.strokeRect(ox+(j+1)*cs,y2,cs,cs);
+        ctx.fillStyle='#333';ctx.font='11px monospace';ctx.fillText(dp[i][j],ox+(j+1)*cs+cs/2,y2+cs/2);
+      }
+    }
+    ctx.fillStyle='#333';ctx.font='13px sans-serif';ctx.textAlign='left';ctx.textBaseline='alphabetic';
+    ctx.fillText('Step '+this.step+'/'+(this.states.length-1)+': '+s.d,10,ht-8);this.updInfo();
+  }
+}
+
+// =================== BST TRAVERSAL ===================
+class BSTAnim extends Anim{
+  genStates(){
+    let vals=[50,30,70,20,40,60,80,10,25,35,45].slice(0,Math.floor(Math.random()*3)+8);
+    // build BST as array of nodes
+    let nodes=[];
+    const ins=(v)=>{if(!nodes.length){nodes.push({v,l:-1,r:-1});return;}
+      let i=0;while(true){if(v<nodes[i].v){if(nodes[i].l===-1){nodes[i].l=nodes.length;nodes.push({v,l:-1,r:-1});return;}i=nodes[i].l;}
+      else{if(nodes[i].r===-1){nodes[i].r=nodes.length;nodes.push({v,l:-1,r:-1});return;}i=nodes[i].r;}}};
+    for(let v of vals)ins(v);
+    this.nodes=nodes;
+    let nc=Array(nodes.length).fill('#fff');
+    this.states=[{nc:[...nc],d:'BST built with '+vals.length+' nodes. In-Order traversal:'}];
+    const inorder=(i)=>{if(i===-1)return;
+      inorder(nodes[i].l);nc[i]='#4CAF50';
+      this.states.push({nc:[...nc],d:'Visit node '+nodes[i].v+' (In-Order: L→Root→R)'});
+      inorder(nodes[i].r);};
+    inorder(0);
+    this.states.push({nc:[...nc],d:'✓ In-Order traversal complete (sorted order!)'});
+  }
+  draw(){let s=this.states[this.step],ctx=this.ctx,w=this.cv.width,ht=this.cv.height;
+    ctx.clearRect(0,0,w,ht);let nodes=this.nodes;
+    // layout BST with levels
+    let pos=Array(nodes.length).fill(null);
+    const layout=(i,x,y,spread)=>{if(i===-1)return;pos[i]={x,y};
+      layout(nodes[i].l,x-spread,y+55,spread*0.55);layout(nodes[i].r,x+spread,y+55,spread*0.55);};
+    layout(0,w/2,35,w/5);
+    // draw edges
+    for(let i=0;i<nodes.length;i++){if(!pos[i])continue;
+      if(nodes[i].l!==-1&&pos[nodes[i].l]){ctx.strokeStyle='#999';ctx.beginPath();ctx.moveTo(pos[i].x,pos[i].y);ctx.lineTo(pos[nodes[i].l].x,pos[nodes[i].l].y);ctx.stroke();}
+      if(nodes[i].r!==-1&&pos[nodes[i].r]){ctx.strokeStyle='#999';ctx.beginPath();ctx.moveTo(pos[i].x,pos[i].y);ctx.lineTo(pos[nodes[i].r].x,pos[nodes[i].r].y);ctx.stroke();}}
+    // draw nodes
+    for(let i=0;i<nodes.length;i++){if(!pos[i])continue;
+      ctx.beginPath();ctx.arc(pos[i].x,pos[i].y,18,0,Math.PI*2);
+      ctx.fillStyle=s.nc[i]||'#fff';ctx.fill();ctx.strokeStyle='#333';ctx.lineWidth=2;ctx.stroke();ctx.lineWidth=1;
+      ctx.fillStyle=s.nc[i]==='#4CAF50'?'#fff':'#1a1a2e';ctx.font='bold 13px monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(nodes[i].v,pos[i].x,pos[i].y);}
+    ctx.fillStyle='#333';ctx.font='13px sans-serif';ctx.textAlign='left';ctx.textBaseline='alphabetic';
+    ctx.fillText('Step '+this.step+'/'+(this.states.length-1)+': '+s.d,10,ht-8);this.updInfo();
+  }
+}
+
+// =================== KRUSKAL'S MST ===================
+class KruskalAnim extends Anim{
+  genStates(){
+    let edges=[{u:0,v:1,w:4},{u:0,v:2,w:2},{u:1,v:2,w:1},{u:1,v:3,w:5},{u:2,v:3,w:8},{u:2,v:4,w:3},{u:3,v:5,w:6},{u:4,v:5,w:7},{u:1,v:4,w:9},{u:3,v:4,w:2}];
+    let adj=Array.from({length:6},()=>[]);
+    for(let e of edges){adj[e.u].push({v:e.v,w:e.w});adj[e.v].push({v:e.u,w:e.w});}
+    this.adj=adj;
+    edges.sort((a,b)=>a.w-b.w);
+    let par=Array.from({length:6},(_,i)=>i);
+    const find=x=>par[x]===x?x:par[x]=find(par[x]);
+    const unite=(a,b)=>{par[find(a)]=find(b);};
+    let nc=Array(6).fill('#fff'),ec={};
+    this.states=[{nc:[...nc],ec:{...ec},d:'Kruskal: edges sorted by weight. Processing...'}];
+    let mstW=0;
+    for(let e of edges){
+      this.states.push({nc:[...nc],ec:{...ec},d:'Consider edge '+e.u+'-'+e.v+' (w='+e.w+')'});
+      if(find(e.u)!==find(e.v)){unite(e.u,e.v);nc[e.u]='#4CAF50';nc[e.v]='#4CAF50';
+        ec[e.u+'-'+e.v]='#4CAF50';mstW+=e.w;
+        this.states.push({nc:[...nc],ec:{...ec},d:'✓ Add edge '+e.u+'-'+e.v+' (w='+e.w+') — no cycle'});}
+      else this.states.push({nc:[...nc],ec:{...ec},d:'✗ Skip '+e.u+'-'+e.v+' — would create cycle'});
+    }
+    this.states.push({nc:[...nc],ec:{...ec},d:'✓ MST complete! Total weight = '+mstW});
+  }
+  draw(){let s=this.states[this.step];
+    let adj=this.adj||[];
+    drawGraph(this.ctx,this.cv.width,this.cv.height,adj,s.nc,s.ec,null,s.d,this.step,this.states.length-1,true);this.updInfo();}
+}
+
+// =================== INITIALIZE ALL ===================
+document.addEventListener('DOMContentLoaded',()=>{
+  new BubbleSort('bubble-sort-anim');
+  new SelectionSort('selection-sort-anim');
+  new InsertionSort('insertion-sort-anim');
+  new MergeSort('merge-sort-anim');
+  new QuickSort('quick-sort-anim');
+  new HeapSort('heap-sort-anim');
+  new LinearSearch('linear-search-anim');
+  new BinarySearch('binary-search-anim');
+  new BFSAnim('bfs-anim');
+  new DFSAnim('dfs-anim');
+  new DijkstraAnim('dijkstra-anim');
+  new FibAnim('fibonacci-anim');
+  new LCSAnim('lcs-anim');
+  new KnapsackAnim('knapsack-anim');
+  new BSTAnim('bst-anim');
+  new KruskalAnim('kruskal-anim');
+  // Active nav highlighting
+  document.querySelectorAll('nav a').forEach(a=>{a.addEventListener('click',()=>{document.querySelectorAll('nav a').forEach(x=>x.classList.remove('active'));a.classList.add('active');});});
+});
+</script></body></html>
